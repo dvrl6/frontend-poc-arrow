@@ -4,7 +4,7 @@ Flutter mobile app for the Arrow Maze inspired semester project.
 
 ## Current Phase
 
-Phase 7 adds local progress, level unlocking, best local scores, functional settings, reset progress, and a lightweight audio feedback foundation on top of the playable local graph UI.
+Phase 8 adds optional backend integration on top of the local-first playable graph UI.
 
 The normal user flow supports:
 
@@ -19,6 +19,8 @@ The normal user flow supports:
 - Saving completion locally when victory is reached.
 - Showing victory, retry, back-to-levels, best score, and next-level actions.
 - Resetting local progress from settings without clearing sound/music settings.
+- Registering or logging in optionally to enable progress sync and leaderboard features.
+- Keeping local gameplay available when the backend is unreachable.
 
 Local levels are stored at:
 
@@ -47,7 +49,7 @@ The asset mirrors the backend seed shape as closely as possible:
 }
 ```
 
-Phase 7 does not implement backend integration, random level generation, final music assets, or APK preparation.
+Phase 8 does not implement random level generation, final APK preparation, production deployment config, full account/profile management, secure token storage hardening, or final music assets.
 
 ## Architecture Direction
 
@@ -177,6 +179,33 @@ Reset progress clears completed levels, best results, and unlock state only. It 
 
 Audio is a foundation only. Phase 7 uses lightweight Flutter system click feedback for movement/block/victory events when sound is enabled. Final sound effects, background music, and approved audio assets remain future work.
 
+## Backend Integration
+
+Backend integration is optional and local-first:
+
+- Local manual levels from `assets/levels/manual_levels.json` remain the default playable source.
+- Authentication is optional. Login/register enables progress sync and leaderboard submission only.
+- Backend failures never block victory, retry, next level, back navigation, or local progress.
+- Remote levels are used only to map local level numbers to backend `levelId` values for progress and leaderboard APIs.
+
+The frontend uses a small `core/network` abstraction over an injectable `http.Client`. Production code does not call top-level `http.get` or `http.post`; API calls go through repositories and use cases.
+
+Auth stores the JWT and basic user summary in `SharedPreferences` for Phase 8 academic/demo scope. Production hardening should replace this with secure token storage.
+
+Progress sync uses this merge policy:
+
+- Completed remains true if either local or remote says completed.
+- Higher score is better.
+- If score is tied, fewer moves is better.
+- If moves are tied, lower `timeSeconds` is better.
+- Better local progress is never deleted because remote data is stale.
+
+Leaderboard behavior:
+
+- After victory, the app saves local progress immediately.
+- If the user is logged in, the app attempts progress sync and leaderboard submission in the background.
+- If submission fails, local gameplay remains complete and usable.
+
 ## Movement Semantics
 
 Phase 4 movement is intentionally simple and deterministic:
@@ -265,10 +294,10 @@ It runs:
 
 Recommended next work:
 
-- Add backend integration for auth, levels, progress, and leaderboard.
 - Add random graph-based levels only after the manual playable path is stable.
 - Add real timer support if time-based scoring should be presented in the UI.
 - Add approved final sound effects/background music assets.
+- Harden token storage for production builds.
 - Prepare Android APK near final delivery.
 
 ## Commit Convention
@@ -280,6 +309,7 @@ feat(game): add graph-based engine domain
 feat(levels): add local manual graph levels
 feat(game): add playable graph board ui
 feat(progress): add local level unlocking and settings
+feat(integration): add optional backend auth and sync
 test(game): add movement and graph validation tests
 docs(frontend): document game engine domain
 ```

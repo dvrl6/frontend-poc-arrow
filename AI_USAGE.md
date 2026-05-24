@@ -113,3 +113,17 @@ This file documents AI-assisted work for the Flutter frontend repository.
 - Limitations found: Phase 7 does not include backend sync, random levels, final audio/music assets, background music playback, a real timer, runtime language switching, or APK release.
 - Approximate percentage of AI-assisted code: Pending.
 - Critical reflection: The phase improves demo readiness without weakening the core boundary: Flutter owns gameplay logic, movement remains in the graph engine, and storage/audio concerns are adapters rather than domain dependencies.
+
+## Phase 8 Frontend Backend Integration Entry
+
+- Date: 2026-05-24
+- AI tool/model: Codex coding agent
+- Role of the tool: Frontend backend integration implementation support.
+- Task or problem addressed: Add optional authentication, API client foundation, progress synchronization, remote level-id mapping, and leaderboard integration while preserving local-first gameplay.
+- Prompt or faithful paraphrase: Work only inside `frontend-poc-arrow`; add only `http`; keep auth optional; keep local manual levels as the default playable source; use injectable `http.Client`; keep HTTP and SharedPreferences behind infrastructure adapters; make sync and leaderboard non-blocking; do not modify backend or Git remotes.
+- Result obtained: Added `core/network`, auth session/token storage, login/register UI, settings auth/sync actions, remote progress merge/sync, backend level-id mapping, leaderboard fetch/submit support, non-blocking victory sync, tests, README updates, and handoff updates.
+- Modifications made by the team: Phase 8 constraints clarified that SharedPreferences token storage is academic/demo scope and production should use secure token storage later.
+- Lessons learned: Mapping backend level ids by level number lets backend integration coexist with local graph assets without replacing offline gameplay.
+- Limitations found: Backend health and Android emulator launch were verified, but manual in-app register/login/complete-level interaction was not performed; secure token storage, random levels, final APK, and production deployment remain future work.
+- Approximate percentage of AI-assisted code: Pending.
+- Critical reflection: The implementation keeps gameplay local and graph-based while making backend features additive rather than mandatory.

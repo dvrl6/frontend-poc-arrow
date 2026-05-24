@@ -18,6 +18,13 @@ typedef SaveLevelCompletion =
       required int moves,
       required int timeSeconds,
     });
+typedef NotifyRemoteLevelCompletion =
+    Future<void> Function({
+      required int levelNumber,
+      required int score,
+      required int moves,
+      required int timeSeconds,
+    });
 typedef GetBestLevelResult = Future<LevelBestResult?> Function(int levelNumber);
 typedef PlayGameAudio = Future<void> Function(GameAudioEvent event);
 
@@ -28,12 +35,14 @@ class GameScreenController extends ChangeNotifier {
     required int? levelNumber,
     required LoadLevelByNumber loadLevelByNumber,
     SaveLevelCompletion? saveLevelCompletion,
+    NotifyRemoteLevelCompletion? notifyRemoteLevelCompletion,
     GetBestLevelResult? getBestLevelResult,
     PlayGameAudio? playGameAudio,
     GameSessionService gameSessionService = const GameSessionService(),
   }) : _levelNumber = levelNumber,
        _loadLevelByNumber = loadLevelByNumber,
        _saveLevelCompletion = saveLevelCompletion,
+       _notifyRemoteLevelCompletion = notifyRemoteLevelCompletion,
        _getBestLevelResult = getBestLevelResult,
        _playGameAudio = playGameAudio,
        _gameSessionService = gameSessionService;
@@ -41,6 +50,7 @@ class GameScreenController extends ChangeNotifier {
   final int? _levelNumber;
   final LoadLevelByNumber _loadLevelByNumber;
   final SaveLevelCompletion? _saveLevelCompletion;
+  final NotifyRemoteLevelCompletion? _notifyRemoteLevelCompletion;
   final GetBestLevelResult? _getBestLevelResult;
   final PlayGameAudio? _playGameAudio;
   final GameSessionService _gameSessionService;
@@ -134,8 +144,29 @@ class GameScreenController extends ChangeNotifier {
       moves: completedSession.movesCount,
       timeSeconds: completedSession.elapsedSeconds,
     );
+    unawaited(_notifyRemoteCompletionBestEffort(completedSession, levelNumber));
     _bestResult = await _getBestLevelResult?.call(levelNumber);
     notifyListeners();
+  }
+
+  Future<void> _notifyRemoteCompletionBestEffort(
+    GameSession completedSession,
+    int levelNumber,
+  ) async {
+    final notifyRemote = _notifyRemoteLevelCompletion;
+    if (notifyRemote == null) {
+      return;
+    }
+    try {
+      await notifyRemote(
+        levelNumber: levelNumber,
+        score: completedSession.score.value,
+        moves: completedSession.movesCount,
+        timeSeconds: completedSession.elapsedSeconds,
+      );
+    } catch (_) {
+      // Remote sync and leaderboard are best-effort; local victory stays valid.
+    }
   }
 
   Future<void> _playAudioFor(MovementResult result) async {
