@@ -17,5 +17,21 @@
   "nextLevel": "Next level",
   "backToLevels": "Back to levels",
   "levelNotFound": "Level not found",
-  "loadingLevel": "Loading level"
+  "loadingLevel": "Loading level",
+  "locked": "Locked",
+  "completed": "Completed",
+  "unlocked": "Unlocked",
+  "bestScore": "Best score",
+  "levelLocked": "Complete previous levels to unlock this level.",
+  "soundEnabled": "Sound effects",
+  "musicEnabled": "Music",
+  "soundFoundationDescription": "Lightweight tap feedback is used while final sound assets are pending.",
+  "musicFutureDescription": "Music is a future enhancement because no music assets are included yet.",
+  "language": "Language",
+  "languageDisplayValue": "English",
+  "resetProgress": "Reset local progress",
+  "resetProgressConfirmation": "This clears completed levels, best scores, and unlocked progress. Settings stay unchanged.",
+  "progressReset": "Local progress reset.",
+  "cancel": "Cancel",
+  "loadingSettings": "Loading settings"
 }

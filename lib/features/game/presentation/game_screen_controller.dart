@@ -1,12 +1,25 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
+import '../../audio/application/game_audio_event.dart';
 import '../application/game_session_service.dart';
 import '../application/movement_result.dart';
 import '../domain/game_session.dart';
 import '../domain/game_status.dart';
 import '../domain/level.dart';
+import '../../progress/domain/level_best_result.dart';
 
 typedef LoadLevelByNumber = Future<Level?> Function(int levelNumber);
+typedef SaveLevelCompletion =
+    Future<void> Function({
+      required int levelNumber,
+      required int score,
+      required int moves,
+      required int timeSeconds,
+    });
+typedef GetBestLevelResult = Future<LevelBestResult?> Function(int levelNumber);
+typedef PlayGameAudio = Future<void> Function(GameAudioEvent event);
 
 enum GameScreenLoadState { loading, ready, notFound, failed }
 
@@ -14,24 +27,36 @@ class GameScreenController extends ChangeNotifier {
   GameScreenController({
     required int? levelNumber,
     required LoadLevelByNumber loadLevelByNumber,
+    SaveLevelCompletion? saveLevelCompletion,
+    GetBestLevelResult? getBestLevelResult,
+    PlayGameAudio? playGameAudio,
     GameSessionService gameSessionService = const GameSessionService(),
   }) : _levelNumber = levelNumber,
        _loadLevelByNumber = loadLevelByNumber,
+       _saveLevelCompletion = saveLevelCompletion,
+       _getBestLevelResult = getBestLevelResult,
+       _playGameAudio = playGameAudio,
        _gameSessionService = gameSessionService;
 
   final int? _levelNumber;
   final LoadLevelByNumber _loadLevelByNumber;
+  final SaveLevelCompletion? _saveLevelCompletion;
+  final GetBestLevelResult? _getBestLevelResult;
+  final PlayGameAudio? _playGameAudio;
   final GameSessionService _gameSessionService;
 
   GameScreenLoadState _loadState = GameScreenLoadState.loading;
   Level? _level;
   GameSession? _session;
   MovementOutcome? _lastOutcome;
+  LevelBestResult? _bestResult;
+  bool _completionSaved = false;
 
   GameScreenLoadState get loadState => _loadState;
   Level? get level => _level;
   GameSession? get session => _session;
   MovementOutcome? get lastOutcome => _lastOutcome;
+  LevelBestResult? get bestResult => _bestResult;
   bool get isVictory => _session?.status == GameStatus.victory;
 
   Future<void> load() async {
@@ -55,7 +80,9 @@ class GameScreenController extends ChangeNotifier {
 
       _level = loadedLevel;
       _session = _gameSessionService.start(loadedLevel);
+      _bestResult = await _getBestLevelResult?.call(levelNumber);
       _lastOutcome = null;
+      _completionSaved = false;
       _loadState = GameScreenLoadState.ready;
       notifyListeners();
     } catch (_) {
@@ -73,6 +100,10 @@ class GameScreenController extends ChangeNotifier {
     final result = _gameSessionService.activateArrow(currentSession, arrowId);
     _session = result.session;
     _lastOutcome = result.outcome;
+    unawaited(_playAudioFor(result));
+    if (result.session.status == GameStatus.victory) {
+      unawaited(_saveCompletionOnce(result.session));
+    }
     notifyListeners();
   }
 
@@ -84,7 +115,47 @@ class GameScreenController extends ChangeNotifier {
 
     _session = _gameSessionService.start(currentLevel);
     _lastOutcome = null;
+    _completionSaved = false;
     _loadState = GameScreenLoadState.ready;
     notifyListeners();
+  }
+
+  Future<void> _saveCompletionOnce(GameSession completedSession) async {
+    final levelNumber = completedSession.level.number;
+    final saveCompletion = _saveLevelCompletion;
+    if (_completionSaved || levelNumber == null || saveCompletion == null) {
+      return;
+    }
+
+    _completionSaved = true;
+    await saveCompletion(
+      levelNumber: levelNumber,
+      score: completedSession.score.value,
+      moves: completedSession.movesCount,
+      timeSeconds: completedSession.elapsedSeconds,
+    );
+    _bestResult = await _getBestLevelResult?.call(levelNumber);
+    notifyListeners();
+  }
+
+  Future<void> _playAudioFor(MovementResult result) async {
+    final playAudio = _playGameAudio;
+    if (playAudio == null) {
+      return;
+    }
+
+    if (result.session.status == GameStatus.victory) {
+      await playAudio(GameAudioEvent.victory);
+      return;
+    }
+
+    final event = switch (result.outcome) {
+      MovementOutcome.moved || MovementOutcome.escaped => GameAudioEvent.move,
+      MovementOutcome.blocked ||
+      MovementOutcome.occupied ||
+      MovementOutcome.arrowNotFound ||
+      MovementOutcome.alreadyEscaped => GameAudioEvent.blocked,
+    };
+    await playAudio(event);
   }
 }

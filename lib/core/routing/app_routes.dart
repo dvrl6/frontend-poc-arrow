@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../features/game/presentation/game_screen.dart';
 import '../../features/levels/presentation/level_selection_screen.dart';
-import '../../features/settings/presentation/settings_placeholder_screen.dart';
+import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 
 class AppRoutes {
@@ -20,7 +20,7 @@ class AppRoutes {
       game => (_) => GameScreen(
         levelNumber: _readLevelNumber(routeSettings.arguments),
       ),
-      settings => (_) => const SettingsPlaceholderScreen(),
+      settings => (_) => const SettingsScreen(),
       _ => (_) => const HomeScreen(),
     };
 

@@ -61,4 +61,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loadingLevel => 'Loading level';
+
+  @override
+  String get locked => 'Locked';
+
+  @override
+  String get completed => 'Completed';
+
+  @override
+  String get unlocked => 'Unlocked';
+
+  @override
+  String get bestScore => 'Best score';
+
+  @override
+  String get levelLocked => 'Complete previous levels to unlock this level.';
+
+  @override
+  String get soundEnabled => 'Sound effects';
+
+  @override
+  String get musicEnabled => 'Music';
+
+  @override
+  String get soundFoundationDescription =>
+      'Lightweight tap feedback is used while final sound assets are pending.';
+
+  @override
+  String get musicFutureDescription =>
+      'Music is a future enhancement because no music assets are included yet.';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get languageDisplayValue => 'English';
+
+  @override
+  String get resetProgress => 'Reset local progress';
+
+  @override
+  String get resetProgressConfirmation =>
+      'This clears completed levels, best scores, and unlocked progress. Settings stay unchanged.';
+
+  @override
+  String get progressReset => 'Local progress reset.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get loadingSettings => 'Loading settings';
 }

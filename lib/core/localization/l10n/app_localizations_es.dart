@@ -62,4 +62,56 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get loadingLevel => 'Cargando nivel';
+
+  @override
+  String get locked => 'Bloqueado';
+
+  @override
+  String get completed => 'Completado';
+
+  @override
+  String get unlocked => 'Desbloqueado';
+
+  @override
+  String get bestScore => 'Mejor puntaje';
+
+  @override
+  String get levelLocked =>
+      'Completa los niveles anteriores para desbloquear este nivel.';
+
+  @override
+  String get soundEnabled => 'Efectos de sonido';
+
+  @override
+  String get musicEnabled => 'Musica';
+
+  @override
+  String get soundFoundationDescription =>
+      'Se usa retroalimentacion ligera de toque mientras se agregan sonidos finales.';
+
+  @override
+  String get musicFutureDescription =>
+      'La musica es una mejora futura porque aun no hay recursos musicales incluidos.';
+
+  @override
+  String get language => 'Idioma';
+
+  @override
+  String get languageDisplayValue => 'Espanol';
+
+  @override
+  String get resetProgress => 'Reiniciar progreso local';
+
+  @override
+  String get resetProgressConfirmation =>
+      'Esto borra niveles completados, mejores puntajes y desbloqueos. La configuracion no cambia.';
+
+  @override
+  String get progressReset => 'Progreso local reiniciado.';
+
+  @override
+  String get cancel => 'Cancelar';
+
+  @override
+  String get loadingSettings => 'Cargando configuracion';
 }

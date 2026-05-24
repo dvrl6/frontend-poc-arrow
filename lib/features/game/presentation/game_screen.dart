@@ -3,8 +3,10 @@ import 'package:frontend_poc_arrow/core/localization/l10n/app_localizations.dart
 
 import '../../../core/routing/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../audio/infrastructure/audio_dependencies.dart';
 import '../domain/game_session.dart';
 import '../infrastructure/local_level_dependencies.dart';
+import '../../progress/infrastructure/local_progress_dependencies.dart';
 import 'game_screen_controller.dart';
 import 'game_ui_keys.dart';
 import 'widgets/graph_board.dart';
@@ -13,49 +15,89 @@ class GameScreen extends StatefulWidget {
   const GameScreen({
     required this.levelNumber,
     this.loadLevelByNumber,
+    this.saveLevelCompletion,
+    this.getBestLevelResult,
+    this.playGameAudio,
     super.key,
   });
 
   final int? levelNumber;
   final LoadLevelByNumber? loadLevelByNumber;
+  final SaveLevelCompletion? saveLevelCompletion;
+  final GetBestLevelResult? getBestLevelResult;
+  final PlayGameAudio? playGameAudio;
 
   @override
   State<GameScreen> createState() => _GameScreenState();
 }
 
 class _GameScreenState extends State<GameScreen> {
-  late final GameScreenController _controller;
+  GameScreenController? _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = GameScreenController(
+    _createController();
+  }
+
+  Future<void> _createController() async {
+    final controller = GameScreenController(
       levelNumber: widget.levelNumber,
       loadLevelByNumber:
           widget.loadLevelByNumber ??
           LocalLevelDependencies.createGetLocalLevelByNumberUseCase().call,
-    )..load();
+      saveLevelCompletion:
+          widget.saveLevelCompletion ??
+          (await LocalProgressDependencies.createSaveLevelCompletionUseCase())
+              .call,
+      getBestLevelResult:
+          widget.getBestLevelResult ??
+          (await LocalProgressDependencies.createGetBestLevelResultUseCase())
+              .call,
+      playGameAudio:
+          widget.playGameAudio ??
+          (await AudioDependencies.createGameAudioController()).play,
+    );
+    if (!mounted) {
+      controller.dispose();
+      return;
+    }
+    setState(() {
+      _controller = controller;
+    });
+    await controller.load();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final controller = _controller;
+    if (controller == null) {
+      final localizations = AppLocalizations.of(context);
+      return Scaffold(
+        appBar: AppBar(title: Text(localizations.loadingLevel)),
+        body: SafeArea(
+          child: _LoadingState(message: localizations.loadingLevel),
+        ),
+      );
+    }
+
     return AnimatedBuilder(
-      animation: _controller,
+      animation: controller,
       builder: (context, _) {
         final localizations = AppLocalizations.of(context);
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(_controller.level?.name ?? localizations.loadingLevel),
+            title: Text(controller.level?.name ?? localizations.loadingLevel),
           ),
           body: SafeArea(
-            child: switch (_controller.loadState) {
+            child: switch (controller.loadState) {
               GameScreenLoadState.loading => _LoadingState(
                 message: localizations.loadingLevel,
               ),
@@ -66,7 +108,7 @@ class _GameScreenState extends State<GameScreen> {
                 onBackToLevels: _backToLevels,
               ),
               GameScreenLoadState.ready => _GameReadyView(
-                controller: _controller,
+                controller: controller,
                 onBackToLevels: _backToLevels,
                 onNextLevel: _openNextLevel,
               ),
@@ -85,7 +127,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _openNextLevel() {
-    final nextLevelNumber = (_controller.level?.number ?? 0) + 1;
+    final nextLevelNumber = (_controller?.level?.number ?? 0) + 1;
     Navigator.of(
       context,
     ).pushReplacementNamed(AppRoutes.game, arguments: nextLevelNumber);
@@ -148,6 +190,7 @@ class _GameReadyView extends StatelessWidget {
           _VictoryOverlay(
             score: session.score.value,
             moves: session.movesCount,
+            bestScore: controller.bestResult?.score,
             hasNextLevel: (level.number ?? 15) < 15,
             onRetry: controller.restart,
             onBackToLevels: onBackToLevels,
@@ -216,6 +259,7 @@ class _VictoryOverlay extends StatelessWidget {
   const _VictoryOverlay({
     required this.score,
     required this.moves,
+    required this.bestScore,
     required this.hasNextLevel,
     required this.onRetry,
     required this.onBackToLevels,
@@ -224,6 +268,7 @@ class _VictoryOverlay extends StatelessWidget {
 
   final int score;
   final int moves;
+  final int? bestScore;
   final bool hasNextLevel;
   final VoidCallback onRetry;
   final VoidCallback onBackToLevels;
@@ -251,6 +296,8 @@ class _VictoryOverlay extends StatelessWidget {
                   const SizedBox(height: 12),
                   Text('${localizations.score}: $score'),
                   Text('${localizations.moves}: $moves'),
+                  if (bestScore != null)
+                    Text('${localizations.bestScore}: $bestScore'),
                   const SizedBox(height: 18),
                   FilledButton(
                     key: GameUiKeys.retryButton,

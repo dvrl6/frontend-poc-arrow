@@ -13,6 +13,7 @@ import 'package:frontend_poc_arrow/features/game/infrastructure/local_level_depe
 import 'package:frontend_poc_arrow/features/game/presentation/game_screen.dart';
 import 'package:frontend_poc_arrow/features/game/presentation/game_ui_keys.dart';
 import 'package:frontend_poc_arrow/features/levels/presentation/level_selection_screen.dart';
+import 'package:frontend_poc_arrow/features/progress/domain/local_progress.dart';
 
 void main() {
   testWidgets('should_display_manual_levels_when_level_selection_loads', (
@@ -125,6 +126,43 @@ void main() {
     );
     semantics.dispose();
   });
+
+  testWidgets('should_not_open_locked_level_when_level_is_locked', (
+    tester,
+  ) async {
+    final levels = await _loadRealManualLevels(tester);
+    await tester.pumpWidget(
+      _TestManualLevelsApp(levels: levels, progress: LocalProgress.initial()),
+    );
+    await _pumpUntilFound(tester, find.byKey(GameUiKeys.levelCard(2)));
+
+    await tester.tap(find.byKey(GameUiKeys.levelCard(2)));
+    await tester.pump();
+
+    expect(find.byKey(GameUiKeys.gameBoard), findsNothing);
+    expect(
+      find.text('Complete previous levels to unlock this level.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('should_update_level_selection_after_level_completion', (
+    tester,
+  ) async {
+    final levels = await _loadRealManualLevels(tester);
+    final progress = LocalProgress.initial().copyWith(
+      completedLevelNumbers: {1},
+      lastUnlockedLevel: 2,
+    );
+
+    await tester.pumpWidget(
+      _TestManualLevelsApp(levels: levels, progress: progress),
+    );
+    await _pumpUntilFound(tester, find.byKey(GameUiKeys.levelCard(2)));
+
+    expect(find.textContaining('Completed'), findsOneWidget);
+    expect(find.textContaining('Unlocked'), findsWidgets);
+  });
 }
 
 Future<void> _openLevelOne(WidgetTester tester, List<Level> levels) async {
@@ -205,15 +243,25 @@ class _TestGameApp extends StatelessWidget {
       home: GameScreen(
         levelNumber: level.number,
         loadLevelByNumber: (_) async => level,
+        saveLevelCompletion:
+            ({
+              required int levelNumber,
+              required int score,
+              required int moves,
+              required int timeSeconds,
+            }) async {},
+        getBestLevelResult: (_) async => null,
+        playGameAudio: (_) async {},
       ),
     );
   }
 }
 
 class _TestManualLevelsApp extends StatelessWidget {
-  const _TestManualLevelsApp({required this.levels});
+  const _TestManualLevelsApp({required this.levels, this.progress});
 
   final List<Level> levels;
+  final LocalProgress? progress;
 
   @override
   Widget build(BuildContext context) {
@@ -221,7 +269,12 @@ class _TestManualLevelsApp extends StatelessWidget {
       theme: AppTheme.dark(),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: LevelSelectionScreen(loadLevels: () async => levels),
+      home: LevelSelectionScreen(
+        loadLevels: () async => levels,
+        loadProgress: () async =>
+            progress ??
+            LocalProgress.initial().copyWith(lastUnlockedLevel: levels.length),
+      ),
       onGenerateRoute: (settings) {
         if (settings.name == AppRoutes.game) {
           final levelNumber = settings.arguments as int?;
@@ -236,6 +289,15 @@ class _TestManualLevelsApp extends StatelessWidget {
                 }
                 return null;
               },
+              saveLevelCompletion:
+                  ({
+                    required int levelNumber,
+                    required int score,
+                    required int moves,
+                    required int timeSeconds,
+                  }) async {},
+              getBestLevelResult: (_) async => null,
+              playGameAudio: (_) async {},
             ),
           );
         }

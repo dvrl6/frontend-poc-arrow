@@ -4,18 +4,21 @@ Flutter mobile app for the Arrow Maze inspired semester project.
 
 ## Current Phase
 
-Phase 6 makes the app playable with the required 15 deterministic manual graph-based levels loaded from local Flutter assets.
+Phase 7 adds local progress, level unlocking, best local scores, functional settings, reset progress, and a lightweight audio feedback foundation on top of the playable local graph UI.
 
 The normal user flow supports:
 
 - Opening the app and entering level selection.
 - Viewing the 15 local manual levels.
+- Seeing locked, unlocked, and completed level states.
 - Selecting a level.
 - Rendering the graph board with persistent nodes and edges.
 - Rendering active arrow paths over graph edges.
 - Tapping arrows to activate movement through the existing game engine.
 - Updating moves and score.
-- Showing victory, retry, back-to-levels, and next-level actions.
+- Saving completion locally when victory is reached.
+- Showing victory, retry, back-to-levels, best score, and next-level actions.
+- Resetting local progress from settings without clearing sound/music settings.
 
 Local levels are stored at:
 
@@ -44,7 +47,7 @@ The asset mirrors the backend seed shape as closely as possible:
 }
 ```
 
-Phase 6 does not implement backend integration, random level generation, advanced persistence, or APK preparation.
+Phase 7 does not implement backend integration, random level generation, final music assets, or APK preparation.
 
 ## Architecture Direction
 
@@ -137,6 +140,43 @@ Main presentation concepts:
 - `GraphBoardLayout`
 - `GraphBoardHitTester`
 
+## Local Progress and Unlocking
+
+Local progress is persisted with `shared_preferences`, behind Clean Architecture ports/adapters:
+
+- `LocalProgressRepository` is the application port.
+- `SharedPreferencesLocalProgressRepository` is the infrastructure adapter.
+- `GetLocalProgressUseCase`, `SaveLevelCompletionUseCase`, `IsLevelUnlockedUseCase`, `GetBestLevelResultUseCase`, and `ResetLocalProgressUseCase` are the application entry points.
+
+Unlocking is intentionally simple:
+
+- Level 1 is unlocked by default.
+- Completing level N unlocks level N + 1.
+- Completed levels remain playable.
+- Locked levels are disabled in level selection and show a short message when tapped.
+
+Best local result uses the same semantics as the backend:
+
+- Higher score is better.
+- If score is tied, fewer moves is better.
+- If moves are tied, lower `timeSeconds` is better.
+
+Phase 7 stores `timeSeconds = 0` because a real gameplay timer is not implemented yet; the UI does not display a fake timer.
+
+## Settings and Audio Foundation
+
+The settings screen now supports:
+
+- Sound feedback enabled/disabled.
+- Music enabled/disabled as a stored preference only.
+- Read-only language display.
+- Read-only API base URL display.
+- Reset local progress with confirmation.
+
+Reset progress clears completed levels, best results, and unlock state only. It does not clear sound, music, language, or API URL configuration.
+
+Audio is a foundation only. Phase 7 uses lightweight Flutter system click feedback for movement/block/victory events when sound is enabled. Final sound effects, background music, and approved audio assets remain future work.
+
 ## Movement Semantics
 
 Phase 4 movement is intentionally simple and deterministic:
@@ -225,9 +265,10 @@ It runs:
 
 Recommended next work:
 
-- Add local progress persistence and level completion state.
 - Add backend integration for auth, levels, progress, and leaderboard.
 - Add random graph-based levels only after the manual playable path is stable.
+- Add real timer support if time-based scoring should be presented in the UI.
+- Add approved final sound effects/background music assets.
 - Prepare Android APK near final delivery.
 
 ## Commit Convention
@@ -238,6 +279,7 @@ Use Conventional Commits in English:
 feat(game): add graph-based engine domain
 feat(levels): add local manual graph levels
 feat(game): add playable graph board ui
+feat(progress): add local level unlocking and settings
 test(game): add movement and graph validation tests
 docs(frontend): document game engine domain
 ```
