@@ -9,9 +9,11 @@ class LevelDefinition {
     required this.arrows,
     required this.blockedEdgeIds,
     required this.metadata,
+    this.number,
   });
 
   final String id;
+  final int? number;
   final String name;
   final List<GraphNodeDefinition> nodes;
   final List<GraphEdgeDefinition> edges;

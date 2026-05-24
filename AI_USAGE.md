@@ -71,3 +71,17 @@ This file documents AI-assisted work for the Flutter frontend repository.
 - Limitations found: Phase 4 uses small test fixtures only; real manual levels and UI integration remain future phases.
 - Approximate percentage of AI-assisted code: Pending.
 - Critical reflection: The implementation demonstrates the required graph model while avoiding premature UI/backend coupling.
+
+## Phase 5 Manual Graph Levels Entry
+
+- Date: 2026-05-23
+- AI tool/model: Codex coding agent
+- Role of the tool: Flutter level asset and Clean Architecture implementation support.
+- Task or problem addressed: Add the 15 required deterministic manual graph-based levels as local Flutter assets, keep them compatible with the backend seed format, load them through infrastructure/application boundaries, and verify them with tests.
+- Prompt or faithful paraphrase: Work only inside `frontend-poc-arrow`; mirror `backend-poc-arrow/prisma/levels/manual-levels.ts` as closely as possible; preserve explicit level numbers; load the actual registered asset; keep validation strict and structural; do not implement gameplay UI, backend integration, random generation, or APK build.
+- Result obtained: Added `assets/levels/manual_levels.json`, registered it in `pubspec.yaml`, added local asset data source/repository/use cases, preserved level numbers in the domain model, and added focused tests for loading, validation, progression, uniqueness, graph shape, mapping, reversed edge id normalization, and invalid reversed edge rejection.
+- Modifications made by the team: Pending team review.
+- Lessons learned: Backend seed compatibility and frontend domain strictness can coexist by mapping backend-style undirected edge references into canonical domain edge ids before validation, while rejecting references that do not have an exact or reversed equivalent edge.
+- Limitations found: Phase 5 does not render or play these levels yet; gameplay UI and backend synchronization remain future work.
+- Approximate percentage of AI-assisted code: Pending.
+- Critical reflection: The local level pipeline keeps the app playable offline in future phases without letting asset loading leak into pure domain logic.

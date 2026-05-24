@@ -8,9 +8,11 @@ class Level {
     required this.boardGraph,
     required this.arrows,
     required this.metadata,
+    this.number,
   });
 
   final String id;
+  final int? number;
   final String name;
   final BoardGraph boardGraph;
   final List<ArrowPath> arrows;

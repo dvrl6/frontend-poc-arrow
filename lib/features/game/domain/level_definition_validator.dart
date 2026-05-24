@@ -17,6 +17,8 @@ class LevelDefinitionException implements Exception {
 }
 
 class LevelDefinitionValidator {
+  const LevelDefinitionValidator();
+
   Level validate(LevelDefinition definition) {
     if (definition.metadata.isEmpty) {
       throw const LevelDefinitionException('Level metadata is required.');
@@ -50,7 +52,10 @@ class LevelDefinitionValidator {
           'Edge ${edge.id} references a node that does not exist.',
         );
       }
-      final direction = Direction.between(fromNode.coordinate, toNode.coordinate);
+      final direction = Direction.between(
+        fromNode.coordinate,
+        toNode.coordinate,
+      );
       if (direction == null) {
         throw LevelDefinitionException('Edge ${edge.id} must be orthogonal.');
       }
@@ -104,6 +109,7 @@ class LevelDefinitionValidator {
 
     return Level(
       id: definition.id,
+      number: definition.number,
       name: definition.name,
       boardGraph: BoardGraph(
         nodes: nodesById.values.toList(growable: false),
