@@ -1,8 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_poc_arrow/features/game/presentation/game_ui_keys.dart';
 import 'package:frontend_poc_arrow/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   testWidgets('should_show_home_screen_when_app_starts', (tester) async {
     await tester.pumpWidget(const ArrowPocApp());
     await tester.pump();

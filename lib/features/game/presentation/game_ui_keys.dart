@@ -10,6 +10,12 @@ class GameUiKeys {
   static const retryButton = Key('retry-button');
   static const nextLevelButton = Key('next-level-button');
   static const backToLevelsButton = Key('back-to-levels-button');
+  static const soundSwitch = Key('sound-switch');
+  static const musicSwitch = Key('music-switch');
+  static const resetProgressButton = Key('reset-progress-button');
+  static const confirmResetProgressButton = Key(
+    'confirm-reset-progress-button',
+  );
 
   static Key levelCard(int levelNumber) => Key('level-card-$levelNumber');
 }

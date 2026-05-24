@@ -6,37 +6,48 @@ import '../../../core/theme/app_theme.dart';
 import '../../game/domain/level.dart';
 import '../../game/infrastructure/local_level_dependencies.dart';
 import '../../game/presentation/game_ui_keys.dart';
+import '../../progress/domain/local_progress.dart';
+import '../../progress/infrastructure/local_progress_dependencies.dart';
 
 typedef LoadLocalLevels = Future<List<Level>> Function();
+typedef LoadLocalProgress = Future<LocalProgress> Function();
 
 class LevelSelectionScreen extends StatefulWidget {
-  const LevelSelectionScreen({this.loadLevels, super.key});
+  const LevelSelectionScreen({this.loadLevels, this.loadProgress, super.key});
 
   final LoadLocalLevels? loadLevels;
+  final LoadLocalProgress? loadProgress;
 
   @override
   State<LevelSelectionScreen> createState() => _LevelSelectionScreenState();
 }
 
 class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
-  late Future<List<Level>> _levelsFuture;
+  late Future<_LevelSelectionData> _screenDataFuture;
 
   @override
   void initState() {
     super.initState();
-    _levelsFuture = _loadLevels();
+    _screenDataFuture = _loadScreenData();
   }
 
-  Future<List<Level>> _loadLevels() {
+  Future<_LevelSelectionData> _loadScreenData() async {
     final loadLevels =
         widget.loadLevels ??
         LocalLevelDependencies.createGetLocalLevelsUseCase().call;
-    return loadLevels();
+    final loadProgress =
+        widget.loadProgress ??
+        (await LocalProgressDependencies.createGetLocalProgressUseCase()).call;
+
+    return _LevelSelectionData(
+      levels: await loadLevels(),
+      progress: await loadProgress(),
+    );
   }
 
   void _retry() {
     setState(() {
-      _levelsFuture = _loadLevels();
+      _screenDataFuture = _loadScreenData();
     });
   }
 
@@ -47,8 +58,8 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(localizations.levels)),
       body: SafeArea(
-        child: FutureBuilder<List<Level>>(
-          future: _levelsFuture,
+        child: FutureBuilder<_LevelSelectionData>(
+          future: _screenDataFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
               return _LoadingState(message: localizations.loadingLevel);
@@ -58,18 +69,36 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
               return _ErrorState(onRetry: _retry);
             }
 
-            final levels = snapshot.data ?? const <Level>[];
+            final screenData =
+                snapshot.data ??
+                _LevelSelectionData(
+                  levels: const <Level>[],
+                  progress: LocalProgress.initial(),
+                );
+            final levels = screenData.levels;
+            final progress = screenData.progress;
             return ListView.separated(
               padding: const EdgeInsets.all(20),
               itemCount: levels.length,
               separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final level = levels[index];
+                final levelNumber = level.number ?? 0;
+                final isUnlocked = progress.isUnlocked(levelNumber);
                 return _LevelCard(
                   level: level,
-                  onTap: () => Navigator.of(
-                    context,
-                  ).pushNamed(AppRoutes.game, arguments: level.number),
+                  isUnlocked: isUnlocked,
+                  isCompleted: progress.isCompleted(levelNumber),
+                  bestScore: progress.bestResultFor(levelNumber)?.score,
+                  onTap: isUnlocked
+                      ? () => Navigator.of(
+                          context,
+                        ).pushNamed(AppRoutes.game, arguments: level.number)
+                      : () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(localizations.levelLocked)),
+                          );
+                        },
                 );
               },
             );
@@ -80,19 +109,47 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
   }
 }
 
+class _LevelSelectionData {
+  const _LevelSelectionData({required this.levels, required this.progress});
+
+  final List<Level> levels;
+  final LocalProgress progress;
+}
+
 class _LevelCard extends StatelessWidget {
-  const _LevelCard({required this.level, required this.onTap});
+  const _LevelCard({
+    required this.level,
+    required this.isUnlocked,
+    required this.isCompleted,
+    required this.bestScore,
+    required this.onTap,
+  });
 
   final Level level;
+  final bool isUnlocked;
+  final bool isCompleted;
+  final int? bestScore;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final number = level.number ?? 0;
     final difficulty = level.metadata['difficulty']?.toString() ?? '-';
+    final localizations = AppLocalizations.of(context);
+    final status = isCompleted
+        ? localizations.completed
+        : isUnlocked
+        ? localizations.unlocked
+        : localizations.locked;
+    final accent = isCompleted
+        ? AppTheme.neonMint
+        : isUnlocked
+        ? AppTheme.pastelAmber
+        : AppTheme.mutedText;
 
     return Card(
       key: GameUiKeys.levelCard(number),
+      color: isUnlocked ? null : AppTheme.surface.withValues(alpha: 0.58),
       child: InkWell(
         borderRadius: BorderRadius.circular(24),
         onTap: onTap,
@@ -104,20 +161,17 @@ class _LevelCard extends StatelessWidget {
                 width: 54,
                 height: 54,
                 decoration: BoxDecoration(
-                  color: AppTheme.neonMint.withValues(alpha: 0.16),
+                  color: accent.withValues(alpha: 0.16),
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: AppTheme.neonMint.withValues(alpha: 0.35),
-                  ),
+                  border: Border.all(color: accent.withValues(alpha: 0.35)),
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   '$number',
                   style: const TextStyle(
-                    color: AppTheme.neonMint,
                     fontWeight: FontWeight.w800,
                     fontSize: 20,
-                  ),
+                  ).copyWith(color: accent),
                 ),
               ),
               const SizedBox(width: 16),
@@ -140,10 +194,23 @@ class _LevelCard extends StatelessWidget {
                         letterSpacing: 1.4,
                       ),
                     ),
+                    const SizedBox(height: 6),
+                    Text(
+                      bestScore == null
+                          ? status
+                          : '$status - ${localizations.bestScore}: $bestScore',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: accent,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded, color: AppTheme.neonMint),
+              Icon(
+                isUnlocked ? Icons.chevron_right_rounded : Icons.lock_rounded,
+                color: accent,
+              ),
             ],
           ),
         ),

@@ -3,96 +3,157 @@
 ## Current Repository
 
 - Repository: `frontend-poc-arrow`
-- Branch: `feat/playable-game-ui`
+- Branch: `feat/local-progress-settings-audio`
 - Do not modify Git remotes automatically.
 - Do not modify `backend-poc-arrow` from this frontend phase.
 
-## Completed Phases
+## Completed Phase
 
-- Phase 3 Flutter Bootstrap: completed and merged.
-- Phase 4 Graph-Based Game Engine Domain: completed and merged.
-- Phase 5 Manual Graph-Based Levels: completed and merged.
-- Phase 6 Playable Game UI with Local Manual Levels: implemented on this branch.
+- Phase 7: Local Progress, Level Unlocking, Settings, Audio Foundation, and UX Polish.
 
-## Implemented Phase 6 State
+Previous completed and merged phases:
 
-- Replaced placeholder route targets with real level selection and game screens.
-- Normal user flow uses real local levels from `assets/levels/manual_levels.json`.
-- Level selection displays the 15 manual levels with number, name, and difficulty.
-- Game route receives an `int` level number and shows a friendly error state for missing/invalid values.
-- Game screen loads the selected local level, starts `GameSession`, renders the graph, and activates arrows by tap.
-- Moves and score update after successful movement/escape.
-- Victory overlay supports retry, back to levels, and next level.
-- Backend integration, random generation, advanced persistence, and APK build remain unimplemented.
+- Phase 3 Flutter Bootstrap.
+- Phase 4 Graph-Based Game Engine Domain.
+- Phase 5 Manual Graph-Based Levels.
+- Phase 6 Playable Game UI with Local Manual Levels.
 
-## Rendering Strategy
+## Files and Features Added
 
-- `GraphBoardPainter` draws directly from `BoardGraph.nodes`, `BoardGraph.edges`, and active `ArrowPath.occupiedEdgeIds`.
-- Graph nodes and edges are always rendered, including after arrow escape.
-- Escaped arrows are not rendered as active arrows.
-- Blocked edges use a distinct accent style.
-- Arrowheads are drawn at each active arrow head using `ArrowPath.direction`.
-- `DottedBoardPlaceholder` remains presentation-only and is not the game engine.
+- Local progress domain model:
+  - `lib/features/progress/domain/local_progress.dart`
+  - `lib/features/progress/domain/level_best_result.dart`
+- Local progress application ports/use cases:
+  - `LocalProgressRepository`
+  - `GetLocalProgressUseCase`
+  - `SaveLevelCompletionUseCase`
+  - `IsLevelUnlockedUseCase`
+  - `GetBestLevelResultUseCase`
+  - `ResetLocalProgressUseCase`
+  - `BestLevelResultPolicy`
+- SharedPreferences progress adapter:
+  - `SharedPreferencesLocalProgressRepository`
+  - `LocalProgressDependencies`
+- Settings model/repository/use cases:
+  - `PlayerSettings`
+  - `SettingsRepository`
+  - `GetPlayerSettingsUseCase`
+  - `SavePlayerSettingsUseCase`
+  - `SharedPreferencesSettingsRepository`
+  - `SettingsDependencies`
+- Settings UI:
+  - `SettingsScreen`
+  - `SettingsScreenController`
+- Audio foundation/facade:
+  - `AudioPort`
+  - `GameAudioEvent`
+  - `GameAudioController`
+  - `SystemSoundAudioPort`
+  - `AudioDependencies`
+- UI integrations:
+  - Level selection shows locked, unlocked, completed, and best-score states.
+  - Locked levels show a snackbar and do not navigate.
+  - Victory flow saves progress exactly once per completed game session.
+  - Victory card shows best score when available.
+  - Settings screen includes sound/music toggles, read-only API URL/language display, and reset progress confirmation.
+- Tests added for progress, settings, audio foundation, locked levels, and level-selection refresh.
 
-## Coordinate Mapping and Hit Testing
+## Architecture Decisions
 
-- `GraphBoardLayout` centralizes graph-coordinate to canvas-coordinate mapping.
-- `GraphBoardLayout` lives in presentation and is not domain logic.
-- `GraphBoardHitTester` uses the shared layout to map tap positions to an active arrow id.
-- Hit testing does not decide movement rules.
+- `shared_preferences` is the only dependency added in Phase 7.
+- `SharedPreferences` is used only in infrastructure/adapters.
+- Screens, controllers, widgets, painters, domain classes, and game application services do not call `SharedPreferences` directly.
+- Domain remains free of Flutter, storage, HTTP, assets, localization, and widget dependencies.
 - Movement still goes through `GameSessionService`, `MoveArrowUseCase`, and `MovementResolver`.
-- No matrix, cell, tile, or cell-runtime model was introduced.
+- Gameplay remains graph-based: UI renders `BoardGraph.nodes`, `BoardGraph.edges`, and `ArrowPath.occupiedEdgeIds`.
+- No matrix, grid-cell, tile, or cell-runtime model was introduced.
 
-## State Management
+## Progress Behavior
 
-- `GameScreenController` is a small `ChangeNotifier`.
-- It holds load state, current level, current session, and last movement outcome.
-- It starts/restarts sessions through `GameSessionService`.
-- It delegates arrow activation through `GameSessionService.activateArrow`.
-- It does not contain gameplay movement rules.
+- Level 1 is unlocked by default.
+- Completing level N unlocks level N + 1, capped by the available manual level count.
+- Completed levels remain playable.
+- Progress stores:
+  - completed level numbers
+  - best results by level
+  - last unlocked level
+- Best-result policy:
+  - Higher score is better.
+  - If score is tied, fewer moves is better.
+  - If moves are tied, lower `timeSeconds` is better.
+- `timeSeconds` is currently `0` until real timer support exists.
+- The UI intentionally does not show a fake live timer or fake best time.
 
-## Files Future Sessions Should Inspect First
+## Settings Behavior
 
-- `lib/core/routing/app_routes.dart`
-- `lib/features/levels/presentation/level_selection_screen.dart`
-- `lib/features/game/presentation/game_screen.dart`
-- `lib/features/game/presentation/game_screen_controller.dart`
-- `lib/features/game/presentation/widgets/graph_board.dart`
-- `lib/features/game/presentation/widgets/graph_board_layout.dart`
-- `lib/features/game/presentation/widgets/graph_board_hit_tester.dart`
-- `lib/features/game/presentation/widgets/graph_board_painter.dart`
-- `lib/features/game/infrastructure/local_level_dependencies.dart`
-- `test/features/game/presentation/playable_game_ui_test.dart`
+- Sound setting persists locally.
+- Music setting persists locally for future music support.
+- Reset progress clears completed levels, best results, and unlock state only.
+- Reset progress does not reset sound/music settings.
+- API base URL remains read-only and config driven through `AppConfig.apiBaseUrl`.
+- Language display is read-only; runtime language switching was not implemented in Phase 7.
+
+## Audio Behavior
+
+- Audio is foundation only.
+- `GameAudioController` checks `soundEnabled` before delegating playback.
+- `SystemSoundAudioPort` uses lightweight Flutter system click feedback.
+- Final sound effects, background music, and approved audio assets are not complete.
+- No `audioplayers` dependency was added.
+- No fake or empty audio assets were added.
 
 ## Tests Added
 
-- `should_display_manual_levels_when_level_selection_loads`
-- `should_open_game_screen_when_manual_level_is_selected`
-- `should_render_game_screen_with_graph_nodes`
-- `should_update_moves_when_arrow_is_activated`
-- `should_show_victory_when_all_arrows_escape_for_simple_level`
-- `should_keep_graph_nodes_visible_after_arrow_exits`
-
-Tests use real local manual levels for selection/navigation/game loading. Fixture levels are used only for deterministic victory/escape checks.
+- `should_unlock_level_one_by_default`
+- `should_unlock_next_level_when_current_level_is_completed`
+- `should_save_best_score_when_new_score_is_better`
+- `should_keep_existing_best_score_when_new_score_is_worse`
+- `should_persist_sound_setting_when_toggled`
+- `should_reset_local_progress_when_confirmed`
+- `should_reset_local_progress_when_confirmed_in_settings_screen`
+- `should_play_audio_feedback_when_sound_is_enabled`
+- `should_not_play_audio_feedback_when_sound_is_disabled`
+- `should_not_open_locked_level_when_level_is_locked`
+- `should_update_level_selection_after_level_completion`
 
 ## Verification Results
 
 - `flutter pub get`: passed.
-- `flutter analyze`: passed.
-- `flutter test`: passed with 29 tests.
-- `flutter run -d emulator-5554 --dart-define=API_BASE_URL=http://10.0.2.2:3000`: launched successfully on Android emulator, then was stopped with `q`.
-- Targeted playable UI tests passed.
+- `flutter analyze`: passed with no issues.
+- `flutter test`: passed with 41 tests.
+- Manual emulator run: not performed in this pass because no Android emulator was detected by `flutter devices`.
+- `flutter devices` showed Windows desktop, Chrome, and Edge only.
 - Backend repository remained untouched.
 - Git remotes were not modified.
 
 ## Known Limitations
 
-- No backend auth, remote levels, progress sync, or leaderboard integration.
-- No random level generation.
-- No advanced persistence or level locking.
-- No APK build.
-- Painter tests avoid pixel-perfect assertions and use keys/semantics instead.
+- No backend authentication, progress sync, remote levels, or leaderboard integration yet.
+- No random level generation yet.
+- No final APK build yet.
+- No final music/background audio assets yet.
+- No real gameplay timer yet.
+- Settings language display is read-only.
+- Music preference is persisted only; it does not play music yet.
+
+## Files Future Sessions Should Inspect First
+
+- `lib/features/progress/application/`
+- `lib/features/progress/domain/`
+- `lib/features/progress/infrastructure/`
+- `lib/features/settings/presentation/settings_screen.dart`
+- `lib/features/settings/presentation/settings_screen_controller.dart`
+- `lib/features/settings/infrastructure/shared_preferences_settings_repository.dart`
+- `lib/features/audio/application/game_audio_controller.dart`
+- `lib/features/audio/infrastructure/system_sound_audio_port.dart`
+- `lib/features/levels/presentation/level_selection_screen.dart`
+- `lib/features/game/presentation/game_screen.dart`
+- `lib/features/game/presentation/game_screen_controller.dart`
+- `test/features/progress/local_progress_test.dart`
+- `test/features/settings/settings_test.dart`
+- `test/features/audio/audio_controller_test.dart`
+- `test/features/game/presentation/playable_game_ui_test.dart`
 
 ## Next Recommended Phase
 
-Recommended next phase: add local progress persistence and level completion flow, or begin backend integration for auth/progress/leaderboard after the playable local loop is reviewed.
+Recommended next phase: backend integration for authentication, remote level retrieval, progress synchronization, and leaderboard submission while preserving local offline play.

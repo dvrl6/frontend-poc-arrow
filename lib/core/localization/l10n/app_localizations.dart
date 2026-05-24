@@ -205,6 +205,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loading level'**
   String get loadingLevel;
+
+  /// No description provided for @locked.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get locked;
+
+  /// No description provided for @completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completed;
+
+  /// No description provided for @unlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked'**
+  String get unlocked;
+
+  /// No description provided for @bestScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Best score'**
+  String get bestScore;
+
+  /// No description provided for @levelLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete previous levels to unlock this level.'**
+  String get levelLocked;
+
+  /// No description provided for @soundEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound effects'**
+  String get soundEnabled;
+
+  /// No description provided for @musicEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Music'**
+  String get musicEnabled;
+
+  /// No description provided for @soundFoundationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Lightweight tap feedback is used while final sound assets are pending.'**
+  String get soundFoundationDescription;
+
+  /// No description provided for @musicFutureDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Music is a future enhancement because no music assets are included yet.'**
+  String get musicFutureDescription;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @languageDisplayValue.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageDisplayValue;
+
+  /// No description provided for @resetProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset local progress'**
+  String get resetProgress;
+
+  /// No description provided for @resetProgressConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'This clears completed levels, best scores, and unlocked progress. Settings stay unchanged.'**
+  String get resetProgressConfirmation;
+
+  /// No description provided for @progressReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Local progress reset.'**
+  String get progressReset;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @loadingSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading settings'**
+  String get loadingSettings;
 }
 
 class _AppLocalizationsDelegate
