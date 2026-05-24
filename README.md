@@ -4,7 +4,44 @@ Flutter mobile app for the Arrow Maze inspired semester project.
 
 ## Current Phase
 
-Phase 4 implements the pure Dart graph-based game engine domain/application foundation:
+Phase 5 adds the required 15 deterministic manual graph-based levels as local Flutter assets and loads them through Clean Architecture boundaries.
+
+Local levels are stored at:
+
+```text
+assets/levels/manual_levels.json
+```
+
+The asset mirrors the backend seed shape as closely as possible:
+
+```json
+{
+  "levels": [
+    {
+      "number": 1,
+      "name": "First Exit",
+      "difficulty": "easy",
+      "definitionJson": {
+        "nodes": [],
+        "edges": [],
+        "arrows": [],
+        "blockedEdges": [],
+        "metadata": {}
+      }
+    }
+  ]
+}
+```
+
+The 15 levels preserve explicit `number` values from 1 to 15:
+
+- Levels 1-5: easy.
+- Levels 6-10: medium.
+- Levels 11-15: hard.
+
+These levels are graph-based, not matrix-based. They are available locally so the Flutter game can run without backend access, while remaining compatible with the backend manual seed definitions.
+
+Phase 4 implemented the pure Dart graph-based game engine domain/application foundation:
 
 - Persistent graph domain model.
 - Dynamic arrow path model.
@@ -16,7 +53,7 @@ Phase 4 implements the pure Dart graph-based game engine domain/application foun
 - Score calculation strategy.
 - Pure Dart unit tests for graph and movement behavior.
 
-This phase does not implement full gameplay UI, backend integration, the 15 manual levels, random level generation, or APK preparation.
+Phase 5 does not implement gameplay UI, backend fetching, random level generation, or APK preparation.
 
 ## Architecture Direction
 
@@ -87,6 +124,16 @@ Main application concepts:
 - `ScoreStrategy`
 - `ScoreCalculator`
 - `GameSessionService`
+- `LevelRepository`
+- `GetLocalLevelsUseCase`
+- `GetLocalLevelByNumberUseCase`
+
+Main infrastructure concepts:
+
+- `LocalLevelDataSource`
+- `AssetLevelRepository`
+- `LevelDefinitionMapper`
+- `RootBundleAssetTextLoader`
 
 ## Movement Semantics
 
@@ -163,9 +210,9 @@ It runs:
 Recommended next work:
 
 - Integrate the pure engine with the game UI.
-- Add local manual level assets mirroring backend graph JSON.
 - Build game screen interactions around `GameSession`.
 - Add backend integration for auth, levels, progress, and leaderboard.
+- Add random graph-based levels only after the manual level path is stable.
 - Prepare Android APK near final delivery.
 
 ## Commit Convention
@@ -174,6 +221,7 @@ Use Conventional Commits in English:
 
 ```text
 feat(game): add graph-based engine domain
+feat(levels): add local manual graph levels
 test(game): add movement and graph validation tests
 docs(frontend): document game engine domain
 ```
