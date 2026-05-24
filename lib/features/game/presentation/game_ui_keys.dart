@@ -9,6 +9,7 @@ class GameUiKeys {
   static const victoryCard = Key('victory-card');
   static const retryButton = Key('retry-button');
   static const nextLevelButton = Key('next-level-button');
+  static const leaderboardButton = Key('leaderboard-button');
   static const backToLevelsButton = Key('back-to-levels-button');
   static const soundSwitch = Key('sound-switch');
   static const musicSwitch = Key('music-switch');

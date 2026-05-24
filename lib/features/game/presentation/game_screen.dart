@@ -16,6 +16,7 @@ class GameScreen extends StatefulWidget {
     required this.levelNumber,
     this.loadLevelByNumber,
     this.saveLevelCompletion,
+    this.notifyRemoteLevelCompletion,
     this.getBestLevelResult,
     this.playGameAudio,
     super.key,
@@ -24,6 +25,7 @@ class GameScreen extends StatefulWidget {
   final int? levelNumber;
   final LoadLevelByNumber? loadLevelByNumber;
   final SaveLevelCompletion? saveLevelCompletion;
+  final NotifyRemoteLevelCompletion? notifyRemoteLevelCompletion;
   final GetBestLevelResult? getBestLevelResult;
   final PlayGameAudio? playGameAudio;
 
@@ -49,6 +51,10 @@ class _GameScreenState extends State<GameScreen> {
       saveLevelCompletion:
           widget.saveLevelCompletion ??
           (await LocalProgressDependencies.createSaveLevelCompletionUseCase())
+              .call,
+      notifyRemoteLevelCompletion:
+          widget.notifyRemoteLevelCompletion ??
+          (await LocalProgressDependencies.createNotifyRemoteLevelCompletionUseCase())
               .call,
       getBestLevelResult:
           widget.getBestLevelResult ??
@@ -111,6 +117,7 @@ class _GameScreenState extends State<GameScreen> {
                 controller: controller,
                 onBackToLevels: _backToLevels,
                 onNextLevel: _openNextLevel,
+                onOpenLeaderboard: _openLeaderboard,
               ),
             },
           ),
@@ -132,6 +139,13 @@ class _GameScreenState extends State<GameScreen> {
       context,
     ).pushReplacementNamed(AppRoutes.game, arguments: nextLevelNumber);
   }
+
+  void _openLeaderboard() {
+    final levelNumber = _controller?.level?.number;
+    Navigator.of(
+      context,
+    ).pushNamed(AppRoutes.leaderboard, arguments: levelNumber);
+  }
 }
 
 class _GameReadyView extends StatelessWidget {
@@ -139,11 +153,13 @@ class _GameReadyView extends StatelessWidget {
     required this.controller,
     required this.onBackToLevels,
     required this.onNextLevel,
+    required this.onOpenLeaderboard,
   });
 
   final GameScreenController controller;
   final VoidCallback onBackToLevels;
   final VoidCallback onNextLevel;
+  final VoidCallback onOpenLeaderboard;
 
   @override
   Widget build(BuildContext context) {
@@ -195,6 +211,7 @@ class _GameReadyView extends StatelessWidget {
             onRetry: controller.restart,
             onBackToLevels: onBackToLevels,
             onNextLevel: onNextLevel,
+            onOpenLeaderboard: onOpenLeaderboard,
           ),
       ],
     );
@@ -264,6 +281,7 @@ class _VictoryOverlay extends StatelessWidget {
     required this.onRetry,
     required this.onBackToLevels,
     required this.onNextLevel,
+    required this.onOpenLeaderboard,
   });
 
   final int score;
@@ -273,6 +291,7 @@ class _VictoryOverlay extends StatelessWidget {
   final VoidCallback onRetry;
   final VoidCallback onBackToLevels;
   final VoidCallback onNextLevel;
+  final VoidCallback onOpenLeaderboard;
 
   @override
   Widget build(BuildContext context) {
@@ -309,6 +328,12 @@ class _VictoryOverlay extends StatelessWidget {
                     key: GameUiKeys.backToLevelsButton,
                     onPressed: onBackToLevels,
                     child: Text(localizations.backToLevels),
+                  ),
+                  const SizedBox(height: 10),
+                  OutlinedButton(
+                    key: GameUiKeys.leaderboardButton,
+                    onPressed: onOpenLeaderboard,
+                    child: Text(localizations.leaderboard),
                   ),
                   if (hasNextLevel) ...[
                     const SizedBox(height: 10),

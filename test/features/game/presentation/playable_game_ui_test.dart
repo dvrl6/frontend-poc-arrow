@@ -11,6 +11,7 @@ import 'package:frontend_poc_arrow/features/game/domain/graph_node.dart';
 import 'package:frontend_poc_arrow/features/game/domain/level.dart';
 import 'package:frontend_poc_arrow/features/game/infrastructure/local_level_dependencies.dart';
 import 'package:frontend_poc_arrow/features/game/presentation/game_screen.dart';
+import 'package:frontend_poc_arrow/features/game/presentation/game_screen_controller.dart';
 import 'package:frontend_poc_arrow/features/game/presentation/game_ui_keys.dart';
 import 'package:frontend_poc_arrow/features/levels/presentation/level_selection_screen.dart';
 import 'package:frontend_poc_arrow/features/progress/domain/local_progress.dart';
@@ -127,6 +128,33 @@ void main() {
     semantics.dispose();
   });
 
+  testWidgets('should_keep_gameplay_available_when_backend_is_unreachable', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _TestGameApp(
+        level: _singleNodeExitLevel(),
+        notifyRemoteLevelCompletion:
+            ({
+              required int levelNumber,
+              required int score,
+              required int moves,
+              required int timeSeconds,
+            }) async {
+              throw Exception('Backend unavailable');
+            },
+      ),
+    );
+    await _pumpUntilFound(tester, find.byKey(GameUiKeys.gameBoard));
+
+    await tester.tapAt(_singleNodePosition(tester));
+    await tester.pump();
+
+    expect(find.byKey(GameUiKeys.victoryCard), findsOneWidget);
+    expect(find.byKey(GameUiKeys.retryButton), findsOneWidget);
+    expect(find.byKey(GameUiKeys.backToLevelsButton), findsOneWidget);
+  });
+
   testWidgets('should_not_open_locked_level_when_level_is_locked', (
     tester,
   ) async {
@@ -230,9 +258,10 @@ Level _singleNodeExitLevel() {
 }
 
 class _TestGameApp extends StatelessWidget {
-  const _TestGameApp({required this.level});
+  const _TestGameApp({required this.level, this.notifyRemoteLevelCompletion});
 
   final Level level;
+  final NotifyRemoteLevelCompletion? notifyRemoteLevelCompletion;
 
   @override
   Widget build(BuildContext context) {
@@ -251,6 +280,14 @@ class _TestGameApp extends StatelessWidget {
               required int timeSeconds,
             }) async {},
         getBestLevelResult: (_) async => null,
+        notifyRemoteLevelCompletion:
+            notifyRemoteLevelCompletion ??
+            ({
+              required int levelNumber,
+              required int score,
+              required int moves,
+              required int timeSeconds,
+            }) async {},
         playGameAudio: (_) async {},
       ),
     );
@@ -297,6 +334,13 @@ class _TestManualLevelsApp extends StatelessWidget {
                     required int timeSeconds,
                   }) async {},
               getBestLevelResult: (_) async => null,
+              notifyRemoteLevelCompletion:
+                  ({
+                    required int levelNumber,
+                    required int score,
+                    required int moves,
+                    required int timeSeconds,
+                  }) async {},
               playGameAudio: (_) async {},
             ),
           );

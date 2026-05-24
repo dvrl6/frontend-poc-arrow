@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:frontend_poc_arrow/core/localization/l10n/app_localizations.dart';
 
 import '../../../core/config/app_config.dart';
+import '../../../core/routing/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../auth/infrastructure/auth_dependencies.dart';
 import '../../game/presentation/game_ui_keys.dart';
 import '../../progress/infrastructure/local_progress_dependencies.dart';
 import '../infrastructure/settings_dependencies.dart';
@@ -39,6 +41,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           await SettingsDependencies.createSavePlayerSettingsUseCase(),
       resetLocalProgress:
           await LocalProgressDependencies.createResetLocalProgressUseCase(),
+      getAuthSession: await AuthDependencies.createGetAuthSessionUseCase(),
+      logout: await AuthDependencies.createLogoutUseCase(),
+      syncProgress:
+          (await LocalProgressDependencies.createSyncProgressUseCase()).call,
     );
     if (!mounted) {
       controller.dispose();
@@ -122,6 +128,8 @@ class _SettingsContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
+        _AuthStatusCard(controller: controller),
+        const SizedBox(height: 12),
         _ReadOnlyInfoCard(
           title: localizations.language,
           value: localizations.languageDisplayValue,
@@ -176,6 +184,76 @@ class _SettingsContent extends StatelessWidget {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(localizations.progressReset)));
+  }
+}
+
+class _AuthStatusCard extends StatelessWidget {
+  const _AuthStatusCard({required this.controller});
+
+  final SettingsScreenController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+    final session = controller.authSession;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              session == null
+                  ? localizations.notLoggedIn
+                  : '${localizations.loggedInAs} ${session.user.displayName}',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: AppTheme.softText,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(localizations.localFirstNotice),
+            if (controller.syncMessage != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                controller.syncMessage == 'success'
+                    ? localizations.syncComplete
+                    : localizations.syncUnavailable,
+              ),
+            ],
+            const SizedBox(height: 14),
+            if (session == null)
+              FilledButton(
+                onPressed: () async {
+                  await Navigator.of(context).pushNamed(AppRoutes.auth);
+                  await controller.refreshAuthSession();
+                },
+                child: Text(localizations.login),
+              )
+            else ...[
+              FilledButton(
+                onPressed: controller.syncing
+                    ? null
+                    : () async {
+                        await controller.syncProgress();
+                      },
+                child: Text(
+                  controller.syncing
+                      ? localizations.loadingSettings
+                      : localizations.syncProgress,
+                ),
+              ),
+              const SizedBox(height: 10),
+              OutlinedButton(
+                onPressed: controller.logout,
+                child: Text(localizations.logout),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 }
 

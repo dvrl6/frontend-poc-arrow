@@ -112,4 +112,53 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loadingSettings => 'Loading settings';
+
+  @override
+  String get login => 'Login';
+
+  @override
+  String get register => 'Register';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get displayName => 'Display name';
+
+  @override
+  String get authOptional =>
+      'Login is optional. It enables progress sync and leaderboard features.';
+
+  @override
+  String get loggedInAs => 'Logged in as';
+
+  @override
+  String get notLoggedIn => 'Not logged in';
+
+  @override
+  String get syncProgress => 'Sync progress';
+
+  @override
+  String get syncComplete => 'Progress sync complete.';
+
+  @override
+  String get syncUnavailable => 'Sync unavailable. Local progress is safe.';
+
+  @override
+  String get leaderboard => 'Leaderboard';
+
+  @override
+  String get leaderboardUnavailable => 'Leaderboard unavailable.';
+
+  @override
+  String get localFirstNotice => 'Local play remains available offline.';
+
+  @override
+  String get submit => 'Submit';
 }

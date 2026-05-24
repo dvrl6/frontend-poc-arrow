@@ -33,5 +33,21 @@
   "resetProgressConfirmation": "Esto borra niveles completados, mejores puntajes y desbloqueos. La configuracion no cambia.",
   "progressReset": "Progreso local reiniciado.",
   "cancel": "Cancelar",
-  "loadingSettings": "Cargando configuracion"
+  "loadingSettings": "Cargando configuracion",
+  "login": "Iniciar sesion",
+  "register": "Registrarse",
+  "logout": "Cerrar sesion",
+  "email": "Correo",
+  "password": "Contrasena",
+  "displayName": "Nombre",
+  "authOptional": "Iniciar sesion es opcional. Activa sincronizacion y tabla de posiciones.",
+  "loggedInAs": "Sesion iniciada como",
+  "notLoggedIn": "Sin sesion iniciada",
+  "syncProgress": "Sincronizar progreso",
+  "syncComplete": "Progreso sincronizado.",
+  "syncUnavailable": "Sincronizacion no disponible. El progreso local esta seguro.",
+  "leaderboard": "Tabla de posiciones",
+  "leaderboardUnavailable": "Tabla de posiciones no disponible.",
+  "localFirstNotice": "El juego local sigue disponible sin conexion.",
+  "submit": "Enviar"
 }

@@ -114,4 +114,55 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get loadingSettings => 'Cargando configuracion';
+
+  @override
+  String get login => 'Iniciar sesion';
+
+  @override
+  String get register => 'Registrarse';
+
+  @override
+  String get logout => 'Cerrar sesion';
+
+  @override
+  String get email => 'Correo';
+
+  @override
+  String get password => 'Contrasena';
+
+  @override
+  String get displayName => 'Nombre';
+
+  @override
+  String get authOptional =>
+      'Iniciar sesion es opcional. Activa sincronizacion y tabla de posiciones.';
+
+  @override
+  String get loggedInAs => 'Sesion iniciada como';
+
+  @override
+  String get notLoggedIn => 'Sin sesion iniciada';
+
+  @override
+  String get syncProgress => 'Sincronizar progreso';
+
+  @override
+  String get syncComplete => 'Progreso sincronizado.';
+
+  @override
+  String get syncUnavailable =>
+      'Sincronizacion no disponible. El progreso local esta seguro.';
+
+  @override
+  String get leaderboard => 'Tabla de posiciones';
+
+  @override
+  String get leaderboardUnavailable => 'Tabla de posiciones no disponible.';
+
+  @override
+  String get localFirstNotice =>
+      'El juego local sigue disponible sin conexion.';
+
+  @override
+  String get submit => 'Enviar';
 }

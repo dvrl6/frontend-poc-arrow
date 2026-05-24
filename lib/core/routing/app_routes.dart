@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../features/auth/presentation/auth_screen.dart';
 import '../../features/game/presentation/game_screen.dart';
 import '../../features/levels/presentation/level_selection_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
+import '../../features/leaderboard/presentation/leaderboard_screen.dart';
 
 class AppRoutes {
   const AppRoutes._();
@@ -12,6 +14,8 @@ class AppRoutes {
   static const levels = '/levels';
   static const game = '/game';
   static const settings = '/settings';
+  static const auth = '/auth';
+  static const leaderboard = '/leaderboard';
 
   static Route<void> onGenerateRoute(RouteSettings routeSettings) {
     final builder = switch (routeSettings.name) {
@@ -21,6 +25,10 @@ class AppRoutes {
         levelNumber: _readLevelNumber(routeSettings.arguments),
       ),
       settings => (_) => const SettingsScreen(),
+      auth => (_) => const AuthScreen(),
+      leaderboard => (_) => LeaderboardScreen(
+        levelNumber: _readLevelNumber(routeSettings.arguments),
+      ),
       _ => (_) => const HomeScreen(),
     };
 

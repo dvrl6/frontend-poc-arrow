@@ -33,5 +33,21 @@
   "resetProgressConfirmation": "This clears completed levels, best scores, and unlocked progress. Settings stay unchanged.",
   "progressReset": "Local progress reset.",
   "cancel": "Cancel",
-  "loadingSettings": "Loading settings"
+  "loadingSettings": "Loading settings",
+  "login": "Login",
+  "register": "Register",
+  "logout": "Logout",
+  "email": "Email",
+  "password": "Password",
+  "displayName": "Display name",
+  "authOptional": "Login is optional. It enables progress sync and leaderboard features.",
+  "loggedInAs": "Logged in as",
+  "notLoggedIn": "Not logged in",
+  "syncProgress": "Sync progress",
+  "syncComplete": "Progress sync complete.",
+  "syncUnavailable": "Sync unavailable. Local progress is safe.",
+  "leaderboard": "Leaderboard",
+  "leaderboardUnavailable": "Leaderboard unavailable.",
+  "localFirstNotice": "Local play remains available offline.",
+  "submit": "Submit"
 }

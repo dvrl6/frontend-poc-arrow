@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_poc_arrow/core/localization/l10n/app_localizations.dart';
 import 'package:frontend_poc_arrow/core/theme/app_theme.dart';
+import 'package:frontend_poc_arrow/features/auth/application/get_auth_session_use_case.dart';
+import 'package:frontend_poc_arrow/features/auth/application/logout_use_case.dart';
+import 'package:frontend_poc_arrow/features/auth/application/token_storage.dart';
+import 'package:frontend_poc_arrow/features/auth/domain/auth_session.dart';
+import 'package:frontend_poc_arrow/features/auth/domain/authenticated_user.dart';
 import 'package:frontend_poc_arrow/features/game/presentation/game_ui_keys.dart';
 import 'package:frontend_poc_arrow/features/progress/application/local_progress_repository.dart';
 import 'package:frontend_poc_arrow/features/progress/application/reset_local_progress_use_case.dart';
@@ -76,7 +81,12 @@ void main() {
     );
 
     await tester.pumpWidget(_TestSettingsApp(controller: controller));
-    await tester.pump();
+    await _pumpUntilFound(tester, find.byKey(GameUiKeys.soundSwitch));
+    await tester.scrollUntilVisible(
+      find.byKey(GameUiKeys.resetProgressButton),
+      300,
+      scrollable: find.byType(Scrollable),
+    );
 
     await tester.tap(find.byKey(GameUiKeys.resetProgressButton));
     await tester.pumpAndSettle();
@@ -89,6 +99,68 @@ void main() {
 
     controller.dispose();
   });
+
+  test(
+    'should_show_logged_in_status_and_logout_from_settings_controller',
+    () async {
+      final tokenStorage = _FakeTokenStorage();
+      final controller = SettingsScreenController(
+        getPlayerSettings: GetPlayerSettingsUseCase(
+          _FakeSettingsRepository(PlayerSettings.defaults()),
+        ),
+        savePlayerSettings: SavePlayerSettingsUseCase(
+          _FakeSettingsRepository(PlayerSettings.defaults()),
+        ),
+        resetLocalProgress: ResetLocalProgressUseCase(
+          _FakeLocalProgressRepository(),
+        ),
+        getAuthSession: GetAuthSessionUseCase(tokenStorage),
+        logout: LogoutUseCase(tokenStorage),
+      );
+
+      await controller.load();
+      expect(controller.isLoggedIn, isTrue);
+
+      await controller.logout();
+      expect(controller.isLoggedIn, isFalse);
+
+      controller.dispose();
+    },
+  );
+
+  test('should_report_sync_failure_without_clearing_local_settings', () async {
+    final settingsRepository = _FakeSettingsRepository(
+      const PlayerSettings(soundEnabled: true, musicEnabled: true),
+    );
+    final controller = SettingsScreenController(
+      getPlayerSettings: GetPlayerSettingsUseCase(settingsRepository),
+      savePlayerSettings: SavePlayerSettingsUseCase(settingsRepository),
+      resetLocalProgress: ResetLocalProgressUseCase(
+        _FakeLocalProgressRepository(),
+      ),
+      getAuthSession: GetAuthSessionUseCase(_FakeTokenStorage()),
+      syncProgress: () async => throw Exception('Backend unavailable'),
+    );
+
+    await controller.load();
+    final result = await controller.syncProgress();
+
+    expect(result, isFalse);
+    expect(controller.syncMessage, 'failed');
+    expect(controller.settings.musicEnabled, isTrue);
+
+    controller.dispose();
+  });
+}
+
+Future<void> _pumpUntilFound(WidgetTester tester, Finder finder) async {
+  for (var i = 0; i < 20; i++) {
+    await tester.pump(const Duration(milliseconds: 100));
+    if (finder.evaluate().isNotEmpty) {
+      return;
+    }
+  }
+  fail('Expected widget was not found: $finder');
 }
 
 class _TestSettingsApp extends StatelessWidget {
@@ -137,5 +209,37 @@ class _FakeSettingsRepository implements SettingsRepository {
   @override
   Future<void> saveSettings(PlayerSettings settings) async {
     this.settings = settings;
+  }
+}
+
+class _FakeTokenStorage implements TokenStorage {
+  AuthSession? session = const AuthSession(
+    accessToken: 'token',
+    user: AuthenticatedUser(
+      id: 'user-1',
+      email: 'player@example.com',
+      displayName: 'Player',
+      role: 'PLAYER',
+    ),
+  );
+
+  @override
+  Future<void> clearSession() async {
+    session = null;
+  }
+
+  @override
+  Future<String?> getAccessToken() async {
+    return session?.accessToken;
+  }
+
+  @override
+  Future<AuthSession?> getSession() async {
+    return session;
+  }
+
+  @override
+  Future<void> saveSession(AuthSession session) async {
+    this.session = session;
   }
 }

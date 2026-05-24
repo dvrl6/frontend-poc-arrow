@@ -3,13 +3,13 @@
 ## Current Repository
 
 - Repository: `frontend-poc-arrow`
-- Branch: `feat/local-progress-settings-audio`
+- Branch: `feat/frontend-backend-integration`
 - Do not modify Git remotes automatically.
-- Do not modify `backend-poc-arrow` from this frontend phase.
+- Do not modify `backend-poc-arrow` unless a blocking API contract issue is found and reported first.
 
 ## Completed Phase
 
-- Phase 7: Local Progress, Level Unlocking, Settings, Audio Foundation, and UX Polish.
+- Phase 8: Frontend Backend Integration.
 
 Previous completed and merged phases:
 
@@ -17,143 +17,120 @@ Previous completed and merged phases:
 - Phase 4 Graph-Based Game Engine Domain.
 - Phase 5 Manual Graph-Based Levels.
 - Phase 6 Playable Game UI with Local Manual Levels.
+- Phase 7 Local Progress, Level Unlocking, Settings, Audio Foundation, and UX Polish.
 
-## Files and Features Added
+## Implemented Phase 8 State
 
-- Local progress domain model:
-  - `lib/features/progress/domain/local_progress.dart`
-  - `lib/features/progress/domain/level_best_result.dart`
-- Local progress application ports/use cases:
-  - `LocalProgressRepository`
-  - `GetLocalProgressUseCase`
-  - `SaveLevelCompletionUseCase`
-  - `IsLevelUnlockedUseCase`
-  - `GetBestLevelResultUseCase`
-  - `ResetLocalProgressUseCase`
-  - `BestLevelResultPolicy`
-- SharedPreferences progress adapter:
-  - `SharedPreferencesLocalProgressRepository`
-  - `LocalProgressDependencies`
-- Settings model/repository/use cases:
-  - `PlayerSettings`
-  - `SettingsRepository`
-  - `GetPlayerSettingsUseCase`
-  - `SavePlayerSettingsUseCase`
-  - `SharedPreferencesSettingsRepository`
-  - `SettingsDependencies`
-- Settings UI:
-  - `SettingsScreen`
-  - `SettingsScreenController`
-- Audio foundation/facade:
-  - `AudioPort`
-  - `GameAudioEvent`
-  - `GameAudioController`
-  - `SystemSoundAudioPort`
-  - `AudioDependencies`
-- UI integrations:
-  - Level selection shows locked, unlocked, completed, and best-score states.
-  - Locked levels show a snackbar and do not navigate.
-  - Victory flow saves progress exactly once per completed game session.
-  - Victory card shows best score when available.
-  - Settings screen includes sound/music toggles, read-only API URL/language display, and reset progress confirmation.
-- Tests added for progress, settings, audio foundation, locked levels, and level-selection refresh.
+- Added `http` as the only new dependency.
+- Added `core/network` with `ApiClient`, `HttpApiClient`, and `ApiException`.
+- Production HTTP uses injectable `http.Client`; no top-level `http.get`/`http.post` calls are used.
+- Added optional auth:
+  - Login/register use cases.
+  - Auth API repository.
+  - SharedPreferences token/session storage adapter.
+  - Simple auth screen.
+  - Settings login/logout status and actions.
+- Added progress sync:
+  - Remote progress repository.
+  - Backend level-id mapping through `GET /levels`.
+  - Merge policy that preserves better local progress.
+  - Manual sync action in settings.
+- Added leaderboard integration:
+  - Fetch leaderboard for a backend level id.
+  - Submit score after victory only when authenticated.
+  - Leaderboard route opened from victory UI.
+- Victory still saves local progress immediately and exactly once.
+- Remote sync/leaderboard submission is best-effort and non-blocking.
 
 ## Architecture Decisions
 
-- `shared_preferences` is the only dependency added in Phase 7.
-- `SharedPreferences` is used only in infrastructure/adapters.
-- Screens, controllers, widgets, painters, domain classes, and game application services do not call `SharedPreferences` directly.
-- Domain remains free of Flutter, storage, HTTP, assets, localization, and widget dependencies.
+- Local manual levels remain the default playable source.
+- Remote levels are used only for backend `levelId` mapping and future compatibility.
+- Auth is optional; logged-out users can play all local unlocked content.
+- `SharedPreferences` token storage is allowed for Phase 8 academic/demo scope only.
+- Production hardening should replace token storage with secure storage.
+- HTTP access lives in `core/network` and infrastructure repositories.
+- SharedPreferences access remains in infrastructure adapters.
+- Screens/controllers do not directly call `http.Client` static helpers or `SharedPreferences`.
 - Movement still goes through `GameSessionService`, `MoveArrowUseCase`, and `MovementResolver`.
-- Gameplay remains graph-based: UI renders `BoardGraph.nodes`, `BoardGraph.edges`, and `ArrowPath.occupiedEdgeIds`.
-- No matrix, grid-cell, tile, or cell-runtime model was introduced.
+- Gameplay remains graph-based; no matrix/grid-cell/tile runtime model was introduced.
 
-## Progress Behavior
+## Progress Merge Policy
 
-- Level 1 is unlocked by default.
-- Completing level N unlocks level N + 1, capped by the available manual level count.
-- Completed levels remain playable.
-- Progress stores:
-  - completed level numbers
-  - best results by level
-  - last unlocked level
-- Best-result policy:
+- Local progress remains the offline source of truth.
+- Completed is true if either local or remote is completed.
+- Best result policy:
   - Higher score is better.
-  - If score is tied, fewer moves is better.
-  - If moves are tied, lower `timeSeconds` is better.
-- `timeSeconds` is currently `0` until real timer support exists.
-- The UI intentionally does not show a fake live timer or fake best time.
+  - If tied, fewer moves is better.
+  - If tied, lower `timeSeconds` is better.
+- Better local progress is never deleted because remote data is stale.
+- If remote sync fails, local progress stays unchanged and usable.
 
-## Settings Behavior
+## Leaderboard Behavior
 
-- Sound setting persists locally.
-- Music setting persists locally for future music support.
-- Reset progress clears completed levels, best results, and unlock state only.
-- Reset progress does not reset sound/music settings.
-- API base URL remains read-only and config driven through `AppConfig.apiBaseUrl`.
-- Language display is read-only; runtime language switching was not implemented in Phase 7.
+- `POST /leaderboard` is attempted after victory only when authenticated and the backend level id can be resolved.
+- `GET /leaderboard/:levelId` is used by the leaderboard screen.
+- Leaderboard failures do not block victory, retry, next level, or back navigation.
 
-## Audio Behavior
+## Local Fallback Behavior
 
-- Audio is foundation only.
-- `GameAudioController` checks `soundEnabled` before delegating playback.
-- `SystemSoundAudioPort` uses lightweight Flutter system click feedback.
-- Final sound effects, background music, and approved audio assets are not complete.
-- No `audioplayers` dependency was added.
-- No fake or empty audio assets were added.
+- Backend unavailable: local level selection, gameplay, progress, unlocking, settings, and victory continue working.
+- Auth unavailable: user can stay logged out and play locally.
+- Remote level mapping unavailable: sync/leaderboard is skipped or reports unavailable, but local gameplay remains intact.
+
+## Files Future Sessions Should Inspect First
+
+- `lib/core/network/`
+- `lib/features/auth/`
+- `lib/features/progress/application/sync_progress_use_case.dart`
+- `lib/features/progress/application/merge_progress_use_case.dart`
+- `lib/features/progress/infrastructure/api_remote_level_repository.dart`
+- `lib/features/progress/infrastructure/api_remote_progress_repository.dart`
+- `lib/features/leaderboard/`
+- `lib/features/settings/presentation/settings_screen.dart`
+- `lib/features/game/presentation/game_screen_controller.dart`
+- `test/core/network/http_api_client_test.dart`
+- `test/features/auth/auth_integration_test.dart`
+- `test/features/progress/progress_sync_test.dart`
+- `test/features/leaderboard/leaderboard_submission_test.dart`
+- `test/features/game/presentation/playable_game_ui_test.dart`
 
 ## Tests Added
 
-- `should_unlock_level_one_by_default`
-- `should_unlock_next_level_when_current_level_is_completed`
-- `should_save_best_score_when_new_score_is_better`
-- `should_keep_existing_best_score_when_new_score_is_worse`
-- `should_persist_sound_setting_when_toggled`
-- `should_reset_local_progress_when_confirmed`
-- `should_reset_local_progress_when_confirmed_in_settings_screen`
-- `should_play_audio_feedback_when_sound_is_enabled`
-- `should_not_play_audio_feedback_when_sound_is_disabled`
-- `should_not_open_locked_level_when_level_is_locked`
-- `should_update_level_selection_after_level_completion`
+- `should_login_user_when_credentials_are_valid`
+- `should_store_token_when_login_succeeds`
+- `should_attach_bearer_token_when_authenticated`
+- `should_keep_local_progress_when_remote_progress_is_stale`
+- `should_merge_remote_progress_when_remote_is_better`
+- `should_submit_leaderboard_when_level_is_completed_and_user_is_authenticated`
+- `should_skip_leaderboard_submission_when_user_is_not_authenticated`
+- `should_keep_gameplay_available_when_backend_is_unreachable`
+- Settings controller tests for logged-in/logout and sync failure behavior.
 
 ## Verification Results
 
 - `flutter pub get`: passed.
 - `flutter analyze`: passed with no issues.
-- `flutter test`: passed with 41 tests.
-- Manual emulator run: not performed in this pass because no Android emulator was detected by `flutter devices`.
-- `flutter devices` showed Windows desktop, Chrome, and Edge only.
+- `flutter test`: passed with 51 tests.
+- `docker compose up --build` from `backend-poc-arrow`: backend built and started successfully.
+- `GET http://localhost:3000/health`: returned `status = ok`.
+- `flutter run -d emulator-5554 --dart-define=API_BASE_URL=http://10.0.2.2:3000`: debug app built, installed, and launched on Android emulator.
+- Manual in-app register/login/complete-level interaction was not performed in this pass.
+- Docker containers were stopped with `docker compose down` after the launch check.
 - Backend repository remained untouched.
 - Git remotes were not modified.
 
 ## Known Limitations
 
-- No backend authentication, progress sync, remote levels, or leaderboard integration yet.
 - No random level generation yet.
 - No final APK build yet.
+- No production deployment config.
+- No full account/profile management.
+- Token storage uses SharedPreferences for academic/demo scope; secure storage is future work.
+- Remote levels do not replace local gameplay.
 - No final music/background audio assets yet.
 - No real gameplay timer yet.
-- Settings language display is read-only.
-- Music preference is persisted only; it does not play music yet.
-
-## Files Future Sessions Should Inspect First
-
-- `lib/features/progress/application/`
-- `lib/features/progress/domain/`
-- `lib/features/progress/infrastructure/`
-- `lib/features/settings/presentation/settings_screen.dart`
-- `lib/features/settings/presentation/settings_screen_controller.dart`
-- `lib/features/settings/infrastructure/shared_preferences_settings_repository.dart`
-- `lib/features/audio/application/game_audio_controller.dart`
-- `lib/features/audio/infrastructure/system_sound_audio_port.dart`
-- `lib/features/levels/presentation/level_selection_screen.dart`
-- `lib/features/game/presentation/game_screen.dart`
-- `lib/features/game/presentation/game_screen_controller.dart`
-- `test/features/progress/local_progress_test.dart`
-- `test/features/settings/settings_test.dart`
-- `test/features/audio/audio_controller_test.dart`
-- `test/features/game/presentation/playable_game_ui_test.dart`
 
 ## Next Recommended Phase
 
-Recommended next phase: backend integration for authentication, remote level retrieval, progress synchronization, and leaderboard submission while preserving local offline play.
+Recommended next phase: random graph-based levels or final release preparation, after a manual backend/emulator smoke test validates auth, sync, and leaderboard against Docker backend.

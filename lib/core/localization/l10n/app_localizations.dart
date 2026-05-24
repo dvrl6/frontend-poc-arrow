@@ -301,6 +301,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loading settings'**
   String get loadingSettings;
+
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get login;
+
+  /// No description provided for @register.
+  ///
+  /// In en, this message translates to:
+  /// **'Register'**
+  String get register;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @displayName.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name'**
+  String get displayName;
+
+  /// No description provided for @authOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Login is optional. It enables progress sync and leaderboard features.'**
+  String get authOptional;
+
+  /// No description provided for @loggedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged in as'**
+  String get loggedInAs;
+
+  /// No description provided for @notLoggedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Not logged in'**
+  String get notLoggedIn;
+
+  /// No description provided for @syncProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync progress'**
+  String get syncProgress;
+
+  /// No description provided for @syncComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress sync complete.'**
+  String get syncComplete;
+
+  /// No description provided for @syncUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync unavailable. Local progress is safe.'**
+  String get syncUnavailable;
+
+  /// No description provided for @leaderboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Leaderboard'**
+  String get leaderboard;
+
+  /// No description provided for @leaderboardUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Leaderboard unavailable.'**
+  String get leaderboardUnavailable;
+
+  /// No description provided for @localFirstNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Local play remains available offline.'**
+  String get localFirstNotice;
+
+  /// No description provided for @submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submit;
 }
 
 class _AppLocalizationsDelegate
