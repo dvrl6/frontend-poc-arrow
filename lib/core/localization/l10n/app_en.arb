@@ -1,0 +1,13 @@
+{
+  "@@locale": "en",
+  "appTitle": "Arrow POC",
+  "play": "Play",
+  "settings": "Settings",
+  "levels": "Levels",
+  "gamePlaceholder": "Game placeholder",
+  "backendUrlLabel": "Backend URL",
+  "homeSubtitle": "A graph puzzle foundation for the mobile game.",
+  "levelSelectionPlaceholder": "Level selection placeholder",
+  "settingsPlaceholder": "Settings placeholder",
+  "openGame": "Open Game"
+}
