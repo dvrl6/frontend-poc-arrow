@@ -6,7 +6,9 @@ class GameUiKeys {
   static const gameBoard = Key('game-board');
   static const movesLabel = Key('moves-label');
   static const scoreLabel = Key('score-label');
+  static const livesLabel = Key('lives-label');
   static const victoryCard = Key('victory-card');
+  static const gameOverCard = Key('game-over-card');
   static const retryButton = Key('retry-button');
   static const nextLevelButton = Key('next-level-button');
   static const leaderboardButton = Key('leaderboard-button');

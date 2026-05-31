@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_poc_arrow/features/game/application/get_local_level_by_number_use_case.dart';
 import 'package:frontend_poc_arrow/features/game/application/get_local_levels_use_case.dart';
+import 'package:frontend_poc_arrow/features/game/application/movement_resolver.dart';
+import 'package:frontend_poc_arrow/features/game/domain/game_session.dart';
 import 'package:frontend_poc_arrow/features/game/domain/level.dart';
 import 'package:frontend_poc_arrow/features/game/domain/level_definition_validator.dart';
 import 'package:frontend_poc_arrow/features/game/infrastructure/asset_level_repository.dart';
@@ -126,8 +128,9 @@ void main() {
     expect(level, isNotNull);
     expect(level!.number, 2);
     expect(level.id, 'manual-002');
-    expect(level.name, 'Two Paths');
-    expect(level.arrows, hasLength(2));
+    // Level 2 is now 'L-Turn' with 1 arrow (Phase 9 redesign).
+    expect(level.name, 'L-Turn');
+    expect(level.arrows, hasLength(1));
     expect(level.metadata['generationType'], 'manual');
   });
 
@@ -149,6 +152,52 @@ void main() {
       expect(definition.containsKey('grid'), isFalse);
       expect(definition.containsKey('cells'), isFalse);
     }
+  });
+
+  test('should_have_no_free_nodes_at_level_start', () async {
+    final levels = await GetLocalLevelsUseCase(repository)();
+
+    for (final level in levels) {
+      final covered = <String>{};
+      for (final arrow in level.arrows) {
+        covered.addAll(
+          MovementResolver.coveredNodeIds(level.boardGraph, arrow),
+        );
+      }
+      final free = level.boardGraph.nodes
+          .where((node) => !covered.contains(node.id))
+          .map((node) => node.id)
+          .toList();
+      expect(
+        free,
+        isEmpty,
+        reason: 'Level ${level.number} has free (unoccupied) nodes: $free',
+      );
+    }
+  });
+
+  test('should_keep_all_levels_solvable_under_full_exit_resolver', () async {
+    final levels = await GetLocalLevelsUseCase(repository)();
+
+    for (final level in levels) {
+      expect(
+        _isSolvable(GameSession.start(level)),
+        isTrue,
+        reason: 'Level ${level.number} is not solvable',
+      );
+    }
+  });
+
+  test('should_not_have_all_hard_levels_rectangular', () async {
+    final levels = await GetLocalLevelsUseCase(repository)();
+    final hard = levels.where((level) => (level.number ?? 0) >= 11).toList();
+
+    final rectangularCount = hard.where(_isRectangular).length;
+    expect(
+      rectangularCount,
+      lessThan(hard.length),
+      reason: 'All hard levels are full rectangles',
+    );
   });
 
   test(
@@ -180,6 +229,45 @@ void main() {
 
 String? _difficulty(Level level) {
   return level.metadata['difficulty'] as String?;
+}
+
+bool _isRectangular(Level level) {
+  final nodes = level.boardGraph.nodes;
+  final xs = nodes.map((n) => n.coordinate.x);
+  final ys = nodes.map((n) => n.coordinate.y);
+  final w = xs.reduce((a, b) => a > b ? a : b) -
+      xs.reduce((a, b) => a < b ? a : b) +
+      1;
+  final h = ys.reduce((a, b) => a > b ? a : b) -
+      ys.reduce((a, b) => a < b ? a : b) +
+      1;
+  return nodes.length == w * h;
+}
+
+/// DFS over exit orders using the real [MovementResolver]: a level is solvable
+/// if some order lets every arrow escape.
+bool _isSolvable(GameSession session) {
+  const resolver = MovementResolver();
+  final active = session.activeArrows;
+  if (active.isEmpty) {
+    return true;
+  }
+  for (final arrow in active) {
+    if (resolver.resolve(session: session, arrow: arrow) ==
+        ExitAttemptOutcome.escaped) {
+      final next = session.copyWith(
+        arrows: session.arrows
+            .map(
+              (a) => a.id == arrow.id ? a.copyWith(isEscaped: true) : a,
+            )
+            .toList(growable: false),
+      );
+      if (_isSolvable(next)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 ManualLevelDto _manualLevelWithArrowEdge(String occupiedEdgeId) {

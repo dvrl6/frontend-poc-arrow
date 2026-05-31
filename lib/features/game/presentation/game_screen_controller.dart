@@ -62,12 +62,41 @@ class GameScreenController extends ChangeNotifier {
   LevelBestResult? _bestResult;
   bool _completionSaved = false;
 
+  /// Arrow id that should flash red on the board (collision feedback).
+  String? _flashingArrowId;
+
+  /// Whether a flash animation is currently in progress (debounce guard).
+  bool _isFlashing = false;
+
+  /// Trace of the most recent resolved attempt (drives presentation animation
+  /// and is asserted by tests). Rules stay in domain/application.
+  GameAttemptTrace? _lastAttemptTrace;
+
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  void _safeNotify() {
+    if (_disposed) return;
+    notifyListeners();
+  }
+
   GameScreenLoadState get loadState => _loadState;
   Level? get level => _level;
   GameSession? get session => _session;
   MovementOutcome? get lastOutcome => _lastOutcome;
   LevelBestResult? get bestResult => _bestResult;
+  String? get flashingArrowId => _flashingArrowId;
+  GameAttemptTrace? get lastAttemptTrace => _lastAttemptTrace;
+
   bool get isVictory => _session?.status == GameStatus.victory;
+  bool get isGameOver => _session?.status == GameStatus.failed;
+  int get livesRemaining => _session?.livesRemaining ?? 3;
+  int get mistakeCount => _session?.mistakeCount ?? 0;
 
   Future<void> load() async {
     final levelNumber = _levelNumber;
@@ -92,7 +121,10 @@ class GameScreenController extends ChangeNotifier {
       _session = _gameSessionService.start(loadedLevel);
       _bestResult = await _getBestLevelResult?.call(levelNumber);
       _lastOutcome = null;
+      _lastAttemptTrace = null;
       _completionSaved = false;
+      _flashingArrowId = null;
+      _isFlashing = false;
       _loadState = GameScreenLoadState.ready;
       notifyListeners();
     } catch (_) {
@@ -103,17 +135,32 @@ class GameScreenController extends ChangeNotifier {
 
   void activateArrow(String arrowId) {
     final currentSession = _session;
-    if (currentSession == null || currentSession.status == GameStatus.victory) {
+    // Guard: ignore taps while session is not active or a flash is in progress.
+    if (currentSession == null ||
+        currentSession.status != GameStatus.playing ||
+        _isFlashing) {
       return;
     }
 
     final result = _gameSessionService.activateArrow(currentSession, arrowId);
     _session = result.session;
     _lastOutcome = result.outcome;
+    _lastAttemptTrace = GameAttemptTrace(
+      arrowId: arrowId,
+      outcome: result.outcome,
+    );
+
     unawaited(_playAudioFor(result));
+
+    if (result.outcome == MovementOutcome.collision ||
+        result.outcome == MovementOutcome.gameOver) {
+      unawaited(_flashCollision(arrowId));
+    }
+
     if (result.session.status == GameStatus.victory) {
       unawaited(_saveCompletionOnce(result.session));
     }
+
     notifyListeners();
   }
 
@@ -125,9 +172,24 @@ class GameScreenController extends ChangeNotifier {
 
     _session = _gameSessionService.start(currentLevel);
     _lastOutcome = null;
+    _lastAttemptTrace = null;
     _completionSaved = false;
+    _flashingArrowId = null;
+    _isFlashing = false;
     _loadState = GameScreenLoadState.ready;
     notifyListeners();
+  }
+
+  Future<void> _flashCollision(String arrowId) async {
+    _isFlashing = true;
+    _flashingArrowId = arrowId;
+    _safeNotify();
+
+    await Future<void>.delayed(const Duration(milliseconds: 320));
+
+    _flashingArrowId = null;
+    _isFlashing = false;
+    _safeNotify();
   }
 
   Future<void> _saveCompletionOnce(GameSession completedSession) async {
@@ -146,7 +208,7 @@ class GameScreenController extends ChangeNotifier {
     );
     unawaited(_notifyRemoteCompletionBestEffort(completedSession, levelNumber));
     _bestResult = await _getBestLevelResult?.call(levelNumber);
-    notifyListeners();
+    _safeNotify();
   }
 
   Future<void> _notifyRemoteCompletionBestEffort(
@@ -181,12 +243,22 @@ class GameScreenController extends ChangeNotifier {
     }
 
     final event = switch (result.outcome) {
-      MovementOutcome.moved || MovementOutcome.escaped => GameAudioEvent.move,
-      MovementOutcome.blocked ||
-      MovementOutcome.occupied ||
+      MovementOutcome.escaped => GameAudioEvent.move,
+      MovementOutcome.collision ||
+      MovementOutcome.gameOver => GameAudioEvent.blocked,
       MovementOutcome.arrowNotFound ||
-      MovementOutcome.alreadyEscaped => GameAudioEvent.blocked,
+      MovementOutcome.alreadyEscaped ||
+      MovementOutcome.sessionNotActive => GameAudioEvent.blocked,
     };
     await playAudio(event);
   }
+}
+
+/// A resolved attempt the presentation layer can render/animate.
+/// Carries no rule logic — it only records what the domain already decided.
+class GameAttemptTrace {
+  const GameAttemptTrace({required this.arrowId, required this.outcome});
+
+  final String arrowId;
+  final MovementOutcome outcome;
 }

@@ -9,10 +9,35 @@ import '../../domain/game_session.dart';
 import 'graph_board_layout.dart';
 
 class GraphBoardPainter extends CustomPainter {
-  const GraphBoardPainter({required this.session, this.lastActivatedArrowId});
+  const GraphBoardPainter({
+    required this.session,
+    this.lastActivatedArrowId,
+    this.flashingArrowId,
+    this.exitingArrow,
+    this.exitProgress = 0,
+    this.shakeArrowId,
+    this.shakeProgress = 0,
+  });
 
   final GameSession session;
+
+  /// Arrow drawn slightly thicker (activated this tap).
   final String? lastActivatedArrowId;
+
+  /// Arrow drawn in collision-error colour for the flash duration.
+  final String? flashingArrowId;
+
+  /// Arrow currently sliding out of the board (already escaped in the model).
+  final ArrowPath? exitingArrow;
+
+  /// 0..1 progress of the exit slide animation.
+  final double exitProgress;
+
+  /// Arrow currently playing a collision shake.
+  final String? shakeArrowId;
+
+  /// 0..1 progress of the shake animation.
+  final double shakeProgress;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -47,7 +72,14 @@ class GraphBoardPainter extends CustomPainter {
     }
 
     for (final arrow in session.activeArrows) {
-      _drawArrow(canvas, layout, arrow);
+      _drawArrow(canvas, layout, arrow, size);
+    }
+
+    // Slide-out animation for the arrow that just escaped (drawn over the graph;
+    // it is no longer in activeArrows).
+    final exiting = exitingArrow;
+    if (exiting != null && exitProgress > 0 && exitProgress < 1) {
+      _drawExitingArrow(canvas, layout, exiting, size);
     }
 
     final nodeHaloPaint = Paint()
@@ -67,10 +99,52 @@ class GraphBoardPainter extends CustomPainter {
     }
   }
 
-  void _drawArrow(Canvas canvas, GraphBoardLayout layout, ArrowPath arrow) {
+  void _drawArrow(
+    Canvas canvas,
+    GraphBoardLayout layout,
+    ArrowPath arrow,
+    Size size,
+  ) {
+    final isFlashing = arrow.id == flashingArrowId;
+    final color = isFlashing ? _collisionColor : _colorForArrow(arrow.id);
+    final offset = _shakeOffsetFor(arrow, size);
+    _paintArrowShape(canvas, layout, arrow, color, 1, offset);
+  }
+
+  void _drawExitingArrow(
+    Canvas canvas,
+    GraphBoardLayout layout,
+    ArrowPath arrow,
+    Size size,
+  ) {
     final color = _colorForArrow(arrow.id);
+    final slide = size.longestSide * 1.1 * exitProgress;
+    final dir = arrow.direction;
+    final offset = Offset(dir.dx.toDouble(), dir.dy.toDouble()) * slide;
+    final opacity = (1 - exitProgress).clamp(0.0, 1.0);
+    _paintArrowShape(canvas, layout, arrow, color, opacity, offset);
+  }
+
+  /// Small back-and-forth nudge in the head direction during a collision.
+  Offset _shakeOffsetFor(ArrowPath arrow, Size size) {
+    if (arrow.id != shakeArrowId || shakeProgress <= 0 || shakeProgress >= 1) {
+      return Offset.zero;
+    }
+    final amplitude = math.sin(shakeProgress * math.pi) * 6.0;
+    final dir = arrow.direction;
+    return Offset(dir.dx.toDouble(), dir.dy.toDouble()) * amplitude;
+  }
+
+  void _paintArrowShape(
+    Canvas canvas,
+    GraphBoardLayout layout,
+    ArrowPath arrow,
+    Color color,
+    double opacity,
+    Offset translation,
+  ) {
     final pathPaint = Paint()
-      ..color = color
+      ..color = color.withValues(alpha: opacity)
       ..strokeWidth = arrow.id == lastActivatedArrowId ? 14 : 12
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
@@ -85,12 +159,17 @@ class GraphBoardPainter extends CustomPainter {
       if (from == null || to == null) {
         continue;
       }
-      canvas.drawLine(from, to, pathPaint);
+      canvas.drawLine(from + translation, to + translation, pathPaint);
     }
 
     final headPosition = layout.positionOf(arrow.endNodeId);
     if (headPosition != null) {
-      _drawArrowHead(canvas, headPosition, arrow.direction, color);
+      _drawArrowHead(
+        canvas,
+        headPosition + translation,
+        arrow.direction,
+        color.withValues(alpha: opacity),
+      );
     }
   }
 
@@ -137,6 +216,8 @@ class GraphBoardPainter extends CustomPainter {
     );
   }
 
+  static const Color _collisionColor = Color(0xFFFF4444);
+
   Color _colorForArrow(String id) {
     const colors = [
       AppTheme.neonMint,
@@ -150,6 +231,11 @@ class GraphBoardPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant GraphBoardPainter oldDelegate) {
     return oldDelegate.session != session ||
-        oldDelegate.lastActivatedArrowId != lastActivatedArrowId;
+        oldDelegate.lastActivatedArrowId != lastActivatedArrowId ||
+        oldDelegate.flashingArrowId != flashingArrowId ||
+        oldDelegate.exitingArrow != exitingArrow ||
+        oldDelegate.exitProgress != exitProgress ||
+        oldDelegate.shakeArrowId != shakeArrowId ||
+        oldDelegate.shakeProgress != shakeProgress;
   }
 }
