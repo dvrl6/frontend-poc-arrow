@@ -397,6 +397,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Submit'**
   String get submit;
+
+  /// No description provided for @lives.
+  ///
+  /// In en, this message translates to:
+  /// **'Lives'**
+  String get lives;
+
+  /// No description provided for @gameOver.
+  ///
+  /// In en, this message translates to:
+  /// **'Game Over'**
+  String get gameOver;
+
+  /// No description provided for @gameOverMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You ran out of lives.'**
+  String get gameOverMessage;
+
+  /// No description provided for @mistakes.
+  ///
+  /// In en, this message translates to:
+  /// **'Mistakes'**
+  String get mistakes;
 }
 
 class _AppLocalizationsDelegate

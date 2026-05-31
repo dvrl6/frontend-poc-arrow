@@ -161,4 +161,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get submit => 'Submit';
+
+  @override
+  String get lives => 'Lives';
+
+  @override
+  String get gameOver => 'Game Over';
+
+  @override
+  String get gameOverMessage => 'You ran out of lives.';
+
+  @override
+  String get mistakes => 'Mistakes';
 }

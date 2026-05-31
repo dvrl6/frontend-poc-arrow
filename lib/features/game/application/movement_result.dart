@@ -1,12 +1,24 @@
 import '../domain/game_session.dart';
 
 enum MovementOutcome {
-  moved,
+  /// Arrow successfully slid out of the board.
   escaped,
-  blocked,
-  occupied,
+
+  /// Exit attempt was blocked by another arrow or a blocked edge.
+  /// The arrow stays at its original position (no partial movement).
+  collision,
+
+  /// Exit attempt failed and lives reached zero — session is now failed.
+  gameOver,
+
+  /// The tapped arrow id does not exist in this session.
   arrowNotFound,
+
+  /// The tapped arrow has already escaped.
   alreadyEscaped,
+
+  /// The session is not in the playing state; input is ignored.
+  sessionNotActive,
 }
 
 class MovementResult {

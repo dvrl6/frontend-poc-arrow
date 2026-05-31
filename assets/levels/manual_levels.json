@@ -22,72 +22,17 @@
             "y": 0
           },
           {
-            "id": "n0_1",
-            "x": 0,
-            "y": 1
-          },
-          {
-            "id": "n1_1",
-            "x": 1,
-            "y": 1
-          },
-          {
             "id": "n2_1",
             "x": 2,
             "y": 1
-          },
-          {
-            "id": "n0_2",
-            "x": 0,
-            "y": 2
-          },
-          {
-            "id": "n1_2",
-            "x": 1,
-            "y": 2
-          },
-          {
-            "id": "n2_2",
-            "x": 2,
-            "y": 2
           }
         ],
         "edges": [
-          {
-            "id": "n0_0-n0_1",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n0_1",
-            "direction": "down"
-          },
           {
             "id": "n0_0-n1_0",
             "fromNodeId": "n0_0",
             "toNodeId": "n1_0",
             "direction": "right"
-          },
-          {
-            "id": "n0_1-n0_2",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n0_2",
-            "direction": "down"
-          },
-          {
-            "id": "n0_1-n1_1",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n1_1",
-            "direction": "right"
-          },
-          {
-            "id": "n0_2-n1_2",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n1_2",
-            "direction": "right"
-          },
-          {
-            "id": "n1_0-n1_1",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n1_1",
-            "direction": "down"
           },
           {
             "id": "n1_0-n2_0",
@@ -96,33 +41,9 @@
             "direction": "right"
           },
           {
-            "id": "n1_1-n1_2",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n1_2",
-            "direction": "down"
-          },
-          {
-            "id": "n1_1-n2_1",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n2_1",
-            "direction": "right"
-          },
-          {
-            "id": "n1_2-n2_2",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n2_2",
-            "direction": "right"
-          },
-          {
             "id": "n2_0-n2_1",
             "fromNodeId": "n2_0",
             "toNodeId": "n2_1",
-            "direction": "down"
-          },
-          {
-            "id": "n2_1-n2_2",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n2_2",
             "direction": "down"
           }
         ],
@@ -130,18 +51,20 @@
           {
             "id": "a1",
             "occupiedEdges": [
-              "n0_1-n1_1"
+              "n0_0-n1_0",
+              "n1_0-n2_0",
+              "n2_0-n2_1"
             ],
-            "startNodeId": "n0_1",
-            "endNodeId": "n1_1",
-            "direction": "right"
+            "startNodeId": "n0_0",
+            "endNodeId": "n2_1",
+            "direction": "down"
           }
         ],
         "blockedEdges": [],
         "metadata": {
           "difficulty": "easy",
           "timeLimit": 120,
-          "maxMoves": 20,
+          "maxMoves": 8,
           "generationType": "manual",
           "seed": null
         }
@@ -149,7 +72,7 @@
     },
     {
       "number": 2,
-      "name": "Two Paths",
+      "name": "L-Turn",
       "difficulty": "easy",
       "definitionJson": {
         "nodes": [
@@ -159,28 +82,8 @@
             "y": 0
           },
           {
-            "id": "n1_0",
-            "x": 1,
-            "y": 0
-          },
-          {
-            "id": "n2_0",
-            "x": 2,
-            "y": 0
-          },
-          {
             "id": "n0_1",
             "x": 0,
-            "y": 1
-          },
-          {
-            "id": "n1_1",
-            "x": 1,
-            "y": 1
-          },
-          {
-            "id": "n2_1",
-            "x": 2,
             "y": 1
           },
           {
@@ -197,21 +100,6 @@
             "id": "n2_2",
             "x": 2,
             "y": 2
-          },
-          {
-            "id": "n0_3",
-            "x": 0,
-            "y": 3
-          },
-          {
-            "id": "n1_3",
-            "x": 1,
-            "y": 3
-          },
-          {
-            "id": "n2_3",
-            "x": 2,
-            "y": 3
           }
         ],
         "edges": [
@@ -222,27 +110,9 @@
             "direction": "down"
           },
           {
-            "id": "n0_0-n1_0",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n1_0",
-            "direction": "right"
-          },
-          {
             "id": "n0_1-n0_2",
             "fromNodeId": "n0_1",
             "toNodeId": "n0_2",
-            "direction": "down"
-          },
-          {
-            "id": "n0_1-n1_1",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n1_1",
-            "direction": "right"
-          },
-          {
-            "id": "n0_2-n0_3",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n0_3",
             "direction": "down"
           },
           {
@@ -252,99 +122,31 @@
             "direction": "right"
           },
           {
-            "id": "n0_3-n1_3",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n1_3",
-            "direction": "right"
-          },
-          {
-            "id": "n1_0-n1_1",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n1_1",
-            "direction": "down"
-          },
-          {
-            "id": "n1_0-n2_0",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n2_0",
-            "direction": "right"
-          },
-          {
-            "id": "n1_1-n1_2",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n1_2",
-            "direction": "down"
-          },
-          {
-            "id": "n1_1-n2_1",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n2_1",
-            "direction": "right"
-          },
-          {
-            "id": "n1_2-n1_3",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n1_3",
-            "direction": "down"
-          },
-          {
             "id": "n1_2-n2_2",
             "fromNodeId": "n1_2",
             "toNodeId": "n2_2",
             "direction": "right"
-          },
-          {
-            "id": "n1_3-n2_3",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n2_3",
-            "direction": "right"
-          },
-          {
-            "id": "n2_0-n2_1",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n2_1",
-            "direction": "down"
-          },
-          {
-            "id": "n2_1-n2_2",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n2_2",
-            "direction": "down"
-          },
-          {
-            "id": "n2_2-n2_3",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n2_3",
-            "direction": "down"
           }
         ],
         "arrows": [
           {
             "id": "a1",
             "occupiedEdges": [
-              "n0_1-n1_1"
+              "n0_0-n0_1",
+              "n0_1-n0_2",
+              "n0_2-n1_2",
+              "n1_2-n2_2"
             ],
-            "startNodeId": "n0_1",
-            "endNodeId": "n1_1",
-            "direction": "right"
-          },
-          {
-            "id": "a2",
-            "occupiedEdges": [
-              "n2_3-n2_2"
-            ],
-            "startNodeId": "n2_3",
+            "startNodeId": "n0_0",
             "endNodeId": "n2_2",
-            "direction": "up"
+            "direction": "right"
           }
         ],
-        "blockedEdges": [
-          "n1_2-n2_2"
-        ],
+        "blockedEdges": [],
         "metadata": {
           "difficulty": "easy",
           "timeLimit": 120,
-          "maxMoves": 22,
+          "maxMoves": 8,
           "generationType": "manual",
           "seed": null
         }
@@ -352,7 +154,7 @@
     },
     {
       "number": 3,
-      "name": "Corner Turn",
+      "name": "Corridor",
       "difficulty": "easy",
       "definitionJson": {
         "nodes": [
@@ -375,84 +177,14 @@
             "id": "n3_0",
             "x": 3,
             "y": 0
-          },
-          {
-            "id": "n0_1",
-            "x": 0,
-            "y": 1
-          },
-          {
-            "id": "n1_1",
-            "x": 1,
-            "y": 1
-          },
-          {
-            "id": "n2_1",
-            "x": 2,
-            "y": 1
-          },
-          {
-            "id": "n3_1",
-            "x": 3,
-            "y": 1
-          },
-          {
-            "id": "n0_2",
-            "x": 0,
-            "y": 2
-          },
-          {
-            "id": "n1_2",
-            "x": 1,
-            "y": 2
-          },
-          {
-            "id": "n2_2",
-            "x": 2,
-            "y": 2
-          },
-          {
-            "id": "n3_2",
-            "x": 3,
-            "y": 2
           }
         ],
         "edges": [
-          {
-            "id": "n0_0-n0_1",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n0_1",
-            "direction": "down"
-          },
           {
             "id": "n0_0-n1_0",
             "fromNodeId": "n0_0",
             "toNodeId": "n1_0",
             "direction": "right"
-          },
-          {
-            "id": "n0_1-n0_2",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n0_2",
-            "direction": "down"
-          },
-          {
-            "id": "n0_1-n1_1",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n1_1",
-            "direction": "right"
-          },
-          {
-            "id": "n0_2-n1_2",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n1_2",
-            "direction": "right"
-          },
-          {
-            "id": "n1_0-n1_1",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n1_1",
-            "direction": "down"
           },
           {
             "id": "n1_0-n2_0",
@@ -461,85 +193,37 @@
             "direction": "right"
           },
           {
-            "id": "n1_1-n1_2",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n1_2",
-            "direction": "down"
-          },
-          {
-            "id": "n1_1-n2_1",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n2_1",
-            "direction": "right"
-          },
-          {
-            "id": "n1_2-n2_2",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n2_2",
-            "direction": "right"
-          },
-          {
-            "id": "n2_0-n2_1",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n2_1",
-            "direction": "down"
-          },
-          {
             "id": "n2_0-n3_0",
             "fromNodeId": "n2_0",
             "toNodeId": "n3_0",
             "direction": "right"
-          },
-          {
-            "id": "n2_1-n2_2",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n2_2",
-            "direction": "down"
-          },
-          {
-            "id": "n2_1-n3_1",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n3_1",
-            "direction": "right"
-          },
-          {
-            "id": "n2_2-n3_2",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n3_2",
-            "direction": "right"
-          },
-          {
-            "id": "n3_0-n3_1",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n3_1",
-            "direction": "down"
-          },
-          {
-            "id": "n3_1-n3_2",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n3_2",
-            "direction": "down"
           }
         ],
         "arrows": [
           {
             "id": "a1",
             "occupiedEdges": [
-              "n0_2-n1_2",
-              "n1_2-n1_1"
+              "n2_0-n3_0"
             ],
-            "startNodeId": "n0_2",
-            "endNodeId": "n1_1",
-            "direction": "up"
+            "startNodeId": "n2_0",
+            "endNodeId": "n3_0",
+            "direction": "right"
+          },
+          {
+            "id": "a2",
+            "occupiedEdges": [
+              "n0_0-n1_0"
+            ],
+            "startNodeId": "n0_0",
+            "endNodeId": "n1_0",
+            "direction": "right"
           }
         ],
-        "blockedEdges": [
-          "n2_1-n3_1"
-        ],
+        "blockedEdges": [],
         "metadata": {
           "difficulty": "easy",
-          "timeLimit": 115,
-          "maxMoves": 24,
+          "timeLimit": 120,
+          "maxMoves": 10,
           "generationType": "manual",
           "seed": null
         }
@@ -547,7 +231,7 @@
     },
     {
       "number": 4,
-      "name": "Crossing Lanes",
+      "name": "Two Lanes",
       "difficulty": "easy",
       "definitionJson": {
         "nodes": [
@@ -567,31 +251,6 @@
             "y": 0
           },
           {
-            "id": "n3_0",
-            "x": 3,
-            "y": 0
-          },
-          {
-            "id": "n0_1",
-            "x": 0,
-            "y": 1
-          },
-          {
-            "id": "n1_1",
-            "x": 1,
-            "y": 1
-          },
-          {
-            "id": "n2_1",
-            "x": 2,
-            "y": 1
-          },
-          {
-            "id": "n3_1",
-            "x": 3,
-            "y": 1
-          },
-          {
             "id": "n0_2",
             "x": 0,
             "y": 2
@@ -605,81 +264,14 @@
             "id": "n2_2",
             "x": 2,
             "y": 2
-          },
-          {
-            "id": "n3_2",
-            "x": 3,
-            "y": 2
-          },
-          {
-            "id": "n0_3",
-            "x": 0,
-            "y": 3
-          },
-          {
-            "id": "n1_3",
-            "x": 1,
-            "y": 3
-          },
-          {
-            "id": "n2_3",
-            "x": 2,
-            "y": 3
-          },
-          {
-            "id": "n3_3",
-            "x": 3,
-            "y": 3
           }
         ],
         "edges": [
-          {
-            "id": "n0_0-n0_1",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n0_1",
-            "direction": "down"
-          },
           {
             "id": "n0_0-n1_0",
             "fromNodeId": "n0_0",
             "toNodeId": "n1_0",
             "direction": "right"
-          },
-          {
-            "id": "n0_1-n0_2",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n0_2",
-            "direction": "down"
-          },
-          {
-            "id": "n0_1-n1_1",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n1_1",
-            "direction": "right"
-          },
-          {
-            "id": "n0_2-n0_3",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n0_3",
-            "direction": "down"
-          },
-          {
-            "id": "n0_2-n1_2",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n1_2",
-            "direction": "right"
-          },
-          {
-            "id": "n0_3-n1_3",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n1_3",
-            "direction": "right"
-          },
-          {
-            "id": "n1_0-n1_1",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n1_1",
-            "direction": "down"
           },
           {
             "id": "n1_0-n2_0",
@@ -688,1487 +280,16 @@
             "direction": "right"
           },
           {
-            "id": "n1_1-n1_2",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n1_2",
-            "direction": "down"
-          },
-          {
-            "id": "n1_1-n2_1",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n2_1",
-            "direction": "right"
-          },
-          {
-            "id": "n1_2-n1_3",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n1_3",
-            "direction": "down"
-          },
-          {
-            "id": "n1_2-n2_2",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n2_2",
-            "direction": "right"
-          },
-          {
-            "id": "n1_3-n2_3",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n2_3",
-            "direction": "right"
-          },
-          {
-            "id": "n2_0-n2_1",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n2_1",
-            "direction": "down"
-          },
-          {
-            "id": "n2_0-n3_0",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n3_0",
-            "direction": "right"
-          },
-          {
-            "id": "n2_1-n2_2",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n2_2",
-            "direction": "down"
-          },
-          {
-            "id": "n2_1-n3_1",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n3_1",
-            "direction": "right"
-          },
-          {
-            "id": "n2_2-n2_3",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n2_3",
-            "direction": "down"
-          },
-          {
-            "id": "n2_2-n3_2",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n3_2",
-            "direction": "right"
-          },
-          {
-            "id": "n2_3-n3_3",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n3_3",
-            "direction": "right"
-          },
-          {
-            "id": "n3_0-n3_1",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n3_1",
-            "direction": "down"
-          },
-          {
-            "id": "n3_1-n3_2",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n3_2",
-            "direction": "down"
-          },
-          {
-            "id": "n3_2-n3_3",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n3_3",
-            "direction": "down"
-          }
-        ],
-        "arrows": [
-          {
-            "id": "a1",
-            "occupiedEdges": [
-              "n0_0-n1_0"
-            ],
-            "startNodeId": "n0_0",
-            "endNodeId": "n1_0",
-            "direction": "right"
-          },
-          {
-            "id": "a2",
-            "occupiedEdges": [
-              "n3_3-n2_3"
-            ],
-            "startNodeId": "n3_3",
-            "endNodeId": "n2_3",
-            "direction": "left"
-          }
-        ],
-        "blockedEdges": [
-          "n1_1-n1_2"
-        ],
-        "metadata": {
-          "difficulty": "easy",
-          "timeLimit": 110,
-          "maxMoves": 26,
-          "generationType": "manual",
-          "seed": null
-        }
-      }
-    },
-    {
-      "number": 5,
-      "name": "Small Detour",
-      "difficulty": "easy",
-      "definitionJson": {
-        "nodes": [
-          {
-            "id": "n0_0",
-            "x": 0,
-            "y": 0
-          },
-          {
-            "id": "n1_0",
-            "x": 1,
-            "y": 0
-          },
-          {
-            "id": "n2_0",
-            "x": 2,
-            "y": 0
-          },
-          {
-            "id": "n3_0",
-            "x": 3,
-            "y": 0
-          },
-          {
-            "id": "n0_1",
-            "x": 0,
-            "y": 1
-          },
-          {
-            "id": "n1_1",
-            "x": 1,
-            "y": 1
-          },
-          {
-            "id": "n2_1",
-            "x": 2,
-            "y": 1
-          },
-          {
-            "id": "n3_1",
-            "x": 3,
-            "y": 1
-          },
-          {
-            "id": "n0_2",
-            "x": 0,
-            "y": 2
-          },
-          {
-            "id": "n1_2",
-            "x": 1,
-            "y": 2
-          },
-          {
-            "id": "n2_2",
-            "x": 2,
-            "y": 2
-          },
-          {
-            "id": "n3_2",
-            "x": 3,
-            "y": 2
-          },
-          {
-            "id": "n0_3",
-            "x": 0,
-            "y": 3
-          },
-          {
-            "id": "n1_3",
-            "x": 1,
-            "y": 3
-          },
-          {
-            "id": "n2_3",
-            "x": 2,
-            "y": 3
-          },
-          {
-            "id": "n3_3",
-            "x": 3,
-            "y": 3
-          }
-        ],
-        "edges": [
-          {
-            "id": "n0_0-n0_1",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n0_1",
-            "direction": "down"
-          },
-          {
-            "id": "n0_0-n1_0",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n1_0",
-            "direction": "right"
-          },
-          {
-            "id": "n0_1-n0_2",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n0_2",
-            "direction": "down"
-          },
-          {
-            "id": "n0_1-n1_1",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n1_1",
-            "direction": "right"
-          },
-          {
-            "id": "n0_2-n0_3",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n0_3",
-            "direction": "down"
-          },
-          {
             "id": "n0_2-n1_2",
             "fromNodeId": "n0_2",
             "toNodeId": "n1_2",
             "direction": "right"
           },
           {
-            "id": "n0_3-n1_3",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n1_3",
-            "direction": "right"
-          },
-          {
-            "id": "n1_0-n1_1",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n1_1",
-            "direction": "down"
-          },
-          {
-            "id": "n1_0-n2_0",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n2_0",
-            "direction": "right"
-          },
-          {
-            "id": "n1_1-n1_2",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n1_2",
-            "direction": "down"
-          },
-          {
-            "id": "n1_1-n2_1",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n2_1",
-            "direction": "right"
-          },
-          {
-            "id": "n1_2-n1_3",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n1_3",
-            "direction": "down"
-          },
-          {
             "id": "n1_2-n2_2",
             "fromNodeId": "n1_2",
             "toNodeId": "n2_2",
             "direction": "right"
-          },
-          {
-            "id": "n1_3-n2_3",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n2_3",
-            "direction": "right"
-          },
-          {
-            "id": "n2_0-n2_1",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n2_1",
-            "direction": "down"
-          },
-          {
-            "id": "n2_0-n3_0",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n3_0",
-            "direction": "right"
-          },
-          {
-            "id": "n2_1-n2_2",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n2_2",
-            "direction": "down"
-          },
-          {
-            "id": "n2_1-n3_1",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n3_1",
-            "direction": "right"
-          },
-          {
-            "id": "n2_2-n2_3",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n2_3",
-            "direction": "down"
-          },
-          {
-            "id": "n2_2-n3_2",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n3_2",
-            "direction": "right"
-          },
-          {
-            "id": "n2_3-n3_3",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n3_3",
-            "direction": "right"
-          },
-          {
-            "id": "n3_0-n3_1",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n3_1",
-            "direction": "down"
-          },
-          {
-            "id": "n3_1-n3_2",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n3_2",
-            "direction": "down"
-          },
-          {
-            "id": "n3_2-n3_3",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n3_3",
-            "direction": "down"
-          }
-        ],
-        "arrows": [
-          {
-            "id": "a1",
-            "occupiedEdges": [
-              "n0_3-n1_3",
-              "n1_3-n1_2"
-            ],
-            "startNodeId": "n0_3",
-            "endNodeId": "n1_2",
-            "direction": "up"
-          }
-        ],
-        "blockedEdges": [
-          "n2_2-n3_2",
-          "n0_1-n1_1"
-        ],
-        "metadata": {
-          "difficulty": "easy",
-          "timeLimit": 105,
-          "maxMoves": 28,
-          "generationType": "manual",
-          "seed": null
-        }
-      }
-    },
-    {
-      "number": 6,
-      "name": "Middle Weave",
-      "difficulty": "medium",
-      "definitionJson": {
-        "nodes": [
-          {
-            "id": "n0_0",
-            "x": 0,
-            "y": 0
-          },
-          {
-            "id": "n1_0",
-            "x": 1,
-            "y": 0
-          },
-          {
-            "id": "n2_0",
-            "x": 2,
-            "y": 0
-          },
-          {
-            "id": "n3_0",
-            "x": 3,
-            "y": 0
-          },
-          {
-            "id": "n4_0",
-            "x": 4,
-            "y": 0
-          },
-          {
-            "id": "n0_1",
-            "x": 0,
-            "y": 1
-          },
-          {
-            "id": "n1_1",
-            "x": 1,
-            "y": 1
-          },
-          {
-            "id": "n2_1",
-            "x": 2,
-            "y": 1
-          },
-          {
-            "id": "n3_1",
-            "x": 3,
-            "y": 1
-          },
-          {
-            "id": "n4_1",
-            "x": 4,
-            "y": 1
-          },
-          {
-            "id": "n0_2",
-            "x": 0,
-            "y": 2
-          },
-          {
-            "id": "n1_2",
-            "x": 1,
-            "y": 2
-          },
-          {
-            "id": "n2_2",
-            "x": 2,
-            "y": 2
-          },
-          {
-            "id": "n3_2",
-            "x": 3,
-            "y": 2
-          },
-          {
-            "id": "n4_2",
-            "x": 4,
-            "y": 2
-          },
-          {
-            "id": "n0_3",
-            "x": 0,
-            "y": 3
-          },
-          {
-            "id": "n1_3",
-            "x": 1,
-            "y": 3
-          },
-          {
-            "id": "n2_3",
-            "x": 2,
-            "y": 3
-          },
-          {
-            "id": "n3_3",
-            "x": 3,
-            "y": 3
-          },
-          {
-            "id": "n4_3",
-            "x": 4,
-            "y": 3
-          }
-        ],
-        "edges": [
-          {
-            "id": "n0_0-n0_1",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n0_1",
-            "direction": "down"
-          },
-          {
-            "id": "n0_0-n1_0",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n1_0",
-            "direction": "right"
-          },
-          {
-            "id": "n0_1-n0_2",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n0_2",
-            "direction": "down"
-          },
-          {
-            "id": "n0_1-n1_1",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n1_1",
-            "direction": "right"
-          },
-          {
-            "id": "n0_2-n0_3",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n0_3",
-            "direction": "down"
-          },
-          {
-            "id": "n0_2-n1_2",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n1_2",
-            "direction": "right"
-          },
-          {
-            "id": "n0_3-n1_3",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n1_3",
-            "direction": "right"
-          },
-          {
-            "id": "n1_0-n1_1",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n1_1",
-            "direction": "down"
-          },
-          {
-            "id": "n1_0-n2_0",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n2_0",
-            "direction": "right"
-          },
-          {
-            "id": "n1_1-n1_2",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n1_2",
-            "direction": "down"
-          },
-          {
-            "id": "n1_1-n2_1",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n2_1",
-            "direction": "right"
-          },
-          {
-            "id": "n1_2-n1_3",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n1_3",
-            "direction": "down"
-          },
-          {
-            "id": "n1_2-n2_2",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n2_2",
-            "direction": "right"
-          },
-          {
-            "id": "n1_3-n2_3",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n2_3",
-            "direction": "right"
-          },
-          {
-            "id": "n2_0-n2_1",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n2_1",
-            "direction": "down"
-          },
-          {
-            "id": "n2_0-n3_0",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n3_0",
-            "direction": "right"
-          },
-          {
-            "id": "n2_1-n2_2",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n2_2",
-            "direction": "down"
-          },
-          {
-            "id": "n2_1-n3_1",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n3_1",
-            "direction": "right"
-          },
-          {
-            "id": "n2_2-n2_3",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n2_3",
-            "direction": "down"
-          },
-          {
-            "id": "n2_2-n3_2",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n3_2",
-            "direction": "right"
-          },
-          {
-            "id": "n2_3-n3_3",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n3_3",
-            "direction": "right"
-          },
-          {
-            "id": "n3_0-n3_1",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n3_1",
-            "direction": "down"
-          },
-          {
-            "id": "n3_0-n4_0",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n4_0",
-            "direction": "right"
-          },
-          {
-            "id": "n3_1-n3_2",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n3_2",
-            "direction": "down"
-          },
-          {
-            "id": "n3_1-n4_1",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n4_1",
-            "direction": "right"
-          },
-          {
-            "id": "n3_2-n3_3",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n3_3",
-            "direction": "down"
-          },
-          {
-            "id": "n3_2-n4_2",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n4_2",
-            "direction": "right"
-          },
-          {
-            "id": "n3_3-n4_3",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n4_3",
-            "direction": "right"
-          },
-          {
-            "id": "n4_0-n4_1",
-            "fromNodeId": "n4_0",
-            "toNodeId": "n4_1",
-            "direction": "down"
-          },
-          {
-            "id": "n4_1-n4_2",
-            "fromNodeId": "n4_1",
-            "toNodeId": "n4_2",
-            "direction": "down"
-          },
-          {
-            "id": "n4_2-n4_3",
-            "fromNodeId": "n4_2",
-            "toNodeId": "n4_3",
-            "direction": "down"
-          }
-        ],
-        "arrows": [
-          {
-            "id": "a1",
-            "occupiedEdges": [
-              "n0_2-n1_2",
-              "n1_2-n2_2"
-            ],
-            "startNodeId": "n0_2",
-            "endNodeId": "n2_2",
-            "direction": "right"
-          },
-          {
-            "id": "a2",
-            "occupiedEdges": [
-              "n4_1-n3_1"
-            ],
-            "startNodeId": "n4_1",
-            "endNodeId": "n3_1",
-            "direction": "left"
-          }
-        ],
-        "blockedEdges": [
-          "n2_1-n2_2",
-          "n1_3-n2_3"
-        ],
-        "metadata": {
-          "difficulty": "medium",
-          "timeLimit": 100,
-          "maxMoves": 30,
-          "generationType": "manual",
-          "seed": null
-        }
-      }
-    },
-    {
-      "number": 7,
-      "name": "U Bend",
-      "difficulty": "medium",
-      "definitionJson": {
-        "nodes": [
-          {
-            "id": "n0_0",
-            "x": 0,
-            "y": 0
-          },
-          {
-            "id": "n1_0",
-            "x": 1,
-            "y": 0
-          },
-          {
-            "id": "n2_0",
-            "x": 2,
-            "y": 0
-          },
-          {
-            "id": "n3_0",
-            "x": 3,
-            "y": 0
-          },
-          {
-            "id": "n4_0",
-            "x": 4,
-            "y": 0
-          },
-          {
-            "id": "n0_1",
-            "x": 0,
-            "y": 1
-          },
-          {
-            "id": "n1_1",
-            "x": 1,
-            "y": 1
-          },
-          {
-            "id": "n2_1",
-            "x": 2,
-            "y": 1
-          },
-          {
-            "id": "n3_1",
-            "x": 3,
-            "y": 1
-          },
-          {
-            "id": "n4_1",
-            "x": 4,
-            "y": 1
-          },
-          {
-            "id": "n0_2",
-            "x": 0,
-            "y": 2
-          },
-          {
-            "id": "n1_2",
-            "x": 1,
-            "y": 2
-          },
-          {
-            "id": "n2_2",
-            "x": 2,
-            "y": 2
-          },
-          {
-            "id": "n3_2",
-            "x": 3,
-            "y": 2
-          },
-          {
-            "id": "n4_2",
-            "x": 4,
-            "y": 2
-          },
-          {
-            "id": "n0_3",
-            "x": 0,
-            "y": 3
-          },
-          {
-            "id": "n1_3",
-            "x": 1,
-            "y": 3
-          },
-          {
-            "id": "n2_3",
-            "x": 2,
-            "y": 3
-          },
-          {
-            "id": "n3_3",
-            "x": 3,
-            "y": 3
-          },
-          {
-            "id": "n4_3",
-            "x": 4,
-            "y": 3
-          },
-          {
-            "id": "n0_4",
-            "x": 0,
-            "y": 4
-          },
-          {
-            "id": "n1_4",
-            "x": 1,
-            "y": 4
-          },
-          {
-            "id": "n2_4",
-            "x": 2,
-            "y": 4
-          },
-          {
-            "id": "n3_4",
-            "x": 3,
-            "y": 4
-          },
-          {
-            "id": "n4_4",
-            "x": 4,
-            "y": 4
-          }
-        ],
-        "edges": [
-          {
-            "id": "n0_0-n0_1",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n0_1",
-            "direction": "down"
-          },
-          {
-            "id": "n0_0-n1_0",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n1_0",
-            "direction": "right"
-          },
-          {
-            "id": "n0_1-n0_2",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n0_2",
-            "direction": "down"
-          },
-          {
-            "id": "n0_1-n1_1",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n1_1",
-            "direction": "right"
-          },
-          {
-            "id": "n0_2-n0_3",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n0_3",
-            "direction": "down"
-          },
-          {
-            "id": "n0_2-n1_2",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n1_2",
-            "direction": "right"
-          },
-          {
-            "id": "n0_3-n0_4",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n0_4",
-            "direction": "down"
-          },
-          {
-            "id": "n0_3-n1_3",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n1_3",
-            "direction": "right"
-          },
-          {
-            "id": "n0_4-n1_4",
-            "fromNodeId": "n0_4",
-            "toNodeId": "n1_4",
-            "direction": "right"
-          },
-          {
-            "id": "n1_0-n1_1",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n1_1",
-            "direction": "down"
-          },
-          {
-            "id": "n1_0-n2_0",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n2_0",
-            "direction": "right"
-          },
-          {
-            "id": "n1_1-n1_2",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n1_2",
-            "direction": "down"
-          },
-          {
-            "id": "n1_1-n2_1",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n2_1",
-            "direction": "right"
-          },
-          {
-            "id": "n1_2-n1_3",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n1_3",
-            "direction": "down"
-          },
-          {
-            "id": "n1_2-n2_2",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n2_2",
-            "direction": "right"
-          },
-          {
-            "id": "n1_3-n1_4",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n1_4",
-            "direction": "down"
-          },
-          {
-            "id": "n1_3-n2_3",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n2_3",
-            "direction": "right"
-          },
-          {
-            "id": "n1_4-n2_4",
-            "fromNodeId": "n1_4",
-            "toNodeId": "n2_4",
-            "direction": "right"
-          },
-          {
-            "id": "n2_0-n2_1",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n2_1",
-            "direction": "down"
-          },
-          {
-            "id": "n2_0-n3_0",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n3_0",
-            "direction": "right"
-          },
-          {
-            "id": "n2_1-n2_2",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n2_2",
-            "direction": "down"
-          },
-          {
-            "id": "n2_1-n3_1",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n3_1",
-            "direction": "right"
-          },
-          {
-            "id": "n2_2-n2_3",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n2_3",
-            "direction": "down"
-          },
-          {
-            "id": "n2_2-n3_2",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n3_2",
-            "direction": "right"
-          },
-          {
-            "id": "n2_3-n2_4",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n2_4",
-            "direction": "down"
-          },
-          {
-            "id": "n2_3-n3_3",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n3_3",
-            "direction": "right"
-          },
-          {
-            "id": "n2_4-n3_4",
-            "fromNodeId": "n2_4",
-            "toNodeId": "n3_4",
-            "direction": "right"
-          },
-          {
-            "id": "n3_0-n3_1",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n3_1",
-            "direction": "down"
-          },
-          {
-            "id": "n3_0-n4_0",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n4_0",
-            "direction": "right"
-          },
-          {
-            "id": "n3_1-n3_2",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n3_2",
-            "direction": "down"
-          },
-          {
-            "id": "n3_1-n4_1",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n4_1",
-            "direction": "right"
-          },
-          {
-            "id": "n3_2-n3_3",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n3_3",
-            "direction": "down"
-          },
-          {
-            "id": "n3_2-n4_2",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n4_2",
-            "direction": "right"
-          },
-          {
-            "id": "n3_3-n3_4",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n3_4",
-            "direction": "down"
-          },
-          {
-            "id": "n3_3-n4_3",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n4_3",
-            "direction": "right"
-          },
-          {
-            "id": "n3_4-n4_4",
-            "fromNodeId": "n3_4",
-            "toNodeId": "n4_4",
-            "direction": "right"
-          },
-          {
-            "id": "n4_0-n4_1",
-            "fromNodeId": "n4_0",
-            "toNodeId": "n4_1",
-            "direction": "down"
-          },
-          {
-            "id": "n4_1-n4_2",
-            "fromNodeId": "n4_1",
-            "toNodeId": "n4_2",
-            "direction": "down"
-          },
-          {
-            "id": "n4_2-n4_3",
-            "fromNodeId": "n4_2",
-            "toNodeId": "n4_3",
-            "direction": "down"
-          },
-          {
-            "id": "n4_3-n4_4",
-            "fromNodeId": "n4_3",
-            "toNodeId": "n4_4",
-            "direction": "down"
-          }
-        ],
-        "arrows": [
-          {
-            "id": "a1",
-            "occupiedEdges": [
-              "n1_4-n1_3",
-              "n1_3-n2_3",
-              "n2_3-n3_3"
-            ],
-            "startNodeId": "n1_4",
-            "endNodeId": "n3_3",
-            "direction": "right"
-          }
-        ],
-        "blockedEdges": [
-          "n2_2-n3_2",
-          "n3_1-n3_2"
-        ],
-        "metadata": {
-          "difficulty": "medium",
-          "timeLimit": 100,
-          "maxMoves": 32,
-          "generationType": "manual",
-          "seed": null
-        }
-      }
-    },
-    {
-      "number": 8,
-      "name": "Double Gate",
-      "difficulty": "medium",
-      "definitionJson": {
-        "nodes": [
-          {
-            "id": "n0_0",
-            "x": 0,
-            "y": 0
-          },
-          {
-            "id": "n1_0",
-            "x": 1,
-            "y": 0
-          },
-          {
-            "id": "n2_0",
-            "x": 2,
-            "y": 0
-          },
-          {
-            "id": "n3_0",
-            "x": 3,
-            "y": 0
-          },
-          {
-            "id": "n4_0",
-            "x": 4,
-            "y": 0
-          },
-          {
-            "id": "n0_1",
-            "x": 0,
-            "y": 1
-          },
-          {
-            "id": "n1_1",
-            "x": 1,
-            "y": 1
-          },
-          {
-            "id": "n2_1",
-            "x": 2,
-            "y": 1
-          },
-          {
-            "id": "n3_1",
-            "x": 3,
-            "y": 1
-          },
-          {
-            "id": "n4_1",
-            "x": 4,
-            "y": 1
-          },
-          {
-            "id": "n0_2",
-            "x": 0,
-            "y": 2
-          },
-          {
-            "id": "n1_2",
-            "x": 1,
-            "y": 2
-          },
-          {
-            "id": "n2_2",
-            "x": 2,
-            "y": 2
-          },
-          {
-            "id": "n3_2",
-            "x": 3,
-            "y": 2
-          },
-          {
-            "id": "n4_2",
-            "x": 4,
-            "y": 2
-          },
-          {
-            "id": "n0_3",
-            "x": 0,
-            "y": 3
-          },
-          {
-            "id": "n1_3",
-            "x": 1,
-            "y": 3
-          },
-          {
-            "id": "n2_3",
-            "x": 2,
-            "y": 3
-          },
-          {
-            "id": "n3_3",
-            "x": 3,
-            "y": 3
-          },
-          {
-            "id": "n4_3",
-            "x": 4,
-            "y": 3
-          },
-          {
-            "id": "n0_4",
-            "x": 0,
-            "y": 4
-          },
-          {
-            "id": "n1_4",
-            "x": 1,
-            "y": 4
-          },
-          {
-            "id": "n2_4",
-            "x": 2,
-            "y": 4
-          },
-          {
-            "id": "n3_4",
-            "x": 3,
-            "y": 4
-          },
-          {
-            "id": "n4_4",
-            "x": 4,
-            "y": 4
-          }
-        ],
-        "edges": [
-          {
-            "id": "n0_0-n0_1",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n0_1",
-            "direction": "down"
-          },
-          {
-            "id": "n0_0-n1_0",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n1_0",
-            "direction": "right"
-          },
-          {
-            "id": "n0_1-n0_2",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n0_2",
-            "direction": "down"
-          },
-          {
-            "id": "n0_1-n1_1",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n1_1",
-            "direction": "right"
-          },
-          {
-            "id": "n0_2-n0_3",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n0_3",
-            "direction": "down"
-          },
-          {
-            "id": "n0_2-n1_2",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n1_2",
-            "direction": "right"
-          },
-          {
-            "id": "n0_3-n0_4",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n0_4",
-            "direction": "down"
-          },
-          {
-            "id": "n0_3-n1_3",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n1_3",
-            "direction": "right"
-          },
-          {
-            "id": "n0_4-n1_4",
-            "fromNodeId": "n0_4",
-            "toNodeId": "n1_4",
-            "direction": "right"
-          },
-          {
-            "id": "n1_0-n1_1",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n1_1",
-            "direction": "down"
-          },
-          {
-            "id": "n1_0-n2_0",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n2_0",
-            "direction": "right"
-          },
-          {
-            "id": "n1_1-n1_2",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n1_2",
-            "direction": "down"
-          },
-          {
-            "id": "n1_1-n2_1",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n2_1",
-            "direction": "right"
-          },
-          {
-            "id": "n1_2-n1_3",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n1_3",
-            "direction": "down"
-          },
-          {
-            "id": "n1_2-n2_2",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n2_2",
-            "direction": "right"
-          },
-          {
-            "id": "n1_3-n1_4",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n1_4",
-            "direction": "down"
-          },
-          {
-            "id": "n1_3-n2_3",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n2_3",
-            "direction": "right"
-          },
-          {
-            "id": "n1_4-n2_4",
-            "fromNodeId": "n1_4",
-            "toNodeId": "n2_4",
-            "direction": "right"
-          },
-          {
-            "id": "n2_0-n2_1",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n2_1",
-            "direction": "down"
-          },
-          {
-            "id": "n2_0-n3_0",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n3_0",
-            "direction": "right"
-          },
-          {
-            "id": "n2_1-n2_2",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n2_2",
-            "direction": "down"
-          },
-          {
-            "id": "n2_1-n3_1",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n3_1",
-            "direction": "right"
-          },
-          {
-            "id": "n2_2-n2_3",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n2_3",
-            "direction": "down"
-          },
-          {
-            "id": "n2_2-n3_2",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n3_2",
-            "direction": "right"
-          },
-          {
-            "id": "n2_3-n2_4",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n2_4",
-            "direction": "down"
-          },
-          {
-            "id": "n2_3-n3_3",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n3_3",
-            "direction": "right"
-          },
-          {
-            "id": "n2_4-n3_4",
-            "fromNodeId": "n2_4",
-            "toNodeId": "n3_4",
-            "direction": "right"
-          },
-          {
-            "id": "n3_0-n3_1",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n3_1",
-            "direction": "down"
-          },
-          {
-            "id": "n3_0-n4_0",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n4_0",
-            "direction": "right"
-          },
-          {
-            "id": "n3_1-n3_2",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n3_2",
-            "direction": "down"
-          },
-          {
-            "id": "n3_1-n4_1",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n4_1",
-            "direction": "right"
-          },
-          {
-            "id": "n3_2-n3_3",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n3_3",
-            "direction": "down"
-          },
-          {
-            "id": "n3_2-n4_2",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n4_2",
-            "direction": "right"
-          },
-          {
-            "id": "n3_3-n3_4",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n3_4",
-            "direction": "down"
-          },
-          {
-            "id": "n3_3-n4_3",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n4_3",
-            "direction": "right"
-          },
-          {
-            "id": "n3_4-n4_4",
-            "fromNodeId": "n3_4",
-            "toNodeId": "n4_4",
-            "direction": "right"
-          },
-          {
-            "id": "n4_0-n4_1",
-            "fromNodeId": "n4_0",
-            "toNodeId": "n4_1",
-            "direction": "down"
-          },
-          {
-            "id": "n4_1-n4_2",
-            "fromNodeId": "n4_1",
-            "toNodeId": "n4_2",
-            "direction": "down"
-          },
-          {
-            "id": "n4_2-n4_3",
-            "fromNodeId": "n4_2",
-            "toNodeId": "n4_3",
-            "direction": "down"
-          },
-          {
-            "id": "n4_3-n4_4",
-            "fromNodeId": "n4_3",
-            "toNodeId": "n4_4",
-            "direction": "down"
           }
         ],
         "arrows": [
@@ -2185,31 +306,260 @@
           {
             "id": "a2",
             "occupiedEdges": [
-              "n4_4-n4_3",
-              "n4_3-n4_2"
+              "n0_2-n1_2",
+              "n1_2-n2_2"
             ],
-            "startNodeId": "n4_4",
-            "endNodeId": "n4_2",
-            "direction": "up"
+            "startNodeId": "n0_2",
+            "endNodeId": "n2_2",
+            "direction": "right"
           }
         ],
-        "blockedEdges": [
-          "n2_1-n3_1",
-          "n1_3-n1_4",
-          "n3_3-n4_3"
-        ],
+        "blockedEdges": [],
         "metadata": {
-          "difficulty": "medium",
-          "timeLimit": 95,
-          "maxMoves": 34,
+          "difficulty": "easy",
+          "timeLimit": 120,
+          "maxMoves": 10,
           "generationType": "manual",
           "seed": null
         }
       }
     },
     {
-      "number": 9,
-      "name": "Offset Lines",
+      "number": 5,
+      "name": "Queue Up",
+      "difficulty": "easy",
+      "definitionJson": {
+        "nodes": [
+          {
+            "id": "n0_0",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "id": "n1_0",
+            "x": 1,
+            "y": 0
+          },
+          {
+            "id": "n2_0",
+            "x": 2,
+            "y": 0
+          },
+          {
+            "id": "n3_0",
+            "x": 3,
+            "y": 0
+          },
+          {
+            "id": "n4_0",
+            "x": 4,
+            "y": 0
+          }
+        ],
+        "edges": [
+          {
+            "id": "n0_0-n1_0",
+            "fromNodeId": "n0_0",
+            "toNodeId": "n1_0",
+            "direction": "right"
+          },
+          {
+            "id": "n1_0-n2_0",
+            "fromNodeId": "n1_0",
+            "toNodeId": "n2_0",
+            "direction": "right"
+          },
+          {
+            "id": "n2_0-n3_0",
+            "fromNodeId": "n2_0",
+            "toNodeId": "n3_0",
+            "direction": "right"
+          },
+          {
+            "id": "n3_0-n4_0",
+            "fromNodeId": "n3_0",
+            "toNodeId": "n4_0",
+            "direction": "right"
+          }
+        ],
+        "arrows": [
+          {
+            "id": "a1",
+            "occupiedEdges": [
+              "n3_0-n4_0"
+            ],
+            "startNodeId": "n3_0",
+            "endNodeId": "n4_0",
+            "direction": "right"
+          },
+          {
+            "id": "a2",
+            "occupiedEdges": [
+              "n0_0-n1_0",
+              "n1_0-n2_0"
+            ],
+            "startNodeId": "n0_0",
+            "endNodeId": "n2_0",
+            "direction": "right"
+          }
+        ],
+        "blockedEdges": [],
+        "metadata": {
+          "difficulty": "easy",
+          "timeLimit": 120,
+          "maxMoves": 10,
+          "generationType": "manual",
+          "seed": null
+        }
+      }
+    },
+    {
+      "number": 6,
+      "name": "Cross Roads",
+      "difficulty": "medium",
+      "definitionJson": {
+        "nodes": [
+          {
+            "id": "n0_2",
+            "x": 0,
+            "y": 2
+          },
+          {
+            "id": "n1_2",
+            "x": 1,
+            "y": 2
+          },
+          {
+            "id": "n2_2",
+            "x": 2,
+            "y": 2
+          },
+          {
+            "id": "n3_2",
+            "x": 3,
+            "y": 2
+          },
+          {
+            "id": "n4_2",
+            "x": 4,
+            "y": 2
+          },
+          {
+            "id": "n2_0",
+            "x": 2,
+            "y": 0
+          },
+          {
+            "id": "n2_1",
+            "x": 2,
+            "y": 1
+          },
+          {
+            "id": "n2_3",
+            "x": 2,
+            "y": 3
+          },
+          {
+            "id": "n2_4",
+            "x": 2,
+            "y": 4
+          }
+        ],
+        "edges": [
+          {
+            "id": "n0_2-n1_2",
+            "fromNodeId": "n0_2",
+            "toNodeId": "n1_2",
+            "direction": "right"
+          },
+          {
+            "id": "n1_2-n2_2",
+            "fromNodeId": "n1_2",
+            "toNodeId": "n2_2",
+            "direction": "right"
+          },
+          {
+            "id": "n2_2-n3_2",
+            "fromNodeId": "n2_2",
+            "toNodeId": "n3_2",
+            "direction": "right"
+          },
+          {
+            "id": "n3_2-n4_2",
+            "fromNodeId": "n3_2",
+            "toNodeId": "n4_2",
+            "direction": "right"
+          },
+          {
+            "id": "n2_0-n2_1",
+            "fromNodeId": "n2_0",
+            "toNodeId": "n2_1",
+            "direction": "down"
+          },
+          {
+            "id": "n2_1-n2_2",
+            "fromNodeId": "n2_1",
+            "toNodeId": "n2_2",
+            "direction": "down"
+          },
+          {
+            "id": "n2_2-n2_3",
+            "fromNodeId": "n2_2",
+            "toNodeId": "n2_3",
+            "direction": "down"
+          },
+          {
+            "id": "n2_3-n2_4",
+            "fromNodeId": "n2_3",
+            "toNodeId": "n2_4",
+            "direction": "down"
+          }
+        ],
+        "arrows": [
+          {
+            "id": "a1",
+            "occupiedEdges": [
+              "n0_2-n1_2",
+              "n1_2-n2_2",
+              "n2_2-n3_2",
+              "n3_2-n4_2"
+            ],
+            "startNodeId": "n0_2",
+            "endNodeId": "n4_2",
+            "direction": "right"
+          },
+          {
+            "id": "a2",
+            "occupiedEdges": [
+              "n2_0-n2_1"
+            ],
+            "startNodeId": "n2_1",
+            "endNodeId": "n2_0",
+            "direction": "up"
+          },
+          {
+            "id": "a3",
+            "occupiedEdges": [
+              "n2_3-n2_4"
+            ],
+            "startNodeId": "n2_3",
+            "endNodeId": "n2_4",
+            "direction": "down"
+          }
+        ],
+        "blockedEdges": [],
+        "metadata": {
+          "difficulty": "medium",
+          "timeLimit": 100,
+          "maxMoves": 15,
+          "generationType": "manual",
+          "seed": null
+        }
+      }
+    },
+    {
+      "number": 7,
+      "name": "T-Junction",
       "difficulty": "medium",
       "definitionJson": {
         "nodes": [
@@ -2239,8 +589,130 @@
             "y": 0
           },
           {
-            "id": "n5_0",
-            "x": 5,
+            "id": "n2_1",
+            "x": 2,
+            "y": 1
+          },
+          {
+            "id": "n2_2",
+            "x": 2,
+            "y": 2
+          },
+          {
+            "id": "n2_3",
+            "x": 2,
+            "y": 3
+          }
+        ],
+        "edges": [
+          {
+            "id": "n0_0-n1_0",
+            "fromNodeId": "n0_0",
+            "toNodeId": "n1_0",
+            "direction": "right"
+          },
+          {
+            "id": "n1_0-n2_0",
+            "fromNodeId": "n1_0",
+            "toNodeId": "n2_0",
+            "direction": "right"
+          },
+          {
+            "id": "n2_0-n3_0",
+            "fromNodeId": "n2_0",
+            "toNodeId": "n3_0",
+            "direction": "right"
+          },
+          {
+            "id": "n3_0-n4_0",
+            "fromNodeId": "n3_0",
+            "toNodeId": "n4_0",
+            "direction": "right"
+          },
+          {
+            "id": "n2_0-n2_1",
+            "fromNodeId": "n2_0",
+            "toNodeId": "n2_1",
+            "direction": "down"
+          },
+          {
+            "id": "n2_1-n2_2",
+            "fromNodeId": "n2_1",
+            "toNodeId": "n2_2",
+            "direction": "down"
+          },
+          {
+            "id": "n2_2-n2_3",
+            "fromNodeId": "n2_2",
+            "toNodeId": "n2_3",
+            "direction": "down"
+          }
+        ],
+        "arrows": [
+          {
+            "id": "a1",
+            "occupiedEdges": [
+              "n3_0-n4_0"
+            ],
+            "startNodeId": "n3_0",
+            "endNodeId": "n4_0",
+            "direction": "right"
+          },
+          {
+            "id": "a2",
+            "occupiedEdges": [
+              "n0_0-n1_0"
+            ],
+            "startNodeId": "n0_0",
+            "endNodeId": "n1_0",
+            "direction": "right"
+          },
+          {
+            "id": "a3",
+            "occupiedEdges": [
+              "n2_0-n2_1",
+              "n2_1-n2_2",
+              "n2_2-n2_3"
+            ],
+            "startNodeId": "n2_0",
+            "endNodeId": "n2_3",
+            "direction": "down"
+          }
+        ],
+        "blockedEdges": [],
+        "metadata": {
+          "difficulty": "medium",
+          "timeLimit": 100,
+          "maxMoves": 15,
+          "generationType": "manual",
+          "seed": null
+        }
+      }
+    },
+    {
+      "number": 8,
+      "name": "Gate Keeper",
+      "difficulty": "medium",
+      "definitionJson": {
+        "nodes": [
+          {
+            "id": "n0_0",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "id": "n1_0",
+            "x": 1,
+            "y": 0
+          },
+          {
+            "id": "n2_0",
+            "x": 2,
+            "y": 0
+          },
+          {
+            "id": "n3_0",
+            "x": 3,
             "y": 0
           },
           {
@@ -2257,131 +729,14 @@
             "id": "n2_1",
             "x": 2,
             "y": 1
-          },
-          {
-            "id": "n3_1",
-            "x": 3,
-            "y": 1
-          },
-          {
-            "id": "n4_1",
-            "x": 4,
-            "y": 1
-          },
-          {
-            "id": "n5_1",
-            "x": 5,
-            "y": 1
-          },
-          {
-            "id": "n0_2",
-            "x": 0,
-            "y": 2
-          },
-          {
-            "id": "n1_2",
-            "x": 1,
-            "y": 2
-          },
-          {
-            "id": "n2_2",
-            "x": 2,
-            "y": 2
-          },
-          {
-            "id": "n3_2",
-            "x": 3,
-            "y": 2
-          },
-          {
-            "id": "n4_2",
-            "x": 4,
-            "y": 2
-          },
-          {
-            "id": "n5_2",
-            "x": 5,
-            "y": 2
-          },
-          {
-            "id": "n0_3",
-            "x": 0,
-            "y": 3
-          },
-          {
-            "id": "n1_3",
-            "x": 1,
-            "y": 3
-          },
-          {
-            "id": "n2_3",
-            "x": 2,
-            "y": 3
-          },
-          {
-            "id": "n3_3",
-            "x": 3,
-            "y": 3
-          },
-          {
-            "id": "n4_3",
-            "x": 4,
-            "y": 3
-          },
-          {
-            "id": "n5_3",
-            "x": 5,
-            "y": 3
           }
         ],
         "edges": [
-          {
-            "id": "n0_0-n0_1",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n0_1",
-            "direction": "down"
-          },
           {
             "id": "n0_0-n1_0",
             "fromNodeId": "n0_0",
             "toNodeId": "n1_0",
             "direction": "right"
-          },
-          {
-            "id": "n0_1-n0_2",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n0_2",
-            "direction": "down"
-          },
-          {
-            "id": "n0_1-n1_1",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n1_1",
-            "direction": "right"
-          },
-          {
-            "id": "n0_2-n0_3",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n0_3",
-            "direction": "down"
-          },
-          {
-            "id": "n0_2-n1_2",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n1_2",
-            "direction": "right"
-          },
-          {
-            "id": "n0_3-n1_3",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n1_3",
-            "direction": "right"
-          },
-          {
-            "id": "n1_0-n1_1",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n1_1",
-            "direction": "down"
           },
           {
             "id": "n1_0-n2_0",
@@ -2390,183 +745,45 @@
             "direction": "right"
           },
           {
-            "id": "n1_1-n1_2",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n1_2",
-            "direction": "down"
-          },
-          {
-            "id": "n1_1-n2_1",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n2_1",
-            "direction": "right"
-          },
-          {
-            "id": "n1_2-n1_3",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n1_3",
-            "direction": "down"
-          },
-          {
-            "id": "n1_2-n2_2",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n2_2",
-            "direction": "right"
-          },
-          {
-            "id": "n1_3-n2_3",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n2_3",
-            "direction": "right"
-          },
-          {
-            "id": "n2_0-n2_1",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n2_1",
-            "direction": "down"
-          },
-          {
             "id": "n2_0-n3_0",
             "fromNodeId": "n2_0",
             "toNodeId": "n3_0",
             "direction": "right"
           },
           {
-            "id": "n2_1-n2_2",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n2_2",
-            "direction": "down"
-          },
-          {
-            "id": "n2_1-n3_1",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n3_1",
+            "id": "n0_1-n1_1",
+            "fromNodeId": "n0_1",
+            "toNodeId": "n1_1",
             "direction": "right"
           },
           {
-            "id": "n2_2-n2_3",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n2_3",
-            "direction": "down"
-          },
-          {
-            "id": "n2_2-n3_2",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n3_2",
+            "id": "n1_1-n2_1",
+            "fromNodeId": "n1_1",
+            "toNodeId": "n2_1",
             "direction": "right"
-          },
-          {
-            "id": "n2_3-n3_3",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n3_3",
-            "direction": "right"
-          },
-          {
-            "id": "n3_0-n3_1",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n3_1",
-            "direction": "down"
-          },
-          {
-            "id": "n3_0-n4_0",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n4_0",
-            "direction": "right"
-          },
-          {
-            "id": "n3_1-n3_2",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n3_2",
-            "direction": "down"
-          },
-          {
-            "id": "n3_1-n4_1",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n4_1",
-            "direction": "right"
-          },
-          {
-            "id": "n3_2-n3_3",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n3_3",
-            "direction": "down"
-          },
-          {
-            "id": "n3_2-n4_2",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n4_2",
-            "direction": "right"
-          },
-          {
-            "id": "n3_3-n4_3",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n4_3",
-            "direction": "right"
-          },
-          {
-            "id": "n4_0-n4_1",
-            "fromNodeId": "n4_0",
-            "toNodeId": "n4_1",
-            "direction": "down"
-          },
-          {
-            "id": "n4_0-n5_0",
-            "fromNodeId": "n4_0",
-            "toNodeId": "n5_0",
-            "direction": "right"
-          },
-          {
-            "id": "n4_1-n4_2",
-            "fromNodeId": "n4_1",
-            "toNodeId": "n4_2",
-            "direction": "down"
-          },
-          {
-            "id": "n4_1-n5_1",
-            "fromNodeId": "n4_1",
-            "toNodeId": "n5_1",
-            "direction": "right"
-          },
-          {
-            "id": "n4_2-n4_3",
-            "fromNodeId": "n4_2",
-            "toNodeId": "n4_3",
-            "direction": "down"
-          },
-          {
-            "id": "n4_2-n5_2",
-            "fromNodeId": "n4_2",
-            "toNodeId": "n5_2",
-            "direction": "right"
-          },
-          {
-            "id": "n4_3-n5_3",
-            "fromNodeId": "n4_3",
-            "toNodeId": "n5_3",
-            "direction": "right"
-          },
-          {
-            "id": "n5_0-n5_1",
-            "fromNodeId": "n5_0",
-            "toNodeId": "n5_1",
-            "direction": "down"
-          },
-          {
-            "id": "n5_1-n5_2",
-            "fromNodeId": "n5_1",
-            "toNodeId": "n5_2",
-            "direction": "down"
-          },
-          {
-            "id": "n5_2-n5_3",
-            "fromNodeId": "n5_2",
-            "toNodeId": "n5_3",
-            "direction": "down"
           }
         ],
         "arrows": [
           {
             "id": "a1",
+            "occupiedEdges": [
+              "n2_0-n3_0"
+            ],
+            "startNodeId": "n2_0",
+            "endNodeId": "n3_0",
+            "direction": "right"
+          },
+          {
+            "id": "a2",
+            "occupiedEdges": [
+              "n0_0-n1_0"
+            ],
+            "startNodeId": "n0_0",
+            "endNodeId": "n1_0",
+            "direction": "right"
+          },
+          {
+            "id": "a3",
             "occupiedEdges": [
               "n0_1-n1_1",
               "n1_1-n2_1"
@@ -2574,35 +791,21 @@
             "startNodeId": "n0_1",
             "endNodeId": "n2_1",
             "direction": "right"
-          },
-          {
-            "id": "a2",
-            "occupiedEdges": [
-              "n5_2-n4_2",
-              "n4_2-n3_2"
-            ],
-            "startNodeId": "n5_2",
-            "endNodeId": "n3_2",
-            "direction": "left"
           }
         ],
-        "blockedEdges": [
-          "n2_0-n3_0",
-          "n2_2-n3_2",
-          "n4_1-n4_2"
-        ],
+        "blockedEdges": [],
         "metadata": {
           "difficulty": "medium",
-          "timeLimit": 95,
-          "maxMoves": 36,
+          "timeLimit": 100,
+          "maxMoves": 15,
           "generationType": "manual",
           "seed": null
         }
       }
     },
     {
-      "number": 10,
-      "name": "Long Hook",
+      "number": 9,
+      "name": "Offset Pair",
       "difficulty": "medium",
       "definitionJson": {
         "nodes": [
@@ -2622,26 +825,6 @@
             "y": 0
           },
           {
-            "id": "n3_0",
-            "x": 3,
-            "y": 0
-          },
-          {
-            "id": "n4_0",
-            "x": 4,
-            "y": 0
-          },
-          {
-            "id": "n5_0",
-            "x": 5,
-            "y": 0
-          },
-          {
-            "id": "n0_1",
-            "x": 0,
-            "y": 1
-          },
-          {
             "id": "n1_1",
             "x": 1,
             "y": 1
@@ -2657,26 +840,6 @@
             "y": 1
           },
           {
-            "id": "n4_1",
-            "x": 4,
-            "y": 1
-          },
-          {
-            "id": "n5_1",
-            "x": 5,
-            "y": 1
-          },
-          {
-            "id": "n0_2",
-            "x": 0,
-            "y": 2
-          },
-          {
-            "id": "n1_2",
-            "x": 1,
-            "y": 2
-          },
-          {
             "id": "n2_2",
             "x": 2,
             "y": 2
@@ -2690,133 +853,14 @@
             "id": "n4_2",
             "x": 4,
             "y": 2
-          },
-          {
-            "id": "n5_2",
-            "x": 5,
-            "y": 2
-          },
-          {
-            "id": "n0_3",
-            "x": 0,
-            "y": 3
-          },
-          {
-            "id": "n1_3",
-            "x": 1,
-            "y": 3
-          },
-          {
-            "id": "n2_3",
-            "x": 2,
-            "y": 3
-          },
-          {
-            "id": "n3_3",
-            "x": 3,
-            "y": 3
-          },
-          {
-            "id": "n4_3",
-            "x": 4,
-            "y": 3
-          },
-          {
-            "id": "n5_3",
-            "x": 5,
-            "y": 3
-          },
-          {
-            "id": "n0_4",
-            "x": 0,
-            "y": 4
-          },
-          {
-            "id": "n1_4",
-            "x": 1,
-            "y": 4
-          },
-          {
-            "id": "n2_4",
-            "x": 2,
-            "y": 4
-          },
-          {
-            "id": "n3_4",
-            "x": 3,
-            "y": 4
-          },
-          {
-            "id": "n4_4",
-            "x": 4,
-            "y": 4
-          },
-          {
-            "id": "n5_4",
-            "x": 5,
-            "y": 4
           }
         ],
         "edges": [
-          {
-            "id": "n0_0-n0_1",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n0_1",
-            "direction": "down"
-          },
           {
             "id": "n0_0-n1_0",
             "fromNodeId": "n0_0",
             "toNodeId": "n1_0",
             "direction": "right"
-          },
-          {
-            "id": "n0_1-n0_2",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n0_2",
-            "direction": "down"
-          },
-          {
-            "id": "n0_1-n1_1",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n1_1",
-            "direction": "right"
-          },
-          {
-            "id": "n0_2-n0_3",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n0_3",
-            "direction": "down"
-          },
-          {
-            "id": "n0_2-n1_2",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n1_2",
-            "direction": "right"
-          },
-          {
-            "id": "n0_3-n0_4",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n0_4",
-            "direction": "down"
-          },
-          {
-            "id": "n0_3-n1_3",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n1_3",
-            "direction": "right"
-          },
-          {
-            "id": "n0_4-n1_4",
-            "fromNodeId": "n0_4",
-            "toNodeId": "n1_4",
-            "direction": "right"
-          },
-          {
-            "id": "n1_0-n1_1",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n1_1",
-            "direction": "down"
           },
           {
             "id": "n1_0-n2_0",
@@ -2825,64 +869,10 @@
             "direction": "right"
           },
           {
-            "id": "n1_1-n1_2",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n1_2",
-            "direction": "down"
-          },
-          {
             "id": "n1_1-n2_1",
             "fromNodeId": "n1_1",
             "toNodeId": "n2_1",
             "direction": "right"
-          },
-          {
-            "id": "n1_2-n1_3",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n1_3",
-            "direction": "down"
-          },
-          {
-            "id": "n1_2-n2_2",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n2_2",
-            "direction": "right"
-          },
-          {
-            "id": "n1_3-n1_4",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n1_4",
-            "direction": "down"
-          },
-          {
-            "id": "n1_3-n2_3",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n2_3",
-            "direction": "right"
-          },
-          {
-            "id": "n1_4-n2_4",
-            "fromNodeId": "n1_4",
-            "toNodeId": "n2_4",
-            "direction": "right"
-          },
-          {
-            "id": "n2_0-n2_1",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n2_1",
-            "direction": "down"
-          },
-          {
-            "id": "n2_0-n3_0",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n3_0",
-            "direction": "right"
-          },
-          {
-            "id": "n2_1-n2_2",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n2_2",
-            "direction": "down"
           },
           {
             "id": "n2_1-n3_1",
@@ -2891,1900 +881,16 @@
             "direction": "right"
           },
           {
-            "id": "n2_2-n2_3",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n2_3",
-            "direction": "down"
-          },
-          {
             "id": "n2_2-n3_2",
             "fromNodeId": "n2_2",
             "toNodeId": "n3_2",
             "direction": "right"
           },
           {
-            "id": "n2_3-n2_4",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n2_4",
-            "direction": "down"
-          },
-          {
-            "id": "n2_3-n3_3",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n3_3",
-            "direction": "right"
-          },
-          {
-            "id": "n2_4-n3_4",
-            "fromNodeId": "n2_4",
-            "toNodeId": "n3_4",
-            "direction": "right"
-          },
-          {
-            "id": "n3_0-n3_1",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n3_1",
-            "direction": "down"
-          },
-          {
-            "id": "n3_0-n4_0",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n4_0",
-            "direction": "right"
-          },
-          {
-            "id": "n3_1-n3_2",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n3_2",
-            "direction": "down"
-          },
-          {
-            "id": "n3_1-n4_1",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n4_1",
-            "direction": "right"
-          },
-          {
-            "id": "n3_2-n3_3",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n3_3",
-            "direction": "down"
-          },
-          {
             "id": "n3_2-n4_2",
             "fromNodeId": "n3_2",
             "toNodeId": "n4_2",
             "direction": "right"
-          },
-          {
-            "id": "n3_3-n3_4",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n3_4",
-            "direction": "down"
-          },
-          {
-            "id": "n3_3-n4_3",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n4_3",
-            "direction": "right"
-          },
-          {
-            "id": "n3_4-n4_4",
-            "fromNodeId": "n3_4",
-            "toNodeId": "n4_4",
-            "direction": "right"
-          },
-          {
-            "id": "n4_0-n4_1",
-            "fromNodeId": "n4_0",
-            "toNodeId": "n4_1",
-            "direction": "down"
-          },
-          {
-            "id": "n4_0-n5_0",
-            "fromNodeId": "n4_0",
-            "toNodeId": "n5_0",
-            "direction": "right"
-          },
-          {
-            "id": "n4_1-n4_2",
-            "fromNodeId": "n4_1",
-            "toNodeId": "n4_2",
-            "direction": "down"
-          },
-          {
-            "id": "n4_1-n5_1",
-            "fromNodeId": "n4_1",
-            "toNodeId": "n5_1",
-            "direction": "right"
-          },
-          {
-            "id": "n4_2-n4_3",
-            "fromNodeId": "n4_2",
-            "toNodeId": "n4_3",
-            "direction": "down"
-          },
-          {
-            "id": "n4_2-n5_2",
-            "fromNodeId": "n4_2",
-            "toNodeId": "n5_2",
-            "direction": "right"
-          },
-          {
-            "id": "n4_3-n4_4",
-            "fromNodeId": "n4_3",
-            "toNodeId": "n4_4",
-            "direction": "down"
-          },
-          {
-            "id": "n4_3-n5_3",
-            "fromNodeId": "n4_3",
-            "toNodeId": "n5_3",
-            "direction": "right"
-          },
-          {
-            "id": "n4_4-n5_4",
-            "fromNodeId": "n4_4",
-            "toNodeId": "n5_4",
-            "direction": "right"
-          },
-          {
-            "id": "n5_0-n5_1",
-            "fromNodeId": "n5_0",
-            "toNodeId": "n5_1",
-            "direction": "down"
-          },
-          {
-            "id": "n5_1-n5_2",
-            "fromNodeId": "n5_1",
-            "toNodeId": "n5_2",
-            "direction": "down"
-          },
-          {
-            "id": "n5_2-n5_3",
-            "fromNodeId": "n5_2",
-            "toNodeId": "n5_3",
-            "direction": "down"
-          },
-          {
-            "id": "n5_3-n5_4",
-            "fromNodeId": "n5_3",
-            "toNodeId": "n5_4",
-            "direction": "down"
-          }
-        ],
-        "arrows": [
-          {
-            "id": "a1",
-            "occupiedEdges": [
-              "n0_4-n1_4",
-              "n1_4-n2_4",
-              "n2_4-n2_3",
-              "n2_3-n2_2"
-            ],
-            "startNodeId": "n0_4",
-            "endNodeId": "n2_2",
-            "direction": "up"
-          }
-        ],
-        "blockedEdges": [
-          "n3_2-n4_2",
-          "n1_1-n2_1",
-          "n4_3-n4_4"
-        ],
-        "metadata": {
-          "difficulty": "medium",
-          "timeLimit": 90,
-          "maxMoves": 38,
-          "generationType": "manual",
-          "seed": null
-        }
-      }
-    },
-    {
-      "number": 11,
-      "name": "Hard Split",
-      "difficulty": "hard",
-      "definitionJson": {
-        "nodes": [
-          {
-            "id": "n0_0",
-            "x": 0,
-            "y": 0
-          },
-          {
-            "id": "n1_0",
-            "x": 1,
-            "y": 0
-          },
-          {
-            "id": "n2_0",
-            "x": 2,
-            "y": 0
-          },
-          {
-            "id": "n3_0",
-            "x": 3,
-            "y": 0
-          },
-          {
-            "id": "n4_0",
-            "x": 4,
-            "y": 0
-          },
-          {
-            "id": "n5_0",
-            "x": 5,
-            "y": 0
-          },
-          {
-            "id": "n0_1",
-            "x": 0,
-            "y": 1
-          },
-          {
-            "id": "n1_1",
-            "x": 1,
-            "y": 1
-          },
-          {
-            "id": "n2_1",
-            "x": 2,
-            "y": 1
-          },
-          {
-            "id": "n3_1",
-            "x": 3,
-            "y": 1
-          },
-          {
-            "id": "n4_1",
-            "x": 4,
-            "y": 1
-          },
-          {
-            "id": "n5_1",
-            "x": 5,
-            "y": 1
-          },
-          {
-            "id": "n0_2",
-            "x": 0,
-            "y": 2
-          },
-          {
-            "id": "n1_2",
-            "x": 1,
-            "y": 2
-          },
-          {
-            "id": "n2_2",
-            "x": 2,
-            "y": 2
-          },
-          {
-            "id": "n3_2",
-            "x": 3,
-            "y": 2
-          },
-          {
-            "id": "n4_2",
-            "x": 4,
-            "y": 2
-          },
-          {
-            "id": "n5_2",
-            "x": 5,
-            "y": 2
-          },
-          {
-            "id": "n0_3",
-            "x": 0,
-            "y": 3
-          },
-          {
-            "id": "n1_3",
-            "x": 1,
-            "y": 3
-          },
-          {
-            "id": "n2_3",
-            "x": 2,
-            "y": 3
-          },
-          {
-            "id": "n3_3",
-            "x": 3,
-            "y": 3
-          },
-          {
-            "id": "n4_3",
-            "x": 4,
-            "y": 3
-          },
-          {
-            "id": "n5_3",
-            "x": 5,
-            "y": 3
-          },
-          {
-            "id": "n0_4",
-            "x": 0,
-            "y": 4
-          },
-          {
-            "id": "n1_4",
-            "x": 1,
-            "y": 4
-          },
-          {
-            "id": "n2_4",
-            "x": 2,
-            "y": 4
-          },
-          {
-            "id": "n3_4",
-            "x": 3,
-            "y": 4
-          },
-          {
-            "id": "n4_4",
-            "x": 4,
-            "y": 4
-          },
-          {
-            "id": "n5_4",
-            "x": 5,
-            "y": 4
-          },
-          {
-            "id": "n0_5",
-            "x": 0,
-            "y": 5
-          },
-          {
-            "id": "n1_5",
-            "x": 1,
-            "y": 5
-          },
-          {
-            "id": "n2_5",
-            "x": 2,
-            "y": 5
-          },
-          {
-            "id": "n3_5",
-            "x": 3,
-            "y": 5
-          },
-          {
-            "id": "n4_5",
-            "x": 4,
-            "y": 5
-          },
-          {
-            "id": "n5_5",
-            "x": 5,
-            "y": 5
-          }
-        ],
-        "edges": [
-          {
-            "id": "n0_0-n0_1",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n0_1",
-            "direction": "down"
-          },
-          {
-            "id": "n0_0-n1_0",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n1_0",
-            "direction": "right"
-          },
-          {
-            "id": "n0_1-n0_2",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n0_2",
-            "direction": "down"
-          },
-          {
-            "id": "n0_1-n1_1",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n1_1",
-            "direction": "right"
-          },
-          {
-            "id": "n0_2-n0_3",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n0_3",
-            "direction": "down"
-          },
-          {
-            "id": "n0_2-n1_2",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n1_2",
-            "direction": "right"
-          },
-          {
-            "id": "n0_3-n0_4",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n0_4",
-            "direction": "down"
-          },
-          {
-            "id": "n0_3-n1_3",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n1_3",
-            "direction": "right"
-          },
-          {
-            "id": "n0_4-n0_5",
-            "fromNodeId": "n0_4",
-            "toNodeId": "n0_5",
-            "direction": "down"
-          },
-          {
-            "id": "n0_4-n1_4",
-            "fromNodeId": "n0_4",
-            "toNodeId": "n1_4",
-            "direction": "right"
-          },
-          {
-            "id": "n0_5-n1_5",
-            "fromNodeId": "n0_5",
-            "toNodeId": "n1_5",
-            "direction": "right"
-          },
-          {
-            "id": "n1_0-n1_1",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n1_1",
-            "direction": "down"
-          },
-          {
-            "id": "n1_0-n2_0",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n2_0",
-            "direction": "right"
-          },
-          {
-            "id": "n1_1-n1_2",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n1_2",
-            "direction": "down"
-          },
-          {
-            "id": "n1_1-n2_1",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n2_1",
-            "direction": "right"
-          },
-          {
-            "id": "n1_2-n1_3",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n1_3",
-            "direction": "down"
-          },
-          {
-            "id": "n1_2-n2_2",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n2_2",
-            "direction": "right"
-          },
-          {
-            "id": "n1_3-n1_4",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n1_4",
-            "direction": "down"
-          },
-          {
-            "id": "n1_3-n2_3",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n2_3",
-            "direction": "right"
-          },
-          {
-            "id": "n1_4-n1_5",
-            "fromNodeId": "n1_4",
-            "toNodeId": "n1_5",
-            "direction": "down"
-          },
-          {
-            "id": "n1_4-n2_4",
-            "fromNodeId": "n1_4",
-            "toNodeId": "n2_4",
-            "direction": "right"
-          },
-          {
-            "id": "n1_5-n2_5",
-            "fromNodeId": "n1_5",
-            "toNodeId": "n2_5",
-            "direction": "right"
-          },
-          {
-            "id": "n2_0-n2_1",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n2_1",
-            "direction": "down"
-          },
-          {
-            "id": "n2_0-n3_0",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n3_0",
-            "direction": "right"
-          },
-          {
-            "id": "n2_1-n2_2",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n2_2",
-            "direction": "down"
-          },
-          {
-            "id": "n2_1-n3_1",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n3_1",
-            "direction": "right"
-          },
-          {
-            "id": "n2_2-n2_3",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n2_3",
-            "direction": "down"
-          },
-          {
-            "id": "n2_2-n3_2",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n3_2",
-            "direction": "right"
-          },
-          {
-            "id": "n2_3-n2_4",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n2_4",
-            "direction": "down"
-          },
-          {
-            "id": "n2_3-n3_3",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n3_3",
-            "direction": "right"
-          },
-          {
-            "id": "n2_4-n2_5",
-            "fromNodeId": "n2_4",
-            "toNodeId": "n2_5",
-            "direction": "down"
-          },
-          {
-            "id": "n2_4-n3_4",
-            "fromNodeId": "n2_4",
-            "toNodeId": "n3_4",
-            "direction": "right"
-          },
-          {
-            "id": "n2_5-n3_5",
-            "fromNodeId": "n2_5",
-            "toNodeId": "n3_5",
-            "direction": "right"
-          },
-          {
-            "id": "n3_0-n3_1",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n3_1",
-            "direction": "down"
-          },
-          {
-            "id": "n3_0-n4_0",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n4_0",
-            "direction": "right"
-          },
-          {
-            "id": "n3_1-n3_2",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n3_2",
-            "direction": "down"
-          },
-          {
-            "id": "n3_1-n4_1",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n4_1",
-            "direction": "right"
-          },
-          {
-            "id": "n3_2-n3_3",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n3_3",
-            "direction": "down"
-          },
-          {
-            "id": "n3_2-n4_2",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n4_2",
-            "direction": "right"
-          },
-          {
-            "id": "n3_3-n3_4",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n3_4",
-            "direction": "down"
-          },
-          {
-            "id": "n3_3-n4_3",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n4_3",
-            "direction": "right"
-          },
-          {
-            "id": "n3_4-n3_5",
-            "fromNodeId": "n3_4",
-            "toNodeId": "n3_5",
-            "direction": "down"
-          },
-          {
-            "id": "n3_4-n4_4",
-            "fromNodeId": "n3_4",
-            "toNodeId": "n4_4",
-            "direction": "right"
-          },
-          {
-            "id": "n3_5-n4_5",
-            "fromNodeId": "n3_5",
-            "toNodeId": "n4_5",
-            "direction": "right"
-          },
-          {
-            "id": "n4_0-n4_1",
-            "fromNodeId": "n4_0",
-            "toNodeId": "n4_1",
-            "direction": "down"
-          },
-          {
-            "id": "n4_0-n5_0",
-            "fromNodeId": "n4_0",
-            "toNodeId": "n5_0",
-            "direction": "right"
-          },
-          {
-            "id": "n4_1-n4_2",
-            "fromNodeId": "n4_1",
-            "toNodeId": "n4_2",
-            "direction": "down"
-          },
-          {
-            "id": "n4_1-n5_1",
-            "fromNodeId": "n4_1",
-            "toNodeId": "n5_1",
-            "direction": "right"
-          },
-          {
-            "id": "n4_2-n4_3",
-            "fromNodeId": "n4_2",
-            "toNodeId": "n4_3",
-            "direction": "down"
-          },
-          {
-            "id": "n4_2-n5_2",
-            "fromNodeId": "n4_2",
-            "toNodeId": "n5_2",
-            "direction": "right"
-          },
-          {
-            "id": "n4_3-n4_4",
-            "fromNodeId": "n4_3",
-            "toNodeId": "n4_4",
-            "direction": "down"
-          },
-          {
-            "id": "n4_3-n5_3",
-            "fromNodeId": "n4_3",
-            "toNodeId": "n5_3",
-            "direction": "right"
-          },
-          {
-            "id": "n4_4-n4_5",
-            "fromNodeId": "n4_4",
-            "toNodeId": "n4_5",
-            "direction": "down"
-          },
-          {
-            "id": "n4_4-n5_4",
-            "fromNodeId": "n4_4",
-            "toNodeId": "n5_4",
-            "direction": "right"
-          },
-          {
-            "id": "n4_5-n5_5",
-            "fromNodeId": "n4_5",
-            "toNodeId": "n5_5",
-            "direction": "right"
-          },
-          {
-            "id": "n5_0-n5_1",
-            "fromNodeId": "n5_0",
-            "toNodeId": "n5_1",
-            "direction": "down"
-          },
-          {
-            "id": "n5_1-n5_2",
-            "fromNodeId": "n5_1",
-            "toNodeId": "n5_2",
-            "direction": "down"
-          },
-          {
-            "id": "n5_2-n5_3",
-            "fromNodeId": "n5_2",
-            "toNodeId": "n5_3",
-            "direction": "down"
-          },
-          {
-            "id": "n5_3-n5_4",
-            "fromNodeId": "n5_3",
-            "toNodeId": "n5_4",
-            "direction": "down"
-          },
-          {
-            "id": "n5_4-n5_5",
-            "fromNodeId": "n5_4",
-            "toNodeId": "n5_5",
-            "direction": "down"
-          }
-        ],
-        "arrows": [
-          {
-            "id": "a1",
-            "occupiedEdges": [
-              "n0_5-n1_5",
-              "n1_5-n2_5",
-              "n2_5-n2_4"
-            ],
-            "startNodeId": "n0_5",
-            "endNodeId": "n2_4",
-            "direction": "up"
-          },
-          {
-            "id": "a2",
-            "occupiedEdges": [
-              "n5_0-n4_0",
-              "n4_0-n3_0"
-            ],
-            "startNodeId": "n5_0",
-            "endNodeId": "n3_0",
-            "direction": "left"
-          }
-        ],
-        "blockedEdges": [
-          "n2_2-n3_2",
-          "n3_3-n4_3",
-          "n1_1-n1_2",
-          "n4_4-n5_4"
-        ],
-        "metadata": {
-          "difficulty": "hard",
-          "timeLimit": 85,
-          "maxMoves": 42,
-          "generationType": "manual",
-          "seed": null
-        }
-      }
-    },
-    {
-      "number": 12,
-      "name": "Nested Turns",
-      "difficulty": "hard",
-      "definitionJson": {
-        "nodes": [
-          {
-            "id": "n0_0",
-            "x": 0,
-            "y": 0
-          },
-          {
-            "id": "n1_0",
-            "x": 1,
-            "y": 0
-          },
-          {
-            "id": "n2_0",
-            "x": 2,
-            "y": 0
-          },
-          {
-            "id": "n3_0",
-            "x": 3,
-            "y": 0
-          },
-          {
-            "id": "n4_0",
-            "x": 4,
-            "y": 0
-          },
-          {
-            "id": "n5_0",
-            "x": 5,
-            "y": 0
-          },
-          {
-            "id": "n0_1",
-            "x": 0,
-            "y": 1
-          },
-          {
-            "id": "n1_1",
-            "x": 1,
-            "y": 1
-          },
-          {
-            "id": "n2_1",
-            "x": 2,
-            "y": 1
-          },
-          {
-            "id": "n3_1",
-            "x": 3,
-            "y": 1
-          },
-          {
-            "id": "n4_1",
-            "x": 4,
-            "y": 1
-          },
-          {
-            "id": "n5_1",
-            "x": 5,
-            "y": 1
-          },
-          {
-            "id": "n0_2",
-            "x": 0,
-            "y": 2
-          },
-          {
-            "id": "n1_2",
-            "x": 1,
-            "y": 2
-          },
-          {
-            "id": "n2_2",
-            "x": 2,
-            "y": 2
-          },
-          {
-            "id": "n3_2",
-            "x": 3,
-            "y": 2
-          },
-          {
-            "id": "n4_2",
-            "x": 4,
-            "y": 2
-          },
-          {
-            "id": "n5_2",
-            "x": 5,
-            "y": 2
-          },
-          {
-            "id": "n0_3",
-            "x": 0,
-            "y": 3
-          },
-          {
-            "id": "n1_3",
-            "x": 1,
-            "y": 3
-          },
-          {
-            "id": "n2_3",
-            "x": 2,
-            "y": 3
-          },
-          {
-            "id": "n3_3",
-            "x": 3,
-            "y": 3
-          },
-          {
-            "id": "n4_3",
-            "x": 4,
-            "y": 3
-          },
-          {
-            "id": "n5_3",
-            "x": 5,
-            "y": 3
-          },
-          {
-            "id": "n0_4",
-            "x": 0,
-            "y": 4
-          },
-          {
-            "id": "n1_4",
-            "x": 1,
-            "y": 4
-          },
-          {
-            "id": "n2_4",
-            "x": 2,
-            "y": 4
-          },
-          {
-            "id": "n3_4",
-            "x": 3,
-            "y": 4
-          },
-          {
-            "id": "n4_4",
-            "x": 4,
-            "y": 4
-          },
-          {
-            "id": "n5_4",
-            "x": 5,
-            "y": 4
-          },
-          {
-            "id": "n0_5",
-            "x": 0,
-            "y": 5
-          },
-          {
-            "id": "n1_5",
-            "x": 1,
-            "y": 5
-          },
-          {
-            "id": "n2_5",
-            "x": 2,
-            "y": 5
-          },
-          {
-            "id": "n3_5",
-            "x": 3,
-            "y": 5
-          },
-          {
-            "id": "n4_5",
-            "x": 4,
-            "y": 5
-          },
-          {
-            "id": "n5_5",
-            "x": 5,
-            "y": 5
-          }
-        ],
-        "edges": [
-          {
-            "id": "n0_0-n0_1",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n0_1",
-            "direction": "down"
-          },
-          {
-            "id": "n0_0-n1_0",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n1_0",
-            "direction": "right"
-          },
-          {
-            "id": "n0_1-n0_2",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n0_2",
-            "direction": "down"
-          },
-          {
-            "id": "n0_1-n1_1",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n1_1",
-            "direction": "right"
-          },
-          {
-            "id": "n0_2-n0_3",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n0_3",
-            "direction": "down"
-          },
-          {
-            "id": "n0_2-n1_2",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n1_2",
-            "direction": "right"
-          },
-          {
-            "id": "n0_3-n0_4",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n0_4",
-            "direction": "down"
-          },
-          {
-            "id": "n0_3-n1_3",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n1_3",
-            "direction": "right"
-          },
-          {
-            "id": "n0_4-n0_5",
-            "fromNodeId": "n0_4",
-            "toNodeId": "n0_5",
-            "direction": "down"
-          },
-          {
-            "id": "n0_4-n1_4",
-            "fromNodeId": "n0_4",
-            "toNodeId": "n1_4",
-            "direction": "right"
-          },
-          {
-            "id": "n0_5-n1_5",
-            "fromNodeId": "n0_5",
-            "toNodeId": "n1_5",
-            "direction": "right"
-          },
-          {
-            "id": "n1_0-n1_1",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n1_1",
-            "direction": "down"
-          },
-          {
-            "id": "n1_0-n2_0",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n2_0",
-            "direction": "right"
-          },
-          {
-            "id": "n1_1-n1_2",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n1_2",
-            "direction": "down"
-          },
-          {
-            "id": "n1_1-n2_1",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n2_1",
-            "direction": "right"
-          },
-          {
-            "id": "n1_2-n1_3",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n1_3",
-            "direction": "down"
-          },
-          {
-            "id": "n1_2-n2_2",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n2_2",
-            "direction": "right"
-          },
-          {
-            "id": "n1_3-n1_4",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n1_4",
-            "direction": "down"
-          },
-          {
-            "id": "n1_3-n2_3",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n2_3",
-            "direction": "right"
-          },
-          {
-            "id": "n1_4-n1_5",
-            "fromNodeId": "n1_4",
-            "toNodeId": "n1_5",
-            "direction": "down"
-          },
-          {
-            "id": "n1_4-n2_4",
-            "fromNodeId": "n1_4",
-            "toNodeId": "n2_4",
-            "direction": "right"
-          },
-          {
-            "id": "n1_5-n2_5",
-            "fromNodeId": "n1_5",
-            "toNodeId": "n2_5",
-            "direction": "right"
-          },
-          {
-            "id": "n2_0-n2_1",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n2_1",
-            "direction": "down"
-          },
-          {
-            "id": "n2_0-n3_0",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n3_0",
-            "direction": "right"
-          },
-          {
-            "id": "n2_1-n2_2",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n2_2",
-            "direction": "down"
-          },
-          {
-            "id": "n2_1-n3_1",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n3_1",
-            "direction": "right"
-          },
-          {
-            "id": "n2_2-n2_3",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n2_3",
-            "direction": "down"
-          },
-          {
-            "id": "n2_2-n3_2",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n3_2",
-            "direction": "right"
-          },
-          {
-            "id": "n2_3-n2_4",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n2_4",
-            "direction": "down"
-          },
-          {
-            "id": "n2_3-n3_3",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n3_3",
-            "direction": "right"
-          },
-          {
-            "id": "n2_4-n2_5",
-            "fromNodeId": "n2_4",
-            "toNodeId": "n2_5",
-            "direction": "down"
-          },
-          {
-            "id": "n2_4-n3_4",
-            "fromNodeId": "n2_4",
-            "toNodeId": "n3_4",
-            "direction": "right"
-          },
-          {
-            "id": "n2_5-n3_5",
-            "fromNodeId": "n2_5",
-            "toNodeId": "n3_5",
-            "direction": "right"
-          },
-          {
-            "id": "n3_0-n3_1",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n3_1",
-            "direction": "down"
-          },
-          {
-            "id": "n3_0-n4_0",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n4_0",
-            "direction": "right"
-          },
-          {
-            "id": "n3_1-n3_2",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n3_2",
-            "direction": "down"
-          },
-          {
-            "id": "n3_1-n4_1",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n4_1",
-            "direction": "right"
-          },
-          {
-            "id": "n3_2-n3_3",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n3_3",
-            "direction": "down"
-          },
-          {
-            "id": "n3_2-n4_2",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n4_2",
-            "direction": "right"
-          },
-          {
-            "id": "n3_3-n3_4",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n3_4",
-            "direction": "down"
-          },
-          {
-            "id": "n3_3-n4_3",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n4_3",
-            "direction": "right"
-          },
-          {
-            "id": "n3_4-n3_5",
-            "fromNodeId": "n3_4",
-            "toNodeId": "n3_5",
-            "direction": "down"
-          },
-          {
-            "id": "n3_4-n4_4",
-            "fromNodeId": "n3_4",
-            "toNodeId": "n4_4",
-            "direction": "right"
-          },
-          {
-            "id": "n3_5-n4_5",
-            "fromNodeId": "n3_5",
-            "toNodeId": "n4_5",
-            "direction": "right"
-          },
-          {
-            "id": "n4_0-n4_1",
-            "fromNodeId": "n4_0",
-            "toNodeId": "n4_1",
-            "direction": "down"
-          },
-          {
-            "id": "n4_0-n5_0",
-            "fromNodeId": "n4_0",
-            "toNodeId": "n5_0",
-            "direction": "right"
-          },
-          {
-            "id": "n4_1-n4_2",
-            "fromNodeId": "n4_1",
-            "toNodeId": "n4_2",
-            "direction": "down"
-          },
-          {
-            "id": "n4_1-n5_1",
-            "fromNodeId": "n4_1",
-            "toNodeId": "n5_1",
-            "direction": "right"
-          },
-          {
-            "id": "n4_2-n4_3",
-            "fromNodeId": "n4_2",
-            "toNodeId": "n4_3",
-            "direction": "down"
-          },
-          {
-            "id": "n4_2-n5_2",
-            "fromNodeId": "n4_2",
-            "toNodeId": "n5_2",
-            "direction": "right"
-          },
-          {
-            "id": "n4_3-n4_4",
-            "fromNodeId": "n4_3",
-            "toNodeId": "n4_4",
-            "direction": "down"
-          },
-          {
-            "id": "n4_3-n5_3",
-            "fromNodeId": "n4_3",
-            "toNodeId": "n5_3",
-            "direction": "right"
-          },
-          {
-            "id": "n4_4-n4_5",
-            "fromNodeId": "n4_4",
-            "toNodeId": "n4_5",
-            "direction": "down"
-          },
-          {
-            "id": "n4_4-n5_4",
-            "fromNodeId": "n4_4",
-            "toNodeId": "n5_4",
-            "direction": "right"
-          },
-          {
-            "id": "n4_5-n5_5",
-            "fromNodeId": "n4_5",
-            "toNodeId": "n5_5",
-            "direction": "right"
-          },
-          {
-            "id": "n5_0-n5_1",
-            "fromNodeId": "n5_0",
-            "toNodeId": "n5_1",
-            "direction": "down"
-          },
-          {
-            "id": "n5_1-n5_2",
-            "fromNodeId": "n5_1",
-            "toNodeId": "n5_2",
-            "direction": "down"
-          },
-          {
-            "id": "n5_2-n5_3",
-            "fromNodeId": "n5_2",
-            "toNodeId": "n5_3",
-            "direction": "down"
-          },
-          {
-            "id": "n5_3-n5_4",
-            "fromNodeId": "n5_3",
-            "toNodeId": "n5_4",
-            "direction": "down"
-          },
-          {
-            "id": "n5_4-n5_5",
-            "fromNodeId": "n5_4",
-            "toNodeId": "n5_5",
-            "direction": "down"
-          }
-        ],
-        "arrows": [
-          {
-            "id": "a1",
-            "occupiedEdges": [
-              "n0_3-n1_3",
-              "n1_3-n1_2",
-              "n1_2-n2_2"
-            ],
-            "startNodeId": "n0_3",
-            "endNodeId": "n2_2",
-            "direction": "right"
-          },
-          {
-            "id": "a2",
-            "occupiedEdges": [
-              "n5_5-n5_4",
-              "n5_4-n4_4"
-            ],
-            "startNodeId": "n5_5",
-            "endNodeId": "n4_4",
-            "direction": "left"
-          }
-        ],
-        "blockedEdges": [
-          "n2_1-n3_1",
-          "n3_2-n3_3",
-          "n0_4-n1_4",
-          "n4_1-n5_1"
-        ],
-        "metadata": {
-          "difficulty": "hard",
-          "timeLimit": 80,
-          "maxMoves": 44,
-          "generationType": "manual",
-          "seed": null
-        }
-      }
-    },
-    {
-      "number": 13,
-      "name": "Wide Pressure",
-      "difficulty": "hard",
-      "definitionJson": {
-        "nodes": [
-          {
-            "id": "n0_0",
-            "x": 0,
-            "y": 0
-          },
-          {
-            "id": "n1_0",
-            "x": 1,
-            "y": 0
-          },
-          {
-            "id": "n2_0",
-            "x": 2,
-            "y": 0
-          },
-          {
-            "id": "n3_0",
-            "x": 3,
-            "y": 0
-          },
-          {
-            "id": "n4_0",
-            "x": 4,
-            "y": 0
-          },
-          {
-            "id": "n5_0",
-            "x": 5,
-            "y": 0
-          },
-          {
-            "id": "n6_0",
-            "x": 6,
-            "y": 0
-          },
-          {
-            "id": "n0_1",
-            "x": 0,
-            "y": 1
-          },
-          {
-            "id": "n1_1",
-            "x": 1,
-            "y": 1
-          },
-          {
-            "id": "n2_1",
-            "x": 2,
-            "y": 1
-          },
-          {
-            "id": "n3_1",
-            "x": 3,
-            "y": 1
-          },
-          {
-            "id": "n4_1",
-            "x": 4,
-            "y": 1
-          },
-          {
-            "id": "n5_1",
-            "x": 5,
-            "y": 1
-          },
-          {
-            "id": "n6_1",
-            "x": 6,
-            "y": 1
-          },
-          {
-            "id": "n0_2",
-            "x": 0,
-            "y": 2
-          },
-          {
-            "id": "n1_2",
-            "x": 1,
-            "y": 2
-          },
-          {
-            "id": "n2_2",
-            "x": 2,
-            "y": 2
-          },
-          {
-            "id": "n3_2",
-            "x": 3,
-            "y": 2
-          },
-          {
-            "id": "n4_2",
-            "x": 4,
-            "y": 2
-          },
-          {
-            "id": "n5_2",
-            "x": 5,
-            "y": 2
-          },
-          {
-            "id": "n6_2",
-            "x": 6,
-            "y": 2
-          },
-          {
-            "id": "n0_3",
-            "x": 0,
-            "y": 3
-          },
-          {
-            "id": "n1_3",
-            "x": 1,
-            "y": 3
-          },
-          {
-            "id": "n2_3",
-            "x": 2,
-            "y": 3
-          },
-          {
-            "id": "n3_3",
-            "x": 3,
-            "y": 3
-          },
-          {
-            "id": "n4_3",
-            "x": 4,
-            "y": 3
-          },
-          {
-            "id": "n5_3",
-            "x": 5,
-            "y": 3
-          },
-          {
-            "id": "n6_3",
-            "x": 6,
-            "y": 3
-          },
-          {
-            "id": "n0_4",
-            "x": 0,
-            "y": 4
-          },
-          {
-            "id": "n1_4",
-            "x": 1,
-            "y": 4
-          },
-          {
-            "id": "n2_4",
-            "x": 2,
-            "y": 4
-          },
-          {
-            "id": "n3_4",
-            "x": 3,
-            "y": 4
-          },
-          {
-            "id": "n4_4",
-            "x": 4,
-            "y": 4
-          },
-          {
-            "id": "n5_4",
-            "x": 5,
-            "y": 4
-          },
-          {
-            "id": "n6_4",
-            "x": 6,
-            "y": 4
-          }
-        ],
-        "edges": [
-          {
-            "id": "n0_0-n0_1",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n0_1",
-            "direction": "down"
-          },
-          {
-            "id": "n0_0-n1_0",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n1_0",
-            "direction": "right"
-          },
-          {
-            "id": "n0_1-n0_2",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n0_2",
-            "direction": "down"
-          },
-          {
-            "id": "n0_1-n1_1",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n1_1",
-            "direction": "right"
-          },
-          {
-            "id": "n0_2-n0_3",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n0_3",
-            "direction": "down"
-          },
-          {
-            "id": "n0_2-n1_2",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n1_2",
-            "direction": "right"
-          },
-          {
-            "id": "n0_3-n0_4",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n0_4",
-            "direction": "down"
-          },
-          {
-            "id": "n0_3-n1_3",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n1_3",
-            "direction": "right"
-          },
-          {
-            "id": "n0_4-n1_4",
-            "fromNodeId": "n0_4",
-            "toNodeId": "n1_4",
-            "direction": "right"
-          },
-          {
-            "id": "n1_0-n1_1",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n1_1",
-            "direction": "down"
-          },
-          {
-            "id": "n1_0-n2_0",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n2_0",
-            "direction": "right"
-          },
-          {
-            "id": "n1_1-n1_2",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n1_2",
-            "direction": "down"
-          },
-          {
-            "id": "n1_1-n2_1",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n2_1",
-            "direction": "right"
-          },
-          {
-            "id": "n1_2-n1_3",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n1_3",
-            "direction": "down"
-          },
-          {
-            "id": "n1_2-n2_2",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n2_2",
-            "direction": "right"
-          },
-          {
-            "id": "n1_3-n1_4",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n1_4",
-            "direction": "down"
-          },
-          {
-            "id": "n1_3-n2_3",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n2_3",
-            "direction": "right"
-          },
-          {
-            "id": "n1_4-n2_4",
-            "fromNodeId": "n1_4",
-            "toNodeId": "n2_4",
-            "direction": "right"
-          },
-          {
-            "id": "n2_0-n2_1",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n2_1",
-            "direction": "down"
-          },
-          {
-            "id": "n2_0-n3_0",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n3_0",
-            "direction": "right"
-          },
-          {
-            "id": "n2_1-n2_2",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n2_2",
-            "direction": "down"
-          },
-          {
-            "id": "n2_1-n3_1",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n3_1",
-            "direction": "right"
-          },
-          {
-            "id": "n2_2-n2_3",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n2_3",
-            "direction": "down"
-          },
-          {
-            "id": "n2_2-n3_2",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n3_2",
-            "direction": "right"
-          },
-          {
-            "id": "n2_3-n2_4",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n2_4",
-            "direction": "down"
-          },
-          {
-            "id": "n2_3-n3_3",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n3_3",
-            "direction": "right"
-          },
-          {
-            "id": "n2_4-n3_4",
-            "fromNodeId": "n2_4",
-            "toNodeId": "n3_4",
-            "direction": "right"
-          },
-          {
-            "id": "n3_0-n3_1",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n3_1",
-            "direction": "down"
-          },
-          {
-            "id": "n3_0-n4_0",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n4_0",
-            "direction": "right"
-          },
-          {
-            "id": "n3_1-n3_2",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n3_2",
-            "direction": "down"
-          },
-          {
-            "id": "n3_1-n4_1",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n4_1",
-            "direction": "right"
-          },
-          {
-            "id": "n3_2-n3_3",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n3_3",
-            "direction": "down"
-          },
-          {
-            "id": "n3_2-n4_2",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n4_2",
-            "direction": "right"
-          },
-          {
-            "id": "n3_3-n3_4",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n3_4",
-            "direction": "down"
-          },
-          {
-            "id": "n3_3-n4_3",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n4_3",
-            "direction": "right"
-          },
-          {
-            "id": "n3_4-n4_4",
-            "fromNodeId": "n3_4",
-            "toNodeId": "n4_4",
-            "direction": "right"
-          },
-          {
-            "id": "n4_0-n4_1",
-            "fromNodeId": "n4_0",
-            "toNodeId": "n4_1",
-            "direction": "down"
-          },
-          {
-            "id": "n4_0-n5_0",
-            "fromNodeId": "n4_0",
-            "toNodeId": "n5_0",
-            "direction": "right"
-          },
-          {
-            "id": "n4_1-n4_2",
-            "fromNodeId": "n4_1",
-            "toNodeId": "n4_2",
-            "direction": "down"
-          },
-          {
-            "id": "n4_1-n5_1",
-            "fromNodeId": "n4_1",
-            "toNodeId": "n5_1",
-            "direction": "right"
-          },
-          {
-            "id": "n4_2-n4_3",
-            "fromNodeId": "n4_2",
-            "toNodeId": "n4_3",
-            "direction": "down"
-          },
-          {
-            "id": "n4_2-n5_2",
-            "fromNodeId": "n4_2",
-            "toNodeId": "n5_2",
-            "direction": "right"
-          },
-          {
-            "id": "n4_3-n4_4",
-            "fromNodeId": "n4_3",
-            "toNodeId": "n4_4",
-            "direction": "down"
-          },
-          {
-            "id": "n4_3-n5_3",
-            "fromNodeId": "n4_3",
-            "toNodeId": "n5_3",
-            "direction": "right"
-          },
-          {
-            "id": "n4_4-n5_4",
-            "fromNodeId": "n4_4",
-            "toNodeId": "n5_4",
-            "direction": "right"
-          },
-          {
-            "id": "n5_0-n5_1",
-            "fromNodeId": "n5_0",
-            "toNodeId": "n5_1",
-            "direction": "down"
-          },
-          {
-            "id": "n5_0-n6_0",
-            "fromNodeId": "n5_0",
-            "toNodeId": "n6_0",
-            "direction": "right"
-          },
-          {
-            "id": "n5_1-n5_2",
-            "fromNodeId": "n5_1",
-            "toNodeId": "n5_2",
-            "direction": "down"
-          },
-          {
-            "id": "n5_1-n6_1",
-            "fromNodeId": "n5_1",
-            "toNodeId": "n6_1",
-            "direction": "right"
-          },
-          {
-            "id": "n5_2-n5_3",
-            "fromNodeId": "n5_2",
-            "toNodeId": "n5_3",
-            "direction": "down"
-          },
-          {
-            "id": "n5_2-n6_2",
-            "fromNodeId": "n5_2",
-            "toNodeId": "n6_2",
-            "direction": "right"
-          },
-          {
-            "id": "n5_3-n5_4",
-            "fromNodeId": "n5_3",
-            "toNodeId": "n5_4",
-            "direction": "down"
-          },
-          {
-            "id": "n5_3-n6_3",
-            "fromNodeId": "n5_3",
-            "toNodeId": "n6_3",
-            "direction": "right"
-          },
-          {
-            "id": "n5_4-n6_4",
-            "fromNodeId": "n5_4",
-            "toNodeId": "n6_4",
-            "direction": "right"
-          },
-          {
-            "id": "n6_0-n6_1",
-            "fromNodeId": "n6_0",
-            "toNodeId": "n6_1",
-            "direction": "down"
-          },
-          {
-            "id": "n6_1-n6_2",
-            "fromNodeId": "n6_1",
-            "toNodeId": "n6_2",
-            "direction": "down"
-          },
-          {
-            "id": "n6_2-n6_3",
-            "fromNodeId": "n6_2",
-            "toNodeId": "n6_3",
-            "direction": "down"
-          },
-          {
-            "id": "n6_3-n6_4",
-            "fromNodeId": "n6_3",
-            "toNodeId": "n6_4",
-            "direction": "down"
           }
         ],
         "arrows": [
@@ -4792,43 +898,593 @@
             "id": "a1",
             "occupiedEdges": [
               "n0_0-n1_0",
-              "n1_0-n2_0",
-              "n2_0-n3_0"
+              "n1_0-n2_0"
             ],
             "startNodeId": "n0_0",
-            "endNodeId": "n3_0",
+            "endNodeId": "n2_0",
             "direction": "right"
           },
           {
             "id": "a2",
             "occupiedEdges": [
-              "n6_4-n5_4",
-              "n5_4-n5_3"
+              "n1_1-n2_1",
+              "n2_1-n3_1"
             ],
-            "startNodeId": "n6_4",
-            "endNodeId": "n5_3",
-            "direction": "up"
+            "startNodeId": "n1_1",
+            "endNodeId": "n3_1",
+            "direction": "right"
           },
           {
             "id": "a3",
+            "occupiedEdges": [
+              "n2_2-n3_2",
+              "n3_2-n4_2"
+            ],
+            "startNodeId": "n2_2",
+            "endNodeId": "n4_2",
+            "direction": "right"
+          }
+        ],
+        "blockedEdges": [],
+        "metadata": {
+          "difficulty": "medium",
+          "timeLimit": 100,
+          "maxMoves": 15,
+          "generationType": "manual",
+          "seed": null
+        }
+      }
+    },
+    {
+      "number": 10,
+      "name": "Three Way",
+      "difficulty": "medium",
+      "definitionJson": {
+        "nodes": [
+          {
+            "id": "n2_0",
+            "x": 2,
+            "y": 0
+          },
+          {
+            "id": "n2_1",
+            "x": 2,
+            "y": 1
+          },
+          {
+            "id": "n2_2",
+            "x": 2,
+            "y": 2
+          },
+          {
+            "id": "n3_0",
+            "x": 3,
+            "y": 0
+          },
+          {
+            "id": "n4_0",
+            "x": 4,
+            "y": 0
+          },
+          {
+            "id": "n0_2",
+            "x": 0,
+            "y": 2
+          },
+          {
+            "id": "n1_2",
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "edges": [
+          {
+            "id": "n2_0-n2_1",
+            "fromNodeId": "n2_0",
+            "toNodeId": "n2_1",
+            "direction": "down"
+          },
+          {
+            "id": "n2_1-n2_2",
+            "fromNodeId": "n2_1",
+            "toNodeId": "n2_2",
+            "direction": "down"
+          },
+          {
+            "id": "n2_0-n3_0",
+            "fromNodeId": "n2_0",
+            "toNodeId": "n3_0",
+            "direction": "right"
+          },
+          {
+            "id": "n3_0-n4_0",
+            "fromNodeId": "n3_0",
+            "toNodeId": "n4_0",
+            "direction": "right"
+          },
+          {
+            "id": "n0_2-n1_2",
+            "fromNodeId": "n0_2",
+            "toNodeId": "n1_2",
+            "direction": "right"
+          },
+          {
+            "id": "n1_2-n2_2",
+            "fromNodeId": "n1_2",
+            "toNodeId": "n2_2",
+            "direction": "right"
+          }
+        ],
+        "arrows": [
+          {
+            "id": "a1",
+            "occupiedEdges": [
+              "n2_0-n2_1",
+              "n2_1-n2_2"
+            ],
+            "startNodeId": "n2_0",
+            "endNodeId": "n2_2",
+            "direction": "down"
+          },
+          {
+            "id": "a2",
+            "occupiedEdges": [
+              "n3_0-n4_0"
+            ],
+            "startNodeId": "n3_0",
+            "endNodeId": "n4_0",
+            "direction": "right"
+          },
+          {
+            "id": "a3",
+            "occupiedEdges": [
+              "n0_2-n1_2"
+            ],
+            "startNodeId": "n1_2",
+            "endNodeId": "n0_2",
+            "direction": "left"
+          }
+        ],
+        "blockedEdges": [],
+        "metadata": {
+          "difficulty": "medium",
+          "timeLimit": 100,
+          "maxMoves": 15,
+          "generationType": "manual",
+          "seed": null
+        }
+      }
+    },
+    {
+      "number": 11,
+      "name": "Deadlock Intro",
+      "difficulty": "hard",
+      "definitionJson": {
+        "nodes": [
+          {
+            "id": "n0_2",
+            "x": 0,
+            "y": 2
+          },
+          {
+            "id": "n1_2",
+            "x": 1,
+            "y": 2
+          },
+          {
+            "id": "n2_2",
+            "x": 2,
+            "y": 2
+          },
+          {
+            "id": "n3_2",
+            "x": 3,
+            "y": 2
+          },
+          {
+            "id": "n4_2",
+            "x": 4,
+            "y": 2
+          },
+          {
+            "id": "n2_0",
+            "x": 2,
+            "y": 0
+          },
+          {
+            "id": "n2_1",
+            "x": 2,
+            "y": 1
+          },
+          {
+            "id": "n2_3",
+            "x": 2,
+            "y": 3
+          },
+          {
+            "id": "n2_4",
+            "x": 2,
+            "y": 4
+          }
+        ],
+        "edges": [
+          {
+            "id": "n0_2-n1_2",
+            "fromNodeId": "n0_2",
+            "toNodeId": "n1_2",
+            "direction": "right"
+          },
+          {
+            "id": "n1_2-n2_2",
+            "fromNodeId": "n1_2",
+            "toNodeId": "n2_2",
+            "direction": "right"
+          },
+          {
+            "id": "n2_2-n3_2",
+            "fromNodeId": "n2_2",
+            "toNodeId": "n3_2",
+            "direction": "right"
+          },
+          {
+            "id": "n3_2-n4_2",
+            "fromNodeId": "n3_2",
+            "toNodeId": "n4_2",
+            "direction": "right"
+          },
+          {
+            "id": "n2_0-n2_1",
+            "fromNodeId": "n2_0",
+            "toNodeId": "n2_1",
+            "direction": "down"
+          },
+          {
+            "id": "n2_1-n2_2",
+            "fromNodeId": "n2_1",
+            "toNodeId": "n2_2",
+            "direction": "down"
+          },
+          {
+            "id": "n2_2-n2_3",
+            "fromNodeId": "n2_2",
+            "toNodeId": "n2_3",
+            "direction": "down"
+          },
+          {
+            "id": "n2_3-n2_4",
+            "fromNodeId": "n2_3",
+            "toNodeId": "n2_4",
+            "direction": "down"
+          }
+        ],
+        "arrows": [
+          {
+            "id": "h1",
             "occupiedEdges": [
               "n3_2-n4_2"
             ],
             "startNodeId": "n3_2",
             "endNodeId": "n4_2",
             "direction": "right"
+          },
+          {
+            "id": "h2",
+            "occupiedEdges": [
+              "n0_2-n1_2"
+            ],
+            "startNodeId": "n0_2",
+            "endNodeId": "n1_2",
+            "direction": "right"
+          },
+          {
+            "id": "vA",
+            "occupiedEdges": [
+              "n2_0-n2_1"
+            ],
+            "startNodeId": "n2_0",
+            "endNodeId": "n2_1",
+            "direction": "down"
+          },
+          {
+            "id": "vB",
+            "occupiedEdges": [
+              "n2_2-n2_3",
+              "n2_3-n2_4"
+            ],
+            "startNodeId": "n2_2",
+            "endNodeId": "n2_4",
+            "direction": "down"
           }
         ],
-        "blockedEdges": [
-          "n2_2-n3_2",
-          "n4_1-n5_1",
-          "n1_3-n2_3",
-          "n5_2-n6_2"
-        ],
+        "blockedEdges": [],
         "metadata": {
           "difficulty": "hard",
-          "timeLimit": 80,
-          "maxMoves": 46,
+          "timeLimit": 90,
+          "maxMoves": 20,
+          "generationType": "manual",
+          "seed": null
+        }
+      }
+    },
+    {
+      "number": 12,
+      "name": "Chain Block",
+      "difficulty": "hard",
+      "definitionJson": {
+        "nodes": [
+          {
+            "id": "n0_0",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "id": "n1_0",
+            "x": 1,
+            "y": 0
+          },
+          {
+            "id": "n2_0",
+            "x": 2,
+            "y": 0
+          },
+          {
+            "id": "n3_0",
+            "x": 3,
+            "y": 0
+          },
+          {
+            "id": "n4_0",
+            "x": 4,
+            "y": 0
+          },
+          {
+            "id": "n5_0",
+            "x": 5,
+            "y": 0
+          },
+          {
+            "id": "n0_1",
+            "x": 0,
+            "y": 1
+          },
+          {
+            "id": "n1_1",
+            "x": 1,
+            "y": 1
+          },
+          {
+            "id": "n2_1",
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "edges": [
+          {
+            "id": "n0_0-n1_0",
+            "fromNodeId": "n0_0",
+            "toNodeId": "n1_0",
+            "direction": "right"
+          },
+          {
+            "id": "n1_0-n2_0",
+            "fromNodeId": "n1_0",
+            "toNodeId": "n2_0",
+            "direction": "right"
+          },
+          {
+            "id": "n2_0-n3_0",
+            "fromNodeId": "n2_0",
+            "toNodeId": "n3_0",
+            "direction": "right"
+          },
+          {
+            "id": "n3_0-n4_0",
+            "fromNodeId": "n3_0",
+            "toNodeId": "n4_0",
+            "direction": "right"
+          },
+          {
+            "id": "n4_0-n5_0",
+            "fromNodeId": "n4_0",
+            "toNodeId": "n5_0",
+            "direction": "right"
+          },
+          {
+            "id": "n0_1-n1_1",
+            "fromNodeId": "n0_1",
+            "toNodeId": "n1_1",
+            "direction": "right"
+          },
+          {
+            "id": "n1_1-n2_1",
+            "fromNodeId": "n1_1",
+            "toNodeId": "n2_1",
+            "direction": "right"
+          }
+        ],
+        "arrows": [
+          {
+            "id": "a1",
+            "occupiedEdges": [
+              "n4_0-n5_0"
+            ],
+            "startNodeId": "n4_0",
+            "endNodeId": "n5_0",
+            "direction": "right"
+          },
+          {
+            "id": "a2",
+            "occupiedEdges": [
+              "n2_0-n3_0"
+            ],
+            "startNodeId": "n2_0",
+            "endNodeId": "n3_0",
+            "direction": "right"
+          },
+          {
+            "id": "a3",
+            "occupiedEdges": [
+              "n0_0-n1_0"
+            ],
+            "startNodeId": "n0_0",
+            "endNodeId": "n1_0",
+            "direction": "right"
+          },
+          {
+            "id": "a4",
+            "occupiedEdges": [
+              "n0_1-n1_1",
+              "n1_1-n2_1"
+            ],
+            "startNodeId": "n0_1",
+            "endNodeId": "n2_1",
+            "direction": "right"
+          }
+        ],
+        "blockedEdges": [],
+        "metadata": {
+          "difficulty": "hard",
+          "timeLimit": 90,
+          "maxMoves": 20,
+          "generationType": "manual",
+          "seed": null
+        }
+      }
+    },
+    {
+      "number": 13,
+      "name": "Interlace",
+      "difficulty": "hard",
+      "definitionJson": {
+        "nodes": [
+          {
+            "id": "n0_1",
+            "x": 0,
+            "y": 1
+          },
+          {
+            "id": "n1_1",
+            "x": 1,
+            "y": 1
+          },
+          {
+            "id": "n2_1",
+            "x": 2,
+            "y": 1
+          },
+          {
+            "id": "n3_1",
+            "x": 3,
+            "y": 1
+          },
+          {
+            "id": "n4_1",
+            "x": 4,
+            "y": 1
+          },
+          {
+            "id": "n2_0",
+            "x": 2,
+            "y": 0
+          },
+          {
+            "id": "n2_2",
+            "x": 2,
+            "y": 2
+          },
+          {
+            "id": "n2_3",
+            "x": 2,
+            "y": 3
+          }
+        ],
+        "edges": [
+          {
+            "id": "n0_1-n1_1",
+            "fromNodeId": "n0_1",
+            "toNodeId": "n1_1",
+            "direction": "right"
+          },
+          {
+            "id": "n1_1-n2_1",
+            "fromNodeId": "n1_1",
+            "toNodeId": "n2_1",
+            "direction": "right"
+          },
+          {
+            "id": "n2_1-n3_1",
+            "fromNodeId": "n2_1",
+            "toNodeId": "n3_1",
+            "direction": "right"
+          },
+          {
+            "id": "n3_1-n4_1",
+            "fromNodeId": "n3_1",
+            "toNodeId": "n4_1",
+            "direction": "right"
+          },
+          {
+            "id": "n2_0-n2_1",
+            "fromNodeId": "n2_0",
+            "toNodeId": "n2_1",
+            "direction": "down"
+          },
+          {
+            "id": "n2_1-n2_2",
+            "fromNodeId": "n2_1",
+            "toNodeId": "n2_2",
+            "direction": "down"
+          },
+          {
+            "id": "n2_2-n2_3",
+            "fromNodeId": "n2_2",
+            "toNodeId": "n2_3",
+            "direction": "down"
+          }
+        ],
+        "arrows": [
+          {
+            "id": "h1",
+            "occupiedEdges": [
+              "n3_1-n4_1"
+            ],
+            "startNodeId": "n3_1",
+            "endNodeId": "n4_1",
+            "direction": "right"
+          },
+          {
+            "id": "h2",
+            "occupiedEdges": [
+              "n0_1-n1_1"
+            ],
+            "startNodeId": "n0_1",
+            "endNodeId": "n1_1",
+            "direction": "right"
+          },
+          {
+            "id": "vTop",
+            "occupiedEdges": [
+              "n2_0-n2_1"
+            ],
+            "startNodeId": "n2_0",
+            "endNodeId": "n2_1",
+            "direction": "down"
+          },
+          {
+            "id": "vBot",
+            "occupiedEdges": [
+              "n2_2-n2_3"
+            ],
+            "startNodeId": "n2_2",
+            "endNodeId": "n2_3",
+            "direction": "down"
+          }
+        ],
+        "blockedEdges": [],
+        "metadata": {
+          "difficulty": "hard",
+          "timeLimit": 90,
+          "maxMoves": 20,
           "generationType": "manual",
           "seed": null
         }
@@ -4836,7 +1492,7 @@
     },
     {
       "number": 14,
-      "name": "Tight Spiral",
+      "name": "Four Locks",
       "difficulty": "hard",
       "definitionJson": {
         "nodes": [
@@ -4844,6 +1500,31 @@
             "id": "n0_0",
             "x": 0,
             "y": 0
+          },
+          {
+            "id": "n0_1",
+            "x": 0,
+            "y": 1
+          },
+          {
+            "id": "n0_2",
+            "x": 0,
+            "y": 2
+          },
+          {
+            "id": "n3_0",
+            "x": 3,
+            "y": 0
+          },
+          {
+            "id": "n3_1",
+            "x": 3,
+            "y": 1
+          },
+          {
+            "id": "n3_2",
+            "x": 3,
+            "y": 2
           },
           {
             "id": "n1_0",
@@ -4854,201 +1535,6 @@
             "id": "n2_0",
             "x": 2,
             "y": 0
-          },
-          {
-            "id": "n3_0",
-            "x": 3,
-            "y": 0
-          },
-          {
-            "id": "n4_0",
-            "x": 4,
-            "y": 0
-          },
-          {
-            "id": "n5_0",
-            "x": 5,
-            "y": 0
-          },
-          {
-            "id": "n6_0",
-            "x": 6,
-            "y": 0
-          },
-          {
-            "id": "n0_1",
-            "x": 0,
-            "y": 1
-          },
-          {
-            "id": "n1_1",
-            "x": 1,
-            "y": 1
-          },
-          {
-            "id": "n2_1",
-            "x": 2,
-            "y": 1
-          },
-          {
-            "id": "n3_1",
-            "x": 3,
-            "y": 1
-          },
-          {
-            "id": "n4_1",
-            "x": 4,
-            "y": 1
-          },
-          {
-            "id": "n5_1",
-            "x": 5,
-            "y": 1
-          },
-          {
-            "id": "n6_1",
-            "x": 6,
-            "y": 1
-          },
-          {
-            "id": "n0_2",
-            "x": 0,
-            "y": 2
-          },
-          {
-            "id": "n1_2",
-            "x": 1,
-            "y": 2
-          },
-          {
-            "id": "n2_2",
-            "x": 2,
-            "y": 2
-          },
-          {
-            "id": "n3_2",
-            "x": 3,
-            "y": 2
-          },
-          {
-            "id": "n4_2",
-            "x": 4,
-            "y": 2
-          },
-          {
-            "id": "n5_2",
-            "x": 5,
-            "y": 2
-          },
-          {
-            "id": "n6_2",
-            "x": 6,
-            "y": 2
-          },
-          {
-            "id": "n0_3",
-            "x": 0,
-            "y": 3
-          },
-          {
-            "id": "n1_3",
-            "x": 1,
-            "y": 3
-          },
-          {
-            "id": "n2_3",
-            "x": 2,
-            "y": 3
-          },
-          {
-            "id": "n3_3",
-            "x": 3,
-            "y": 3
-          },
-          {
-            "id": "n4_3",
-            "x": 4,
-            "y": 3
-          },
-          {
-            "id": "n5_3",
-            "x": 5,
-            "y": 3
-          },
-          {
-            "id": "n6_3",
-            "x": 6,
-            "y": 3
-          },
-          {
-            "id": "n0_4",
-            "x": 0,
-            "y": 4
-          },
-          {
-            "id": "n1_4",
-            "x": 1,
-            "y": 4
-          },
-          {
-            "id": "n2_4",
-            "x": 2,
-            "y": 4
-          },
-          {
-            "id": "n3_4",
-            "x": 3,
-            "y": 4
-          },
-          {
-            "id": "n4_4",
-            "x": 4,
-            "y": 4
-          },
-          {
-            "id": "n5_4",
-            "x": 5,
-            "y": 4
-          },
-          {
-            "id": "n6_4",
-            "x": 6,
-            "y": 4
-          },
-          {
-            "id": "n0_5",
-            "x": 0,
-            "y": 5
-          },
-          {
-            "id": "n1_5",
-            "x": 1,
-            "y": 5
-          },
-          {
-            "id": "n2_5",
-            "x": 2,
-            "y": 5
-          },
-          {
-            "id": "n3_5",
-            "x": 3,
-            "y": 5
-          },
-          {
-            "id": "n4_5",
-            "x": 4,
-            "y": 5
-          },
-          {
-            "id": "n5_5",
-            "x": 5,
-            "y": 5
-          },
-          {
-            "id": "n6_5",
-            "x": 6,
-            "y": 5
           }
         ],
         "edges": [
@@ -5059,196 +1545,10 @@
             "direction": "down"
           },
           {
-            "id": "n0_0-n1_0",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n1_0",
-            "direction": "right"
-          },
-          {
             "id": "n0_1-n0_2",
             "fromNodeId": "n0_1",
             "toNodeId": "n0_2",
             "direction": "down"
-          },
-          {
-            "id": "n0_1-n1_1",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n1_1",
-            "direction": "right"
-          },
-          {
-            "id": "n0_2-n0_3",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n0_3",
-            "direction": "down"
-          },
-          {
-            "id": "n0_2-n1_2",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n1_2",
-            "direction": "right"
-          },
-          {
-            "id": "n0_3-n0_4",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n0_4",
-            "direction": "down"
-          },
-          {
-            "id": "n0_3-n1_3",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n1_3",
-            "direction": "right"
-          },
-          {
-            "id": "n0_4-n0_5",
-            "fromNodeId": "n0_4",
-            "toNodeId": "n0_5",
-            "direction": "down"
-          },
-          {
-            "id": "n0_4-n1_4",
-            "fromNodeId": "n0_4",
-            "toNodeId": "n1_4",
-            "direction": "right"
-          },
-          {
-            "id": "n0_5-n1_5",
-            "fromNodeId": "n0_5",
-            "toNodeId": "n1_5",
-            "direction": "right"
-          },
-          {
-            "id": "n1_0-n1_1",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n1_1",
-            "direction": "down"
-          },
-          {
-            "id": "n1_0-n2_0",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n2_0",
-            "direction": "right"
-          },
-          {
-            "id": "n1_1-n1_2",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n1_2",
-            "direction": "down"
-          },
-          {
-            "id": "n1_1-n2_1",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n2_1",
-            "direction": "right"
-          },
-          {
-            "id": "n1_2-n1_3",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n1_3",
-            "direction": "down"
-          },
-          {
-            "id": "n1_2-n2_2",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n2_2",
-            "direction": "right"
-          },
-          {
-            "id": "n1_3-n1_4",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n1_4",
-            "direction": "down"
-          },
-          {
-            "id": "n1_3-n2_3",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n2_3",
-            "direction": "right"
-          },
-          {
-            "id": "n1_4-n1_5",
-            "fromNodeId": "n1_4",
-            "toNodeId": "n1_5",
-            "direction": "down"
-          },
-          {
-            "id": "n1_4-n2_4",
-            "fromNodeId": "n1_4",
-            "toNodeId": "n2_4",
-            "direction": "right"
-          },
-          {
-            "id": "n1_5-n2_5",
-            "fromNodeId": "n1_5",
-            "toNodeId": "n2_5",
-            "direction": "right"
-          },
-          {
-            "id": "n2_0-n2_1",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n2_1",
-            "direction": "down"
-          },
-          {
-            "id": "n2_0-n3_0",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n3_0",
-            "direction": "right"
-          },
-          {
-            "id": "n2_1-n2_2",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n2_2",
-            "direction": "down"
-          },
-          {
-            "id": "n2_1-n3_1",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n3_1",
-            "direction": "right"
-          },
-          {
-            "id": "n2_2-n2_3",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n2_3",
-            "direction": "down"
-          },
-          {
-            "id": "n2_2-n3_2",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n3_2",
-            "direction": "right"
-          },
-          {
-            "id": "n2_3-n2_4",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n2_4",
-            "direction": "down"
-          },
-          {
-            "id": "n2_3-n3_3",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n3_3",
-            "direction": "right"
-          },
-          {
-            "id": "n2_4-n2_5",
-            "fromNodeId": "n2_4",
-            "toNodeId": "n2_5",
-            "direction": "down"
-          },
-          {
-            "id": "n2_4-n3_4",
-            "fromNodeId": "n2_4",
-            "toNodeId": "n3_4",
-            "direction": "right"
-          },
-          {
-            "id": "n2_5-n3_5",
-            "fromNodeId": "n2_5",
-            "toNodeId": "n3_5",
-            "direction": "right"
           },
           {
             "id": "n3_0-n3_1",
@@ -5257,263 +1557,73 @@
             "direction": "down"
           },
           {
-            "id": "n3_0-n4_0",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n4_0",
-            "direction": "right"
-          },
-          {
             "id": "n3_1-n3_2",
             "fromNodeId": "n3_1",
             "toNodeId": "n3_2",
             "direction": "down"
           },
           {
-            "id": "n3_1-n4_1",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n4_1",
+            "id": "n0_0-n1_0",
+            "fromNodeId": "n0_0",
+            "toNodeId": "n1_0",
             "direction": "right"
           },
           {
-            "id": "n3_2-n3_3",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n3_3",
-            "direction": "down"
-          },
-          {
-            "id": "n3_2-n4_2",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n4_2",
+            "id": "n1_0-n2_0",
+            "fromNodeId": "n1_0",
+            "toNodeId": "n2_0",
             "direction": "right"
           },
           {
-            "id": "n3_3-n3_4",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n3_4",
-            "direction": "down"
-          },
-          {
-            "id": "n3_3-n4_3",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n4_3",
+            "id": "n2_0-n3_0",
+            "fromNodeId": "n2_0",
+            "toNodeId": "n3_0",
             "direction": "right"
-          },
-          {
-            "id": "n3_4-n3_5",
-            "fromNodeId": "n3_4",
-            "toNodeId": "n3_5",
-            "direction": "down"
-          },
-          {
-            "id": "n3_4-n4_4",
-            "fromNodeId": "n3_4",
-            "toNodeId": "n4_4",
-            "direction": "right"
-          },
-          {
-            "id": "n3_5-n4_5",
-            "fromNodeId": "n3_5",
-            "toNodeId": "n4_5",
-            "direction": "right"
-          },
-          {
-            "id": "n4_0-n4_1",
-            "fromNodeId": "n4_0",
-            "toNodeId": "n4_1",
-            "direction": "down"
-          },
-          {
-            "id": "n4_0-n5_0",
-            "fromNodeId": "n4_0",
-            "toNodeId": "n5_0",
-            "direction": "right"
-          },
-          {
-            "id": "n4_1-n4_2",
-            "fromNodeId": "n4_1",
-            "toNodeId": "n4_2",
-            "direction": "down"
-          },
-          {
-            "id": "n4_1-n5_1",
-            "fromNodeId": "n4_1",
-            "toNodeId": "n5_1",
-            "direction": "right"
-          },
-          {
-            "id": "n4_2-n4_3",
-            "fromNodeId": "n4_2",
-            "toNodeId": "n4_3",
-            "direction": "down"
-          },
-          {
-            "id": "n4_2-n5_2",
-            "fromNodeId": "n4_2",
-            "toNodeId": "n5_2",
-            "direction": "right"
-          },
-          {
-            "id": "n4_3-n4_4",
-            "fromNodeId": "n4_3",
-            "toNodeId": "n4_4",
-            "direction": "down"
-          },
-          {
-            "id": "n4_3-n5_3",
-            "fromNodeId": "n4_3",
-            "toNodeId": "n5_3",
-            "direction": "right"
-          },
-          {
-            "id": "n4_4-n4_5",
-            "fromNodeId": "n4_4",
-            "toNodeId": "n4_5",
-            "direction": "down"
-          },
-          {
-            "id": "n4_4-n5_4",
-            "fromNodeId": "n4_4",
-            "toNodeId": "n5_4",
-            "direction": "right"
-          },
-          {
-            "id": "n4_5-n5_5",
-            "fromNodeId": "n4_5",
-            "toNodeId": "n5_5",
-            "direction": "right"
-          },
-          {
-            "id": "n5_0-n5_1",
-            "fromNodeId": "n5_0",
-            "toNodeId": "n5_1",
-            "direction": "down"
-          },
-          {
-            "id": "n5_0-n6_0",
-            "fromNodeId": "n5_0",
-            "toNodeId": "n6_0",
-            "direction": "right"
-          },
-          {
-            "id": "n5_1-n5_2",
-            "fromNodeId": "n5_1",
-            "toNodeId": "n5_2",
-            "direction": "down"
-          },
-          {
-            "id": "n5_1-n6_1",
-            "fromNodeId": "n5_1",
-            "toNodeId": "n6_1",
-            "direction": "right"
-          },
-          {
-            "id": "n5_2-n5_3",
-            "fromNodeId": "n5_2",
-            "toNodeId": "n5_3",
-            "direction": "down"
-          },
-          {
-            "id": "n5_2-n6_2",
-            "fromNodeId": "n5_2",
-            "toNodeId": "n6_2",
-            "direction": "right"
-          },
-          {
-            "id": "n5_3-n5_4",
-            "fromNodeId": "n5_3",
-            "toNodeId": "n5_4",
-            "direction": "down"
-          },
-          {
-            "id": "n5_3-n6_3",
-            "fromNodeId": "n5_3",
-            "toNodeId": "n6_3",
-            "direction": "right"
-          },
-          {
-            "id": "n5_4-n5_5",
-            "fromNodeId": "n5_4",
-            "toNodeId": "n5_5",
-            "direction": "down"
-          },
-          {
-            "id": "n5_4-n6_4",
-            "fromNodeId": "n5_4",
-            "toNodeId": "n6_4",
-            "direction": "right"
-          },
-          {
-            "id": "n5_5-n6_5",
-            "fromNodeId": "n5_5",
-            "toNodeId": "n6_5",
-            "direction": "right"
-          },
-          {
-            "id": "n6_0-n6_1",
-            "fromNodeId": "n6_0",
-            "toNodeId": "n6_1",
-            "direction": "down"
-          },
-          {
-            "id": "n6_1-n6_2",
-            "fromNodeId": "n6_1",
-            "toNodeId": "n6_2",
-            "direction": "down"
-          },
-          {
-            "id": "n6_2-n6_3",
-            "fromNodeId": "n6_2",
-            "toNodeId": "n6_3",
-            "direction": "down"
-          },
-          {
-            "id": "n6_3-n6_4",
-            "fromNodeId": "n6_3",
-            "toNodeId": "n6_4",
-            "direction": "down"
-          },
-          {
-            "id": "n6_4-n6_5",
-            "fromNodeId": "n6_4",
-            "toNodeId": "n6_5",
-            "direction": "down"
           }
         ],
         "arrows": [
           {
             "id": "a1",
             "occupiedEdges": [
-              "n1_5-n1_4",
-              "n1_4-n2_4",
-              "n2_4-n3_4",
-              "n3_4-n3_3"
+              "n0_1-n0_2"
             ],
-            "startNodeId": "n1_5",
-            "endNodeId": "n3_3",
-            "direction": "up"
+            "startNodeId": "n0_1",
+            "endNodeId": "n0_2",
+            "direction": "down"
           },
           {
             "id": "a2",
             "occupiedEdges": [
-              "n6_0-n5_0",
-              "n5_0-n4_0"
+              "n3_1-n3_2"
             ],
-            "startNodeId": "n6_0",
-            "endNodeId": "n4_0",
-            "direction": "left"
+            "startNodeId": "n3_1",
+            "endNodeId": "n3_2",
+            "direction": "down"
+          },
+          {
+            "id": "a3",
+            "occupiedEdges": [
+              "n2_0-n3_0"
+            ],
+            "startNodeId": "n2_0",
+            "endNodeId": "n3_0",
+            "direction": "right"
+          },
+          {
+            "id": "a4",
+            "occupiedEdges": [
+              "n0_0-n1_0"
+            ],
+            "startNodeId": "n0_0",
+            "endNodeId": "n1_0",
+            "direction": "right"
           }
         ],
-        "blockedEdges": [
-          "n2_2-n2_3",
-          "n3_1-n4_1",
-          "n4_3-n5_3",
-          "n5_4-n5_5",
-          "n0_2-n1_2"
-        ],
+        "blockedEdges": [],
         "metadata": {
           "difficulty": "hard",
-          "timeLimit": 75,
-          "maxMoves": 50,
+          "timeLimit": 80,
+          "maxMoves": 20,
           "generationType": "manual",
           "seed": null
         }
@@ -5521,7 +1631,7 @@
     },
     {
       "number": 15,
-      "name": "Final Grid",
+      "name": "Final Maze",
       "difficulty": "hard",
       "definitionJson": {
         "nodes": [
@@ -5546,56 +1656,6 @@
             "y": 0
           },
           {
-            "id": "n4_0",
-            "x": 4,
-            "y": 0
-          },
-          {
-            "id": "n5_0",
-            "x": 5,
-            "y": 0
-          },
-          {
-            "id": "n6_0",
-            "x": 6,
-            "y": 0
-          },
-          {
-            "id": "n0_1",
-            "x": 0,
-            "y": 1
-          },
-          {
-            "id": "n1_1",
-            "x": 1,
-            "y": 1
-          },
-          {
-            "id": "n2_1",
-            "x": 2,
-            "y": 1
-          },
-          {
-            "id": "n3_1",
-            "x": 3,
-            "y": 1
-          },
-          {
-            "id": "n4_1",
-            "x": 4,
-            "y": 1
-          },
-          {
-            "id": "n5_1",
-            "x": 5,
-            "y": 1
-          },
-          {
-            "id": "n6_1",
-            "x": 6,
-            "y": 1
-          },
-          {
             "id": "n0_2",
             "x": 0,
             "y": 2
@@ -5616,245 +1676,27 @@
             "y": 2
           },
           {
+            "id": "n4_0",
+            "x": 4,
+            "y": 0
+          },
+          {
+            "id": "n4_1",
+            "x": 4,
+            "y": 1
+          },
+          {
             "id": "n4_2",
             "x": 4,
             "y": 2
-          },
-          {
-            "id": "n5_2",
-            "x": 5,
-            "y": 2
-          },
-          {
-            "id": "n6_2",
-            "x": 6,
-            "y": 2
-          },
-          {
-            "id": "n0_3",
-            "x": 0,
-            "y": 3
-          },
-          {
-            "id": "n1_3",
-            "x": 1,
-            "y": 3
-          },
-          {
-            "id": "n2_3",
-            "x": 2,
-            "y": 3
-          },
-          {
-            "id": "n3_3",
-            "x": 3,
-            "y": 3
-          },
-          {
-            "id": "n4_3",
-            "x": 4,
-            "y": 3
-          },
-          {
-            "id": "n5_3",
-            "x": 5,
-            "y": 3
-          },
-          {
-            "id": "n6_3",
-            "x": 6,
-            "y": 3
-          },
-          {
-            "id": "n0_4",
-            "x": 0,
-            "y": 4
-          },
-          {
-            "id": "n1_4",
-            "x": 1,
-            "y": 4
-          },
-          {
-            "id": "n2_4",
-            "x": 2,
-            "y": 4
-          },
-          {
-            "id": "n3_4",
-            "x": 3,
-            "y": 4
-          },
-          {
-            "id": "n4_4",
-            "x": 4,
-            "y": 4
-          },
-          {
-            "id": "n5_4",
-            "x": 5,
-            "y": 4
-          },
-          {
-            "id": "n6_4",
-            "x": 6,
-            "y": 4
-          },
-          {
-            "id": "n0_5",
-            "x": 0,
-            "y": 5
-          },
-          {
-            "id": "n1_5",
-            "x": 1,
-            "y": 5
-          },
-          {
-            "id": "n2_5",
-            "x": 2,
-            "y": 5
-          },
-          {
-            "id": "n3_5",
-            "x": 3,
-            "y": 5
-          },
-          {
-            "id": "n4_5",
-            "x": 4,
-            "y": 5
-          },
-          {
-            "id": "n5_5",
-            "x": 5,
-            "y": 5
-          },
-          {
-            "id": "n6_5",
-            "x": 6,
-            "y": 5
-          },
-          {
-            "id": "n0_6",
-            "x": 0,
-            "y": 6
-          },
-          {
-            "id": "n1_6",
-            "x": 1,
-            "y": 6
-          },
-          {
-            "id": "n2_6",
-            "x": 2,
-            "y": 6
-          },
-          {
-            "id": "n3_6",
-            "x": 3,
-            "y": 6
-          },
-          {
-            "id": "n4_6",
-            "x": 4,
-            "y": 6
-          },
-          {
-            "id": "n5_6",
-            "x": 5,
-            "y": 6
-          },
-          {
-            "id": "n6_6",
-            "x": 6,
-            "y": 6
           }
         ],
         "edges": [
-          {
-            "id": "n0_0-n0_1",
-            "fromNodeId": "n0_0",
-            "toNodeId": "n0_1",
-            "direction": "down"
-          },
           {
             "id": "n0_0-n1_0",
             "fromNodeId": "n0_0",
             "toNodeId": "n1_0",
             "direction": "right"
-          },
-          {
-            "id": "n0_1-n0_2",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n0_2",
-            "direction": "down"
-          },
-          {
-            "id": "n0_1-n1_1",
-            "fromNodeId": "n0_1",
-            "toNodeId": "n1_1",
-            "direction": "right"
-          },
-          {
-            "id": "n0_2-n0_3",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n0_3",
-            "direction": "down"
-          },
-          {
-            "id": "n0_2-n1_2",
-            "fromNodeId": "n0_2",
-            "toNodeId": "n1_2",
-            "direction": "right"
-          },
-          {
-            "id": "n0_3-n0_4",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n0_4",
-            "direction": "down"
-          },
-          {
-            "id": "n0_3-n1_3",
-            "fromNodeId": "n0_3",
-            "toNodeId": "n1_3",
-            "direction": "right"
-          },
-          {
-            "id": "n0_4-n0_5",
-            "fromNodeId": "n0_4",
-            "toNodeId": "n0_5",
-            "direction": "down"
-          },
-          {
-            "id": "n0_4-n1_4",
-            "fromNodeId": "n0_4",
-            "toNodeId": "n1_4",
-            "direction": "right"
-          },
-          {
-            "id": "n0_5-n0_6",
-            "fromNodeId": "n0_5",
-            "toNodeId": "n0_6",
-            "direction": "down"
-          },
-          {
-            "id": "n0_5-n1_5",
-            "fromNodeId": "n0_5",
-            "toNodeId": "n1_5",
-            "direction": "right"
-          },
-          {
-            "id": "n0_6-n1_6",
-            "fromNodeId": "n0_6",
-            "toNodeId": "n1_6",
-            "direction": "right"
-          },
-          {
-            "id": "n1_0-n1_1",
-            "fromNodeId": "n1_0",
-            "toNodeId": "n1_1",
-            "direction": "down"
           },
           {
             "id": "n1_0-n2_0",
@@ -5863,22 +1705,16 @@
             "direction": "right"
           },
           {
-            "id": "n1_1-n1_2",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n1_2",
-            "direction": "down"
-          },
-          {
-            "id": "n1_1-n2_1",
-            "fromNodeId": "n1_1",
-            "toNodeId": "n2_1",
+            "id": "n2_0-n3_0",
+            "fromNodeId": "n2_0",
+            "toNodeId": "n3_0",
             "direction": "right"
           },
           {
-            "id": "n1_2-n1_3",
-            "fromNodeId": "n1_2",
-            "toNodeId": "n1_3",
-            "direction": "down"
+            "id": "n0_2-n1_2",
+            "fromNodeId": "n0_2",
+            "toNodeId": "n1_2",
+            "direction": "right"
           },
           {
             "id": "n1_2-n2_2",
@@ -5887,201 +1723,9 @@
             "direction": "right"
           },
           {
-            "id": "n1_3-n1_4",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n1_4",
-            "direction": "down"
-          },
-          {
-            "id": "n1_3-n2_3",
-            "fromNodeId": "n1_3",
-            "toNodeId": "n2_3",
-            "direction": "right"
-          },
-          {
-            "id": "n1_4-n1_5",
-            "fromNodeId": "n1_4",
-            "toNodeId": "n1_5",
-            "direction": "down"
-          },
-          {
-            "id": "n1_4-n2_4",
-            "fromNodeId": "n1_4",
-            "toNodeId": "n2_4",
-            "direction": "right"
-          },
-          {
-            "id": "n1_5-n1_6",
-            "fromNodeId": "n1_5",
-            "toNodeId": "n1_6",
-            "direction": "down"
-          },
-          {
-            "id": "n1_5-n2_5",
-            "fromNodeId": "n1_5",
-            "toNodeId": "n2_5",
-            "direction": "right"
-          },
-          {
-            "id": "n1_6-n2_6",
-            "fromNodeId": "n1_6",
-            "toNodeId": "n2_6",
-            "direction": "right"
-          },
-          {
-            "id": "n2_0-n2_1",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n2_1",
-            "direction": "down"
-          },
-          {
-            "id": "n2_0-n3_0",
-            "fromNodeId": "n2_0",
-            "toNodeId": "n3_0",
-            "direction": "right"
-          },
-          {
-            "id": "n2_1-n2_2",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n2_2",
-            "direction": "down"
-          },
-          {
-            "id": "n2_1-n3_1",
-            "fromNodeId": "n2_1",
-            "toNodeId": "n3_1",
-            "direction": "right"
-          },
-          {
-            "id": "n2_2-n2_3",
-            "fromNodeId": "n2_2",
-            "toNodeId": "n2_3",
-            "direction": "down"
-          },
-          {
             "id": "n2_2-n3_2",
             "fromNodeId": "n2_2",
             "toNodeId": "n3_2",
-            "direction": "right"
-          },
-          {
-            "id": "n2_3-n2_4",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n2_4",
-            "direction": "down"
-          },
-          {
-            "id": "n2_3-n3_3",
-            "fromNodeId": "n2_3",
-            "toNodeId": "n3_3",
-            "direction": "right"
-          },
-          {
-            "id": "n2_4-n2_5",
-            "fromNodeId": "n2_4",
-            "toNodeId": "n2_5",
-            "direction": "down"
-          },
-          {
-            "id": "n2_4-n3_4",
-            "fromNodeId": "n2_4",
-            "toNodeId": "n3_4",
-            "direction": "right"
-          },
-          {
-            "id": "n2_5-n2_6",
-            "fromNodeId": "n2_5",
-            "toNodeId": "n2_6",
-            "direction": "down"
-          },
-          {
-            "id": "n2_5-n3_5",
-            "fromNodeId": "n2_5",
-            "toNodeId": "n3_5",
-            "direction": "right"
-          },
-          {
-            "id": "n2_6-n3_6",
-            "fromNodeId": "n2_6",
-            "toNodeId": "n3_6",
-            "direction": "right"
-          },
-          {
-            "id": "n3_0-n3_1",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n3_1",
-            "direction": "down"
-          },
-          {
-            "id": "n3_0-n4_0",
-            "fromNodeId": "n3_0",
-            "toNodeId": "n4_0",
-            "direction": "right"
-          },
-          {
-            "id": "n3_1-n3_2",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n3_2",
-            "direction": "down"
-          },
-          {
-            "id": "n3_1-n4_1",
-            "fromNodeId": "n3_1",
-            "toNodeId": "n4_1",
-            "direction": "right"
-          },
-          {
-            "id": "n3_2-n3_3",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n3_3",
-            "direction": "down"
-          },
-          {
-            "id": "n3_2-n4_2",
-            "fromNodeId": "n3_2",
-            "toNodeId": "n4_2",
-            "direction": "right"
-          },
-          {
-            "id": "n3_3-n3_4",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n3_4",
-            "direction": "down"
-          },
-          {
-            "id": "n3_3-n4_3",
-            "fromNodeId": "n3_3",
-            "toNodeId": "n4_3",
-            "direction": "right"
-          },
-          {
-            "id": "n3_4-n3_5",
-            "fromNodeId": "n3_4",
-            "toNodeId": "n3_5",
-            "direction": "down"
-          },
-          {
-            "id": "n3_4-n4_4",
-            "fromNodeId": "n3_4",
-            "toNodeId": "n4_4",
-            "direction": "right"
-          },
-          {
-            "id": "n3_5-n3_6",
-            "fromNodeId": "n3_5",
-            "toNodeId": "n3_6",
-            "direction": "down"
-          },
-          {
-            "id": "n3_5-n4_5",
-            "fromNodeId": "n3_5",
-            "toNodeId": "n4_5",
-            "direction": "right"
-          },
-          {
-            "id": "n3_6-n4_6",
-            "fromNodeId": "n3_6",
-            "toNodeId": "n4_6",
             "direction": "right"
           },
           {
@@ -6091,237 +1735,77 @@
             "direction": "down"
           },
           {
-            "id": "n4_0-n5_0",
-            "fromNodeId": "n4_0",
-            "toNodeId": "n5_0",
-            "direction": "right"
-          },
-          {
             "id": "n4_1-n4_2",
             "fromNodeId": "n4_1",
             "toNodeId": "n4_2",
             "direction": "down"
           },
           {
-            "id": "n4_1-n5_1",
-            "fromNodeId": "n4_1",
-            "toNodeId": "n5_1",
+            "id": "n3_0-n4_0",
+            "fromNodeId": "n3_0",
+            "toNodeId": "n4_0",
             "direction": "right"
           },
           {
-            "id": "n4_2-n4_3",
-            "fromNodeId": "n4_2",
-            "toNodeId": "n4_3",
-            "direction": "down"
-          },
-          {
-            "id": "n4_2-n5_2",
-            "fromNodeId": "n4_2",
-            "toNodeId": "n5_2",
+            "id": "n3_2-n4_2",
+            "fromNodeId": "n3_2",
+            "toNodeId": "n4_2",
             "direction": "right"
-          },
-          {
-            "id": "n4_3-n4_4",
-            "fromNodeId": "n4_3",
-            "toNodeId": "n4_4",
-            "direction": "down"
-          },
-          {
-            "id": "n4_3-n5_3",
-            "fromNodeId": "n4_3",
-            "toNodeId": "n5_3",
-            "direction": "right"
-          },
-          {
-            "id": "n4_4-n4_5",
-            "fromNodeId": "n4_4",
-            "toNodeId": "n4_5",
-            "direction": "down"
-          },
-          {
-            "id": "n4_4-n5_4",
-            "fromNodeId": "n4_4",
-            "toNodeId": "n5_4",
-            "direction": "right"
-          },
-          {
-            "id": "n4_5-n4_6",
-            "fromNodeId": "n4_5",
-            "toNodeId": "n4_6",
-            "direction": "down"
-          },
-          {
-            "id": "n4_5-n5_5",
-            "fromNodeId": "n4_5",
-            "toNodeId": "n5_5",
-            "direction": "right"
-          },
-          {
-            "id": "n4_6-n5_6",
-            "fromNodeId": "n4_6",
-            "toNodeId": "n5_6",
-            "direction": "right"
-          },
-          {
-            "id": "n5_0-n5_1",
-            "fromNodeId": "n5_0",
-            "toNodeId": "n5_1",
-            "direction": "down"
-          },
-          {
-            "id": "n5_0-n6_0",
-            "fromNodeId": "n5_0",
-            "toNodeId": "n6_0",
-            "direction": "right"
-          },
-          {
-            "id": "n5_1-n5_2",
-            "fromNodeId": "n5_1",
-            "toNodeId": "n5_2",
-            "direction": "down"
-          },
-          {
-            "id": "n5_1-n6_1",
-            "fromNodeId": "n5_1",
-            "toNodeId": "n6_1",
-            "direction": "right"
-          },
-          {
-            "id": "n5_2-n5_3",
-            "fromNodeId": "n5_2",
-            "toNodeId": "n5_3",
-            "direction": "down"
-          },
-          {
-            "id": "n5_2-n6_2",
-            "fromNodeId": "n5_2",
-            "toNodeId": "n6_2",
-            "direction": "right"
-          },
-          {
-            "id": "n5_3-n5_4",
-            "fromNodeId": "n5_3",
-            "toNodeId": "n5_4",
-            "direction": "down"
-          },
-          {
-            "id": "n5_3-n6_3",
-            "fromNodeId": "n5_3",
-            "toNodeId": "n6_3",
-            "direction": "right"
-          },
-          {
-            "id": "n5_4-n5_5",
-            "fromNodeId": "n5_4",
-            "toNodeId": "n5_5",
-            "direction": "down"
-          },
-          {
-            "id": "n5_4-n6_4",
-            "fromNodeId": "n5_4",
-            "toNodeId": "n6_4",
-            "direction": "right"
-          },
-          {
-            "id": "n5_5-n5_6",
-            "fromNodeId": "n5_5",
-            "toNodeId": "n5_6",
-            "direction": "down"
-          },
-          {
-            "id": "n5_5-n6_5",
-            "fromNodeId": "n5_5",
-            "toNodeId": "n6_5",
-            "direction": "right"
-          },
-          {
-            "id": "n5_6-n6_6",
-            "fromNodeId": "n5_6",
-            "toNodeId": "n6_6",
-            "direction": "right"
-          },
-          {
-            "id": "n6_0-n6_1",
-            "fromNodeId": "n6_0",
-            "toNodeId": "n6_1",
-            "direction": "down"
-          },
-          {
-            "id": "n6_1-n6_2",
-            "fromNodeId": "n6_1",
-            "toNodeId": "n6_2",
-            "direction": "down"
-          },
-          {
-            "id": "n6_2-n6_3",
-            "fromNodeId": "n6_2",
-            "toNodeId": "n6_3",
-            "direction": "down"
-          },
-          {
-            "id": "n6_3-n6_4",
-            "fromNodeId": "n6_3",
-            "toNodeId": "n6_4",
-            "direction": "down"
-          },
-          {
-            "id": "n6_4-n6_5",
-            "fromNodeId": "n6_4",
-            "toNodeId": "n6_5",
-            "direction": "down"
-          },
-          {
-            "id": "n6_5-n6_6",
-            "fromNodeId": "n6_5",
-            "toNodeId": "n6_6",
-            "direction": "down"
           }
         ],
         "arrows": [
           {
             "id": "a1",
             "occupiedEdges": [
-              "n0_6-n1_6",
-              "n1_6-n2_6",
-              "n2_6-n2_5"
+              "n2_0-n3_0"
             ],
-            "startNodeId": "n0_6",
-            "endNodeId": "n2_5",
-            "direction": "up"
+            "startNodeId": "n2_0",
+            "endNodeId": "n3_0",
+            "direction": "right"
           },
           {
             "id": "a2",
             "occupiedEdges": [
-              "n6_0-n6_1",
-              "n6_1-n5_1"
+              "n0_0-n1_0"
             ],
-            "startNodeId": "n6_0",
-            "endNodeId": "n5_1",
-            "direction": "left"
+            "startNodeId": "n0_0",
+            "endNodeId": "n1_0",
+            "direction": "right"
           },
           {
             "id": "a3",
             "occupiedEdges": [
-              "n3_3-n4_3",
-              "n4_3-n4_2"
+              "n2_2-n3_2"
             ],
-            "startNodeId": "n3_3",
+            "startNodeId": "n2_2",
+            "endNodeId": "n3_2",
+            "direction": "right"
+          },
+          {
+            "id": "a4",
+            "occupiedEdges": [
+              "n0_2-n1_2"
+            ],
+            "startNodeId": "n0_2",
+            "endNodeId": "n1_2",
+            "direction": "right"
+          },
+          {
+            "id": "a5",
+            "occupiedEdges": [
+              "n4_0-n4_1",
+              "n4_1-n4_2"
+            ],
+            "startNodeId": "n4_0",
             "endNodeId": "n4_2",
-            "direction": "up"
+            "direction": "down"
           }
         ],
-        "blockedEdges": [
-          "n1_1-n2_1",
-          "n2_2-n3_2",
-          "n3_4-n4_4",
-          "n4_5-n5_5",
-          "n5_2-n6_2",
-          "n0_3-n1_3"
-        ],
+        "blockedEdges": [],
         "metadata": {
           "difficulty": "hard",
-          "timeLimit": 70,
-          "maxMoves": 54,
+          "timeLimit": 80,
+          "maxMoves": 25,
           "generationType": "manual",
           "seed": null
         }

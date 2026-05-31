@@ -19,6 +19,7 @@ class GameScreen extends StatefulWidget {
     this.notifyRemoteLevelCompletion,
     this.getBestLevelResult,
     this.playGameAudio,
+    this.enableBoardAnimations = true,
     super.key,
   });
 
@@ -28,6 +29,10 @@ class GameScreen extends StatefulWidget {
   final NotifyRemoteLevelCompletion? notifyRemoteLevelCompletion;
   final GetBestLevelResult? getBestLevelResult;
   final PlayGameAudio? playGameAudio;
+
+  /// When false (widget tests), the board renders resolved state without
+  /// starting animation tickers.
+  final bool enableBoardAnimations;
 
   @override
   State<GameScreen> createState() => _GameScreenState();
@@ -115,6 +120,7 @@ class _GameScreenState extends State<GameScreen> {
               ),
               GameScreenLoadState.ready => _GameReadyView(
                 controller: controller,
+                animateBoard: widget.enableBoardAnimations,
                 onBackToLevels: _backToLevels,
                 onNextLevel: _openNextLevel,
                 onOpenLeaderboard: _openLeaderboard,
@@ -148,15 +154,21 @@ class _GameScreenState extends State<GameScreen> {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Game ready view — board + HUD + overlays
+// ---------------------------------------------------------------------------
+
 class _GameReadyView extends StatelessWidget {
   const _GameReadyView({
     required this.controller,
+    required this.animateBoard,
     required this.onBackToLevels,
     required this.onNextLevel,
     required this.onOpenLeaderboard,
   });
 
   final GameScreenController controller;
+  final bool animateBoard;
   final VoidCallback onBackToLevels;
   final VoidCallback onNextLevel;
   final VoidCallback onOpenLeaderboard;
@@ -172,15 +184,17 @@ class _GameReadyView extends StatelessWidget {
         ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            _GameStats(session: session),
+            _GameHud(session: session),
             const SizedBox(height: 18),
             GraphBoard(
               session: session,
               lastActivatedArrowId: null,
+              flashingArrowId: controller.flashingArrowId,
+              animate: animateBoard,
               onArrowActivated: controller.activateArrow,
             ),
             const SizedBox(height: 18),
-            if (!controller.isVictory)
+            if (!controller.isVictory && !controller.isGameOver)
               Row(
                 children: [
                   Expanded(
@@ -212,14 +226,25 @@ class _GameReadyView extends StatelessWidget {
             onBackToLevels: onBackToLevels,
             onNextLevel: onNextLevel,
             onOpenLeaderboard: onOpenLeaderboard,
+          )
+        else if (controller.isGameOver)
+          _GameOverOverlay(
+            score: session.score.value,
+            mistakes: session.mistakeCount,
+            onRetry: controller.restart,
+            onBackToLevels: onBackToLevels,
           ),
       ],
     );
   }
 }
 
-class _GameStats extends StatelessWidget {
-  const _GameStats({required this.session});
+// ---------------------------------------------------------------------------
+// HUD — moves, score, lives
+// ---------------------------------------------------------------------------
+
+class _GameHud extends StatelessWidget {
+  const _GameHud({required this.session});
 
   final GameSession session;
 
@@ -236,7 +261,7 @@ class _GameStats extends StatelessWidget {
             value: '${session.movesCount}',
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 8),
         Expanded(
           child: _StatCard(
             key: GameUiKeys.scoreLabel,
@@ -244,6 +269,8 @@ class _GameStats extends StatelessWidget {
             value: '${session.score.value}',
           ),
         ),
+        const SizedBox(width: 8),
+        _LivesCard(key: GameUiKeys.livesLabel, lives: session.livesRemaining),
       ],
     );
   }
@@ -259,11 +286,11 @@ class _StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Column(
           children: [
-            Text(label, style: Theme.of(context).textTheme.bodyMedium),
-            const SizedBox(height: 6),
+            Text(label, style: Theme.of(context).textTheme.bodySmall),
+            const SizedBox(height: 4),
             Text(value, style: Theme.of(context).textTheme.headlineSmall),
           ],
         ),
@@ -271,6 +298,45 @@ class _StatCard extends StatelessWidget {
     );
   }
 }
+
+class _LivesCard extends StatelessWidget {
+  const _LivesCard({required this.lives, super.key});
+
+  final int lives;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        child: Column(
+          children: [
+            Text(
+              AppLocalizations.of(context).lives,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 4),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: List.generate(3, (i) {
+                final filled = i < lives;
+                return Icon(
+                  filled ? Icons.favorite : Icons.favorite_border,
+                  color: filled ? Colors.redAccent : Colors.grey,
+                  size: 20,
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Victory overlay
+// ---------------------------------------------------------------------------
 
 class _VictoryOverlay extends StatelessWidget {
   const _VictoryOverlay({
@@ -352,6 +418,76 @@ class _VictoryOverlay extends StatelessWidget {
     );
   }
 }
+
+// ---------------------------------------------------------------------------
+// Game-over overlay
+// ---------------------------------------------------------------------------
+
+class _GameOverOverlay extends StatelessWidget {
+  const _GameOverOverlay({
+    required this.score,
+    required this.mistakes,
+    required this.onRetry,
+    required this.onBackToLevels,
+  });
+
+  final int score;
+  final int mistakes;
+  final VoidCallback onRetry;
+  final VoidCallback onBackToLevels;
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+
+    return Positioned.fill(
+      child: ColoredBox(
+        color: AppTheme.background.withValues(alpha: 0.82),
+        child: Center(
+          child: Card(
+            key: GameUiKeys.gameOverCard,
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    localizations.gameOver,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    localizations.gameOverMessage,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  Text('${localizations.score}: $score'),
+                  Text('${localizations.mistakes}: $mistakes'),
+                  const SizedBox(height: 18),
+                  FilledButton(
+                    key: GameUiKeys.retryButton,
+                    onPressed: onRetry,
+                    child: Text(localizations.retry),
+                  ),
+                  const SizedBox(height: 10),
+                  OutlinedButton(
+                    key: GameUiKeys.backToLevelsButton,
+                    onPressed: onBackToLevels,
+                    child: Text(localizations.backToLevels),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Loading / not-found states
+// ---------------------------------------------------------------------------
 
 class _LoadingState extends StatelessWidget {
   const _LoadingState({required this.message});

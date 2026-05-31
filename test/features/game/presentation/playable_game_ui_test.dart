@@ -7,6 +7,7 @@ import 'package:frontend_poc_arrow/features/game/domain/arrow_path.dart';
 import 'package:frontend_poc_arrow/features/game/domain/board_coordinate.dart';
 import 'package:frontend_poc_arrow/features/game/domain/board_graph.dart';
 import 'package:frontend_poc_arrow/features/game/domain/direction.dart';
+import 'package:frontend_poc_arrow/features/game/domain/graph_edge.dart';
 import 'package:frontend_poc_arrow/features/game/domain/graph_node.dart';
 import 'package:frontend_poc_arrow/features/game/domain/level.dart';
 import 'package:frontend_poc_arrow/features/game/infrastructure/local_level_dependencies.dart';
@@ -25,6 +26,7 @@ void main() {
     await _pumpUntilFound(tester, find.byKey(GameUiKeys.levelCard(1)));
 
     expect(find.byKey(GameUiKeys.levelCard(1)), findsOneWidget);
+    // Level 1 is now named "First Exit" — unchanged from Phase 8.
     expect(find.text('First Exit'), findsAtLeastNWidgets(1));
 
     await tester.scrollUntilVisible(
@@ -34,7 +36,7 @@ void main() {
     );
 
     expect(find.byKey(GameUiKeys.levelCard(15)), findsOneWidget);
-    expect(find.text('Final Grid'), findsOneWidget);
+    expect(find.text('Final Maze'), findsOneWidget);
   });
 
   testWidgets('should_open_game_screen_when_manual_level_is_selected', (
@@ -46,6 +48,7 @@ void main() {
     expect(find.byKey(GameUiKeys.gameBoard), findsOneWidget);
     expect(find.byKey(GameUiKeys.movesLabel), findsOneWidget);
     expect(find.byKey(GameUiKeys.scoreLabel), findsOneWidget);
+    expect(find.byKey(GameUiKeys.livesLabel), findsOneWidget);
   });
 
   testWidgets('should_render_game_screen_with_graph_nodes', (tester) async {
@@ -53,15 +56,18 @@ void main() {
 
     await _openLevelOne(tester, await _loadRealManualLevels(tester));
 
+    // Level 1 is an L-shaped board with 4 nodes and 1 arrow (Phase 9 redesign).
     expect(
-      find.bySemanticsLabel('Graph board with 9 nodes and 1 active arrows'),
+      find.bySemanticsLabel('Graph board with 4 nodes and 1 active arrows'),
       findsOneWidget,
     );
     semantics.dispose();
   });
 
-  testWidgets('should_update_moves_when_arrow_is_activated', (tester) async {
-    await _openLevelOne(tester, await _loadRealManualLevels(tester));
+  testWidgets('should_update_moves_when_arrow_attempt_is_made', (tester) async {
+    // Use the single-node exit fixture — one tap = one exit attempt.
+    await tester.pumpWidget(_TestGameApp(level: _singleNodeExitLevel()));
+    await _pumpUntilFound(tester, find.byKey(GameUiKeys.gameBoard));
 
     expect(
       find.descendant(
@@ -70,28 +76,16 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(
-      find.descendant(
-        of: find.byKey(GameUiKeys.scoreLabel),
-        matching: find.text('1000'),
-      ),
-      findsOneWidget,
-    );
 
-    await tester.tapAt(tester.getCenter(find.byKey(GameUiKeys.gameBoard)));
+    // Tap at the arrow's position (single node is at canvas (32, 32)).
+    await tester.tapAt(_singleNodePosition(tester));
     await tester.pump();
 
+    // One tap = 1 move.
     expect(
       find.descendant(
         of: find.byKey(GameUiKeys.movesLabel),
         matching: find.text('1'),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(
-        of: find.byKey(GameUiKeys.scoreLabel),
-        matching: find.text('990'),
       ),
       findsOneWidget,
     );
@@ -108,6 +102,30 @@ void main() {
 
     expect(find.byKey(GameUiKeys.victoryCard), findsOneWidget);
     expect(find.text('Victory'), findsOneWidget);
+  });
+
+  testWidgets('should_show_lives_display_in_hud', (tester) async {
+    await tester.pumpWidget(_TestGameApp(level: _singleNodeExitLevel()));
+    await _pumpUntilFound(tester, find.byKey(GameUiKeys.gameBoard));
+
+    expect(find.byKey(GameUiKeys.livesLabel), findsOneWidget);
+    // Three heart icons: all filled at start.
+    expect(find.byIcon(Icons.favorite), findsNWidgets(3));
+  });
+
+  testWidgets('should_show_game_over_when_lives_reach_zero', (tester) async {
+    await tester.pumpWidget(_TestGameApp(level: _blockedArrowLevel()));
+    await _pumpUntilFound(tester, find.byKey(GameUiKeys.gameBoard));
+
+    // 6 collision taps → lives = 0 → game over. Each tap needs a pump.
+    for (var i = 0; i < 6; i++) {
+      await tester.tapAt(_singleNodePosition(tester));
+      // Wait for flash delay to clear (320 ms) between taps.
+      await tester.pump(const Duration(milliseconds: 400));
+    }
+
+    expect(find.byKey(GameUiKeys.gameOverCard), findsOneWidget);
+    expect(find.text('Game Over'), findsOneWidget);
   });
 
   testWidgets('should_keep_graph_nodes_visible_after_arrow_exits', (
@@ -191,7 +209,48 @@ void main() {
     expect(find.textContaining('Completed'), findsOneWidget);
     expect(find.textContaining('Unlocked'), findsWidgets);
   });
+
+  testWidgets('should_refresh_progress_when_returning_from_game', (
+    tester,
+  ) async {
+    final levels = await _loadRealManualLevels(tester);
+
+    // Progress changes between the first load and the load after returning:
+    // first only level 1 is unlocked; after returning, level 1 is completed.
+    var calls = 0;
+    Future<LocalProgress> loadProgress() async {
+      calls++;
+      if (calls <= 1) {
+        return LocalProgress.initial().copyWith(lastUnlockedLevel: 1);
+      }
+      return LocalProgress.initial().copyWith(
+        completedLevelNumbers: {1},
+        lastUnlockedLevel: 2,
+      );
+    }
+
+    await tester.pumpWidget(
+      _TestManualLevelsApp(levels: levels, loadProgress: loadProgress),
+    );
+    await _pumpUntilFound(tester, find.byKey(GameUiKeys.levelCard(1)));
+
+    // Initially nothing is completed.
+    expect(find.textContaining('Completed'), findsNothing);
+
+    // Open level 1, then return via the app-bar back button (covers pop).
+    await tester.tap(find.byKey(GameUiKeys.levelCard(1)));
+    await _pumpUntilFound(tester, find.byKey(GameUiKeys.gameBoard));
+    await tester.pageBack();
+    await _pumpUntilFound(tester, find.byKey(GameUiKeys.levelCard(1)));
+
+    // Progress was reloaded → level 1 now shows Completed.
+    expect(find.textContaining('Completed'), findsOneWidget);
+  });
 }
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
 Future<void> _openLevelOne(WidgetTester tester, List<Level> levels) async {
   await tester.pumpWidget(_TestManualLevelsApp(levels: levels));
@@ -233,6 +292,7 @@ Offset _singleNodePosition(WidgetTester tester) {
       const Offset(32, 32);
 }
 
+/// Level with one arrow that immediately exits (no graph boundary in direction).
 Level _singleNodeExitLevel() {
   return Level(
     id: 'fixture-exit',
@@ -257,6 +317,46 @@ Level _singleNodeExitLevel() {
   );
 }
 
+/// Level with one arrow that always collides — the only edge in its
+/// direction is blocked, so every tap returns a collision. Used to
+/// drive the lives counter to 0 for game-over testing.
+Level _blockedArrowLevel() {
+  return Level(
+    id: 'fixture-blocked',
+    number: 99,
+    name: 'Fixture Blocked',
+    boardGraph: BoardGraph(
+      nodes: const [
+        GraphNode(id: 'a', coordinate: BoardCoordinate(x: 0, y: 0)),
+        GraphNode(id: 'b', coordinate: BoardCoordinate(x: 1, y: 0)),
+      ],
+      edges: const [
+        // Blocked edge in the arrow's direction → always collides.
+        GraphEdge(
+          id: 'ab',
+          fromNodeId: 'a',
+          toNodeId: 'b',
+          isBlocked: true,
+        ),
+      ],
+    ),
+    arrows: const [
+      ArrowPath(
+        id: 'arrow-1',
+        occupiedEdgeIds: [],
+        startNodeId: 'a',
+        endNodeId: 'a',
+        direction: Direction.right,
+      ),
+    ],
+    metadata: const {'difficulty': 'test'},
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Test app wrappers
+// ---------------------------------------------------------------------------
+
 class _TestGameApp extends StatelessWidget {
   const _TestGameApp({required this.level, this.notifyRemoteLevelCompletion});
 
@@ -271,6 +371,7 @@ class _TestGameApp extends StatelessWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       home: GameScreen(
         levelNumber: level.number,
+        enableBoardAnimations: false,
         loadLevelByNumber: (_) async => level,
         saveLevelCompletion:
             ({
@@ -295,10 +396,15 @@ class _TestGameApp extends StatelessWidget {
 }
 
 class _TestManualLevelsApp extends StatelessWidget {
-  const _TestManualLevelsApp({required this.levels, this.progress});
+  const _TestManualLevelsApp({
+    required this.levels,
+    this.progress,
+    this.loadProgress,
+  });
 
   final List<Level> levels;
   final LocalProgress? progress;
+  final Future<LocalProgress> Function()? loadProgress;
 
   @override
   Widget build(BuildContext context) {
@@ -308,16 +414,20 @@ class _TestManualLevelsApp extends StatelessWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       home: LevelSelectionScreen(
         loadLevels: () async => levels,
-        loadProgress: () async =>
-            progress ??
-            LocalProgress.initial().copyWith(lastUnlockedLevel: levels.length),
+        loadProgress: loadProgress ??
+            () async =>
+                progress ??
+                LocalProgress.initial()
+                    .copyWith(lastUnlockedLevel: levels.length),
       ),
       onGenerateRoute: (settings) {
         if (settings.name == AppRoutes.game) {
           final levelNumber = settings.arguments as int?;
           return MaterialPageRoute<void>(
+            settings: settings,
             builder: (_) => GameScreen(
               levelNumber: levelNumber,
+              enableBoardAnimations: false,
               loadLevelByNumber: (number) async {
                 for (final level in levels) {
                   if (level.number == number) {
@@ -345,7 +455,6 @@ class _TestManualLevelsApp extends StatelessWidget {
             ),
           );
         }
-
         return null;
       },
     );

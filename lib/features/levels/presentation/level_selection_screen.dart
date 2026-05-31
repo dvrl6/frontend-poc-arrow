@@ -51,6 +51,21 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
     });
   }
 
+  /// Opens a level and refreshes progress when control returns — covers the
+  /// in-app button, the app-bar back arrow, and the Android system back button,
+  /// since `Navigator.push` completes on any pop.
+  Future<void> _openLevel(BuildContext context, int? levelNumber) async {
+    await Navigator.of(
+      context,
+    ).pushNamed(AppRoutes.game, arguments: levelNumber);
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _screenDataFuture = _loadScreenData();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -91,9 +106,7 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
                   isCompleted: progress.isCompleted(levelNumber),
                   bestScore: progress.bestResultFor(levelNumber)?.score,
                   onTap: isUnlocked
-                      ? () => Navigator.of(
-                          context,
-                        ).pushNamed(AppRoutes.game, arguments: level.number)
+                      ? () => _openLevel(context, level.number)
                       : () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(localizations.levelLocked)),

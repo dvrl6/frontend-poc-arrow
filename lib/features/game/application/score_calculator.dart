@@ -10,10 +10,12 @@ class ScoreCalculator {
 
   Score calculate({
     required int movesCount,
+    required int mistakeCount,
     required int elapsedSeconds,
   }) {
     return strategy.calculate(
       movesCount: movesCount,
+      mistakeCount: mistakeCount,
       elapsedSeconds: elapsedSeconds,
     );
   }

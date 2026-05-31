@@ -49,5 +49,9 @@
   "leaderboard": "Tabla de posiciones",
   "leaderboardUnavailable": "Tabla de posiciones no disponible.",
   "localFirstNotice": "El juego local sigue disponible sin conexion.",
-  "submit": "Enviar"
+  "submit": "Enviar",
+  "lives": "Vidas",
+  "gameOver": "Fin del juego",
+  "gameOverMessage": "Te quedaste sin vidas.",
+  "mistakes": "Errores"
 }

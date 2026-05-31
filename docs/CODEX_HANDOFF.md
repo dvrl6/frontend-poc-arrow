@@ -120,6 +120,96 @@ Previous completed and merged phases:
 - Backend repository remained untouched.
 - Git remotes were not modified.
 
+## Phase 9 — Gameplay Rules Fixes, Lives System, Level Redesign, Stability
+
+Phase 9 corrected the core gameplay model, added a lives/game-over system, redesigned all 15 manual levels, added exit/collision animations, and fixed level-selection refresh. All work is inside `frontend-poc-arrow`; backend and Git remotes were untouched.
+
+### Full Exit Attempt Rule
+
+- Tapping an arrow performs a single, atomic **full exit attempt** — not one-step movement.
+- The arrow head defines the exit direction; the arrow travels strictly in its head direction (it never auto-turns). If there is no neighbor in that direction, that part of the arrow leaves the board.
+- The attempt either fully escapes or leaves the arrow exactly as it was. No partial movement is ever committed.
+
+### Full-Arrow Collision Behavior
+
+- Collision detection considers the arrow's **entire occupied shape**, not just the head.
+- `MovementResolver.resolve` computes the moving arrow's full covered-node set (`coveredNodeIds`: start node, head node, and both endpoints of every occupied edge), and the union of covered nodes of all other active arrows.
+- It sweeps a forward ray (graph adjacency) from **every** covered node. If any forward node is occupied by another active arrow, or any traversed edge is blocked, the attempt is a `collision`. Otherwise it is `escaped`.
+- This means a body/segment overlap causes a collision even when the head's own path is clear.
+- The resolver is read-only and lives in application; rules never live in presentation.
+
+### Collision Rollback Behavior
+
+- On collision, `MoveArrowUseCase` returns without mutating the arrow: same `endNodeId`, same `occupiedEdgeIds`. No partial movement remains.
+- `movesCount` increments on every attempt (success or failure). `mistakeCount` increments only on failure.
+
+### Lives / Mistakes / Game-Over Behavior
+
+- Each session starts with 3 lives. `GameSession.livesRemaining = 3 - (mistakeCount ~/ 2)`.
+- 0-1 mistakes = 3 lives, 2-3 = 2 lives, 4-5 = 1 life, 6+ = 0 lives.
+- When lives reach 0 the use case sets `GameStatus.failed` and returns `MovementOutcome.gameOver`.
+- Once `victory` or `failed`, further input is ignored (`sessionNotActive`).
+- Retry (`GameScreenController.restart`) rebuilds via `GameSession.start`, resetting mistakes, lives, trace, and flash state.
+- Score formula: `max(0, 1000 - (mistakeCount * 100) - (movesCount * 5))`. No timer; `elapsedSeconds` stays 0 and is not displayed.
+
+### Exit Animation Behavior
+
+- Rules resolve instantly in the domain; presentation animates the already-resolved trace.
+- `GraphBoard` is stateful (`TickerProviderStateMixin`). When an arrow transitions active to escaped, it runs a ~360 ms controller that translates the **whole arrow shape** (all segments + head) outward in the head direction while fading — L/U/zigzag arrows move as one piece. After completion the arrow is rendered escaped/inactive.
+- On collision it plays a short shake (sine nudge) plus the existing red collision flash, then the arrow snaps back.
+- Graph nodes and edges remain visible at all times.
+- `GameScreenController.lastAttemptTrace` (`GameAttemptTrace`) exposes arrow id + outcome for non-brittle tests.
+- Animations are gated by `GameScreen.enableBoardAnimations` (default true; widget tests pass false to avoid ticker flakiness).
+
+### Level Selection Refresh Fix
+
+- `LevelSelectionScreen._openLevel` awaits `Navigator.pushNamed(...)` and reloads progress on return.
+- Because the await completes on any pop (in-app button, app-bar back, Android system back), unlocked/completed/best-score state is always refreshed after returning from a level.
+
+### Redesigned Manual Levels
+
+- All 15 levels in `assets/levels/manual_levels.json` were redesigned as deterministic, graph-based, varied-shape levels: L-shaped, narrow corridor, gapped lanes, staircase, plus/cross, T, branch/tree, H-ladder, and asymmetric multi-arm.
+- Preserved: exactly 15 levels, numbers 1-15, difficulty progression (1-5 easy, 6-10 medium, 11-15 hard), and the existing graph-based JSON schema.
+- `blockedEdges` is empty for all 15 levels; the main blocker is other active arrows. No matrix/grid/tile runtime logic.
+- Hard levels 11-15 are not all rectangles (0 of them are full rectangles).
+- All 15 pass `LevelDefinitionValidator` and remain solvable under the full-exit resolver.
+
+### No-Free-Nodes Rule
+
+- At the start of every level, every graph node is occupied by at least one arrow (via start node, head node, or an occupied edge endpoint).
+- Validated both by the generator and by the Dart test `should_have_no_free_nodes_at_level_start`.
+
+### tool/gen_levels.js Purpose
+
+- A deterministic Node generator/validator for the 15 manual levels. It builds levels from straight/L "filled corridors," then verifies structure (orthogonal edges, unique ids, arrow edges/nodes exist), no-free-nodes, difficulty progression, hard-not-all-rectangular, and full-exit solvability (DFS using a JS mirror of the Dart resolver). It writes `assets/levels/manual_levels.json` only when every check passes. It is a build-time authoring tool, not runtime code, and does not perform random generation.
+
+### Tests Added / Updated
+
+- `exit_attempt_resolver_test.dart`: full-shape head and body collision, clear-sweep escape, multi-segment escape, blocked edge, self-non-collision, already-escaped (3x2 grid fixture added).
+- `move_arrow_use_case_test.dart`: escape, collision + rollback (state unchanged), blocked edge, lives table, game-over trigger, guards, score formula.
+- `lives_system_test.dart`: lives thresholds, game-over, restart reset.
+- `score_calculator_test.dart`: new mistake/move formula, no time penalty.
+- `manual_levels_test.dart`: `should_have_no_free_nodes_at_level_start`, all-levels-solvable (DFS via real resolver), hard-not-all-rectangular, graph-based (no matrix/grid/cells keys), difficulty progression, level mapping.
+- `game_screen_controller_test.dart` (new): escape trace, collision trace + flash, restart resets trace/lives/mistakes.
+- `playable_game_ui_test.dart`: lives HUD, game-over overlay, graph persistence after exit, backend-unreachable, locked level, and `should_refresh_progress_when_returning_from_game`.
+
+### Phase 9 Verification Results
+
+- `flutter analyze`: passed with no issues.
+- `flutter test`: passed, 92 tests.
+- `node tool/gen_levels.js`: all 15 levels valid, no free nodes, all solvable, 0 hard rectangles; asset written.
+- Manual emulator validation: not yet performed in this pass — see checklist below. Backend repository and Git remotes were not modified.
+
+### Phase 9 Manual Emulator Validation (pending)
+
+1. Tap an L/zigzag arrow with a clear path: whole shape slides out as one piece; nodes/edges remain.
+2. Tap a blocked arrow: short shake + red flash, snaps back, no partial movement, mistake +1.
+3. Confirm full-shape blocking where a body segment (not the head) is the blocker.
+4. Lives deplete every 2 mistakes; game-over at 6; Retry resets to 3 lives.
+5. Complete a level, return via system back and app-bar back: next level shows unlocked both ways.
+6. Play all 15 levels to confirm documented solution orders and non-rectangular shapes render.
+7. Backend up: login -> complete -> sync/leaderboard non-blocking. Backend down: full local play intact.
+
 ## Known Limitations
 
 - No random level generation yet.
@@ -129,8 +219,10 @@ Previous completed and merged phases:
 - Token storage uses SharedPreferences for academic/demo scope; secure storage is future work.
 - Remote levels do not replace local gameplay.
 - No final music/background audio assets yet.
-- No real gameplay timer yet.
+- No real gameplay timer yet (intentional; score is mistake/move based).
+- Stuck/deadlock detection was treated as optional and is not implemented; lives/game-over remains the failure path.
+- Phase 9 manual emulator validation is still pending.
 
 ## Next Recommended Phase
 
-Recommended next phase: random graph-based levels or final release preparation, after a manual backend/emulator smoke test validates auth, sync, and leaderboard against Docker backend.
+Recommended next phase: final release preparation and a manual backend/emulator smoke test (auth, sync, leaderboard against the Docker backend), then optionally random graph-based level generation. Complete the Phase 9 manual emulator checklist before starting new feature work.
