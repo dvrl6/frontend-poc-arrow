@@ -53,5 +53,6 @@
   "lives": "Lives",
   "gameOver": "Game Over",
   "gameOverMessage": "You ran out of lives.",
-  "mistakes": "Mistakes"
+  "mistakes": "Mistakes",
+  "resetView": "Reset view"
 }

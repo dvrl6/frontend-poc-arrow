@@ -179,6 +179,11 @@ class GraphBoardPainter extends CustomPainter {
     Direction direction,
     Color color,
   ) {
+    // The arrowhead orientation depends ONLY on the arrow's head direction, not
+    // on its body shape. `position` is the head (endNodeId) and the tip extends
+    // one head-length along `direction`. The mapping is symmetric for all four
+    // directions (left/right/up/down), so heads render correctly regardless of
+    // which way the body bends. (Canvas y grows downward: down = +pi/2.)
     final angle = switch (direction) {
       Direction.up => -math.pi / 2,
       Direction.right => 0.0,

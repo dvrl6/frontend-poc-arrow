@@ -53,5 +53,6 @@
   "lives": "Vidas",
   "gameOver": "Fin del juego",
   "gameOverMessage": "Te quedaste sin vidas.",
-  "mistakes": "Errores"
+  "mistakes": "Errores",
+  "resetView": "Restablecer vista"
 }

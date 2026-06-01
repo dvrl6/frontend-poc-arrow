@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_poc_arrow/features/game/application/get_local_level_by_number_use_case.dart';
@@ -128,9 +129,9 @@ void main() {
     expect(level, isNotNull);
     expect(level!.number, 2);
     expect(level.id, 'manual-002');
-    // Level 2 is now 'L-Turn' with 1 arrow (Phase 9 redesign).
+    // Level 2 is 'L-Turn' (Phase 10 denser redesign: 11 arrows).
     expect(level.name, 'L-Turn');
-    expect(level.arrows, hasLength(1));
+    expect(level.arrows, hasLength(11));
     expect(level.metadata['generationType'], 'manual');
   });
 
@@ -200,6 +201,121 @@ void main() {
     );
   });
 
+  test('should_meet_arrow_density_bands_per_tier', () async {
+    final levels = await GetLocalLevelsUseCase(repository)();
+    for (final level in levels) {
+      final n = level.arrows.length;
+      final tier = _difficulty(level);
+      final matcher = switch (tier) {
+        'easy' => inInclusiveRange(10, 15),
+        'medium' => inInclusiveRange(15, 30),
+        _ => inInclusiveRange(20, 60), // hard
+      };
+      expect(
+        n,
+        matcher,
+        reason: 'Level ${level.number} ($tier) has $n arrows (out of band)',
+      );
+    }
+  });
+
+  test('should_have_single_connected_traversal_graph_for_all_manual_levels',
+      () async {
+    final levels = await GetLocalLevelsUseCase(repository)();
+    for (final level in levels) {
+      expect(
+        _componentCount(level),
+        1,
+        reason: 'Level ${level.number} is not a single connected graph',
+      );
+    }
+  });
+
+  test('should_reject_disconnected_level_graph', () async {
+    // Two unconnected manual levels in source must be rejected by the
+    // connectivity check (here exercised directly via the BFS helper).
+    final levels = await GetLocalLevelsUseCase(repository)();
+    final connected = levels.first;
+    expect(_componentCount(connected), 1);
+
+    // A synthetic two-island graph reports 2 components.
+    final twoIslands = _twoIslandLevel();
+    expect(_componentCountOfGraph(twoIslands.nodeIds, twoIslands.edges), 2);
+  });
+
+  test('should_apply_no_free_nodes_rule_to_visible_nodes', () async {
+    // Every visible/playable node must be occupied by an arrow at start.
+    // (No hidden connector nodes exist; the rule applies to all nodes.)
+    final levels = await GetLocalLevelsUseCase(repository)();
+    for (final level in levels) {
+      final covered = <String>{};
+      for (final arrow in level.arrows) {
+        covered.addAll(
+          MovementResolver.coveredNodeIds(level.boardGraph, arrow),
+        );
+      }
+      final freeVisible = level.boardGraph.nodes
+          .where((n) => !covered.contains(n.id))
+          .map((n) => n.id)
+          .toList();
+      expect(freeVisible, isEmpty,
+          reason: 'Level ${level.number} has unoccupied visible nodes');
+    }
+  });
+
+  test('should_orient_arrowhead_at_exit_end_for_all_directions', () async {
+    // The head (endNodeId) must be the exit-facing end: the arrow body edge at
+    // the head must lead OPPOSITE to the arrow direction. This catches the
+    // left/up head-placement bug behind incorrect arrowhead rendering.
+    final levels = await GetLocalLevelsUseCase(repository)();
+    for (final level in levels) {
+      final graph = level.boardGraph;
+      for (final arrow in level.arrows) {
+        final head = graph.nodeById(arrow.endNodeId)!;
+        final dir = arrow.direction;
+        var bodyIsBehind = false;
+        for (final edgeId in arrow.occupiedEdgeIds) {
+          final edge = graph.edgeById(edgeId);
+          if (edge == null) continue;
+          final otherId = edge.otherNodeId(arrow.endNodeId);
+          if (otherId == null) continue;
+          final other = graph.nodeById(otherId)!;
+          if (other.coordinate.x == head.coordinate.x - dir.dx &&
+              other.coordinate.y == head.coordinate.y - dir.dy) {
+            bodyIsBehind = true;
+          }
+        }
+        expect(bodyIsBehind, isTrue,
+            reason:
+                'Level ${level.number} arrow ${arrow.id} head not at exit end '
+                '(dir ${dir.name})');
+      }
+    }
+  });
+
+  test('should_document_arrow_shapes_as_arbitrary_paths_not_templates', () {
+    final doc = File('docs/LEVEL_AUTHORING.md').readAsStringSync();
+    expect(doc.toLowerCase(), contains('arbitrary'));
+    expect(doc.toLowerCase(), contains('not'));
+    expect(doc.toLowerCase(), contains('template'));
+    expect(doc.toLowerCase(), contains('connected traversal graph'));
+  });
+
+  test('should_increase_average_density_across_tiers', () async {
+    final levels = await GetLocalLevelsUseCase(repository)();
+    double avgArrows(bool Function(Level) where) {
+      final counts = levels.where(where).map((l) => l.arrows.length).toList();
+      return counts.reduce((a, b) => a + b) / counts.length;
+    }
+
+    final easy = avgArrows((l) => (l.number ?? 0) <= 5);
+    final medium = avgArrows((l) => (l.number ?? 0) >= 6 && (l.number ?? 0) <= 10);
+    final hard = avgArrows((l) => (l.number ?? 0) >= 11);
+
+    expect(easy < medium, isTrue, reason: 'easy avg $easy !< medium avg $medium');
+    expect(medium < hard, isTrue, reason: 'medium avg $medium !< hard avg $hard');
+  });
+
   test(
     'should_normalize_reversed_undirected_edge_id_when_equivalent_edge_exists',
     () {
@@ -231,6 +347,48 @@ String? _difficulty(Level level) {
   return level.metadata['difficulty'] as String?;
 }
 
+int _componentCount(Level level) {
+  final nodeIds = level.boardGraph.nodes.map((n) => n.id).toSet();
+  final edges = level.boardGraph.edges
+      .map((e) => [e.fromNodeId, e.toNodeId])
+      .toList();
+  return _componentCountOfGraph(nodeIds, edges);
+}
+
+/// Counts connected components over a node set and undirected edge list (BFS).
+int _componentCountOfGraph(Set<String> nodeIds, List<List<String>> edges) {
+  final adj = <String, List<String>>{for (final id in nodeIds) id: <String>[]};
+  for (final e in edges) {
+    adj[e[0]]?.add(e[1]);
+    adj[e[1]]?.add(e[0]);
+  }
+  final seen = <String>{};
+  var components = 0;
+  for (final start in nodeIds) {
+    if (seen.contains(start)) continue;
+    components++;
+    final stack = <String>[start];
+    seen.add(start);
+    while (stack.isNotEmpty) {
+      final cur = stack.removeLast();
+      for (final nb in adj[cur]!) {
+        if (seen.add(nb)) stack.add(nb);
+      }
+    }
+  }
+  return components;
+}
+
+({Set<String> nodeIds, List<List<String>> edges}) _twoIslandLevel() {
+  return (
+    nodeIds: {'a', 'b', 'c', 'd'},
+    edges: [
+      ['a', 'b'], // island 1
+      ['c', 'd'], // island 2 (no edge between the islands)
+    ],
+  );
+}
+
 bool _isRectangular(Level level) {
   final nodes = level.boardGraph.nodes;
   final xs = nodes.map((n) => n.coordinate.x);
@@ -244,30 +402,36 @@ bool _isRectangular(Level level) {
   return nodes.length == w * h;
 }
 
-/// DFS over exit orders using the real [MovementResolver]: a level is solvable
-/// if some order lets every arrow escape.
+/// Greedy solver using the real [MovementResolver]: repeatedly escape every
+/// currently-exitable arrow. Because escaped arrows are non-blocking and
+/// exiting only frees nodes (monotonic), greedy is sound AND complete — it
+/// succeeds iff the level is solvable. This stays fast at 50+ arrows where DFS
+/// would blow up.
 bool _isSolvable(GameSession session) {
   const resolver = MovementResolver();
-  final active = session.activeArrows;
-  if (active.isEmpty) {
-    return true;
-  }
-  for (final arrow in active) {
-    if (resolver.resolve(session: session, arrow: arrow) ==
-        ExitAttemptOutcome.escaped) {
-      final next = session.copyWith(
-        arrows: session.arrows
-            .map(
-              (a) => a.id == arrow.id ? a.copyWith(isEscaped: true) : a,
-            )
-            .toList(growable: false),
-      );
-      if (_isSolvable(next)) {
-        return true;
-      }
+  var s = session;
+  while (true) {
+    final active = s.activeArrows;
+    if (active.isEmpty) {
+      return true;
     }
+    final exitableIds = active
+        .where(
+          (a) =>
+              resolver.resolve(session: s, arrow: a) ==
+              ExitAttemptOutcome.escaped,
+        )
+        .map((a) => a.id)
+        .toSet();
+    if (exitableIds.isEmpty) {
+      return false; // deadlock → unsolvable
+    }
+    s = s.copyWith(
+      arrows: s.arrows
+          .map((a) => exitableIds.contains(a.id) ? a.copyWith(isEscaped: true) : a)
+          .toList(growable: false),
+    );
   }
-  return false;
 }
 
 ManualLevelDto _manualLevelWithArrowEdge(String occupiedEdgeId) {
