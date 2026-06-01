@@ -210,6 +210,40 @@ Phase 9 corrected the core gameplay model, added a lives/game-over system, redes
 6. Play all 15 levels to confirm documented solution orders and non-rectangular shapes render.
 7. Backend up: login -> complete -> sync/leaderboard non-blocking. Backend down: full local play intact.
 
+## Phase 10 — Level Authoring, Density Tuning, and Board UX Polish
+
+Phase 10 documented level authoring, made `manual_levels.json` the authoritative hand-editable source, densified all 15 levels, and added board pan/zoom. Core Phase 9 gameplay rules were unchanged. All work is inside `frontend-poc-arrow`.
+
+### Authoring guide
+- `docs/LEVEL_AUTHORING.md` explains the JSON structure, nodes/edges/arrows, straight and L/U/zigzag arrows, the no-free-nodes rule, designing solvable levels (greedy-completeness), increasing density, difficulty rules, and the validate-after-edit workflow.
+
+### Level tool (`tool/gen_levels.js`) — safe modes
+- `node tool/gen_levels.js --validate-only` (also the default with no args): reads the on-disk `manual_levels.json`, runs all checks, prints a per-level report, exits non-zero on failure, and **never writes**.
+- `node tool/gen_levels.js --generate`: rebuilds the denser levels from in-script builders, validates, and writes the JSON. Intentional use only.
+- Solvability uses a **greedy** solver (repeatedly exit any currently-exitable arrow). Because escaped arrows are non-blocking and exiting only frees nodes, greedy is sound and complete, and stays fast at 50-60 arrows (the old DFS would blow up).
+- Checks: structure (orthogonal/unit edges, unique ids, arrow edges/nodes exist), no-free-nodes, greedy solvability, difficulty progression, density bands, strictly increasing tier averages, hard-not-all-rectangular.
+
+### Density tuning
+- Easy 1-5: 10-15 arrows (soft ramp). Medium 6-10: 15-30. Hard 11-15: 20-50 (51-60 = warning, 61+ = failure).
+- Current set: easy 10/11/12/13/15, medium 16/18/20/24/28, hard 22/27/34/40/50; tier averages 12.2 < 21.2 < 34.6 (strictly increasing); 0 hard levels are full rectangles; every visible node occupied; all greedy-solvable; every level a single connected component.
+- Levels are built as a **single connected traversal graph**: left-aligned horizontal rows of arrow queues, woven with vertical connector edges (perpendicular to the arrows, so they never change exit sweeps). Ragged row widths give non-rectangular silhouettes; alternating left/right exit directions exercise both arrowhead orientations. Connectivity guarantees no disconnected islands while preserving solvability and density.
+
+### Phase 10 corrections (post manual validation)
+- **Connected traversal graph**: the disjoint-lane layout was replaced with one connected component per level. The tool and Dart tests now reject disconnected graphs (`comp` must be 1; `--validate-only` prints `DISCONNECTED(n)` and fails). No hidden connector nodes were needed (connectivity uses edges between visible nodes); the schema/validator nonetheless support an optional `hidden` node flag (exempt from visible no-free-nodes).
+- **Visible no-free-nodes**: the rule is clarified to apply to visible nodes; hidden connector nodes (if ever used) are exempt. All current nodes are visible and occupied.
+- **Arbitrary arrow paths**: documented that arrow shape is just the path from `occupiedEdges` (no "L/U/zigzag" templates). The head must be the exit-facing end.
+- **Left/up arrowhead fix**: the generator previously put the head (`endNodeId`) on the inner end for left/up lanes, so arrowheads rendered at the wrong end. Fixed so the head is always the exit-facing node (verified: all 340 arrows have the body behind the head). The painter's direction→angle mapping was already correct for all four directions.
+
+### Board UX (pan/zoom)
+- `GraphBoard` wraps the board in `InteractiveViewer` (min 1x, max 4x, drag to pan) with a reset-view button (`GameUiKeys.resetViewButton`, localized `resetView` / "Reset view" / "Restablecer vista").
+- Tap-to-activate is unaffected: the tap `GestureDetector` lives inside the transformed child, so hit testing stays in child coordinates.
+
+### Phase 10 verification
+- `node tool/gen_levels.js --generate`: all 15 valid/solvable/in-band; asset written.
+- `node tool/gen_levels.js --validate-only`: passes on the shipped JSON, writes nothing (byte-identical), exit 0.
+- `flutter analyze`: no issues. `flutter test`: 95 passed (added density-band, density-increasing, and reset-view/tap tests; switched the Dart solvability test to greedy).
+- Manual emulator validation still pending — confirm dense hard levels are playable with pinch-zoom/drag/reset and that exit/collision animations and lives still behave.
+
 ## Known Limitations
 
 - No random level generation yet.
@@ -221,8 +255,9 @@ Phase 9 corrected the core gameplay model, added a lives/game-over system, redes
 - No final music/background audio assets yet.
 - No real gameplay timer yet (intentional; score is mistake/move based).
 - Stuck/deadlock detection was treated as optional and is not implemented; lives/game-over remains the failure path.
-- Phase 9 manual emulator validation is still pending.
+- Dense hard levels may require pinch-zoom/drag to play comfortably on small screens.
+- Manual emulator validation (Phase 9 + Phase 10) is still pending.
 
 ## Next Recommended Phase
 
-Recommended next phase: final release preparation and a manual backend/emulator smoke test (auth, sync, leaderboard against the Docker backend), then optionally random graph-based level generation. Complete the Phase 9 manual emulator checklist before starting new feature work.
+Recommended next phase: final release preparation and a manual backend/emulator smoke test (auth, sync, leaderboard against the Docker backend), plus the pending manual emulator validation for the dense Phase 10 boards. Optionally, random graph-based level generation afterward.

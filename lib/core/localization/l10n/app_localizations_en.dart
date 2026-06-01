@@ -173,4 +173,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mistakes => 'Mistakes';
+
+  @override
+  String get resetView => 'Reset view';
 }

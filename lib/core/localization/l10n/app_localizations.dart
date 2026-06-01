@@ -421,6 +421,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mistakes'**
   String get mistakes;
+
+  /// No description provided for @resetView.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset view'**
+  String get resetView;
 }
 
 class _AppLocalizationsDelegate

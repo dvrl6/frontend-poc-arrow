@@ -4,6 +4,7 @@ class GameUiKeys {
   const GameUiKeys._();
 
   static const gameBoard = Key('game-board');
+  static const resetViewButton = Key('reset-view-button');
   static const movesLabel = Key('moves-label');
   static const scoreLabel = Key('score-label');
   static const livesLabel = Key('lives-label');

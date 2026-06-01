@@ -182,6 +182,69 @@ void main() {
   });
 
   // -------------------------------------------------------------------------
+  // Connected traversal graph — continuation through connector nodes
+  // -------------------------------------------------------------------------
+
+  test('should_not_escape_at_internal_visual_gap_when_traversal_graph_continues',
+      () {
+    // a-b-c-d-e in one connected row. Arrow A occupies a-b (head b, right).
+    // c is an unoccupied continuation node (a "visual gap"). Arrow B sits on
+    // d-e ahead. A must NOT escape at the gap — it sweeps through c and hits B.
+    final session = buildSession(_lineGraph(
+      arrows: const [
+        ArrowPathDefinition(
+          id: 'A',
+          occupiedEdgeIds: ['a-b'],
+          startNodeId: 'a',
+          endNodeId: 'b',
+          direction: Direction.right,
+        ),
+        ArrowPathDefinition(
+          id: 'B',
+          occupiedEdgeIds: ['d-e'],
+          startNodeId: 'd',
+          endNodeId: 'e',
+          direction: Direction.right,
+        ),
+      ],
+    ));
+    final a = session.arrowById('A')!;
+    expect(
+      resolver.resolve(session: session, arrow: a),
+      isNot(ExitAttemptOutcome.escaped),
+    );
+  });
+
+  test('should_collide_with_arrow_across_connector_path_when_trajectory_overlaps',
+      () {
+    // Same connected line. A's rightward trajectory continues through the
+    // connector node c and overlaps B on d-e → collision.
+    final session = buildSession(_lineGraph(
+      arrows: const [
+        ArrowPathDefinition(
+          id: 'A',
+          occupiedEdgeIds: ['a-b'],
+          startNodeId: 'a',
+          endNodeId: 'b',
+          direction: Direction.right,
+        ),
+        ArrowPathDefinition(
+          id: 'B',
+          occupiedEdgeIds: ['d-e'],
+          startNodeId: 'd',
+          endNodeId: 'e',
+          direction: Direction.right,
+        ),
+      ],
+    ));
+    final a = session.arrowById('A')!;
+    expect(
+      resolver.resolve(session: session, arrow: a),
+      ExitAttemptOutcome.collision,
+    );
+  });
+
+  // -------------------------------------------------------------------------
   // Guard — already escaped
   // -------------------------------------------------------------------------
 
@@ -190,6 +253,30 @@ void main() {
     final escaped = session.arrowById('arrow-1')!.copyWith(isEscaped: true);
     expect(resolver.resolve(session: session, arrow: escaped), ExitAttemptOutcome.alreadyEscaped);
   });
+}
+
+/// One connected row a-b-c-d-e (c is a continuation/connector node).
+LevelDefinition _lineGraph({required List<ArrowPathDefinition> arrows}) {
+  return LevelDefinition(
+    id: 'line',
+    name: 'Line',
+    nodes: const [
+      GraphNodeDefinition(id: 'a', x: 0, y: 0),
+      GraphNodeDefinition(id: 'b', x: 1, y: 0),
+      GraphNodeDefinition(id: 'c', x: 2, y: 0),
+      GraphNodeDefinition(id: 'd', x: 3, y: 0),
+      GraphNodeDefinition(id: 'e', x: 4, y: 0),
+    ],
+    edges: const [
+      GraphEdgeDefinition(id: 'a-b', fromNodeId: 'a', toNodeId: 'b'),
+      GraphEdgeDefinition(id: 'b-c', fromNodeId: 'b', toNodeId: 'c'),
+      GraphEdgeDefinition(id: 'c-d', fromNodeId: 'c', toNodeId: 'd'),
+      GraphEdgeDefinition(id: 'd-e', fromNodeId: 'd', toNodeId: 'e'),
+    ],
+    arrows: arrows,
+    blockedEdgeIds: const [],
+    metadata: const {'difficulty': 'test'},
+  );
 }
 
 /// 3 columns x 2 rows grid:

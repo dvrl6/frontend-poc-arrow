@@ -177,4 +177,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get mistakes => 'Errores';
+
+  @override
+  String get resetView => 'Restablecer vista';
 }

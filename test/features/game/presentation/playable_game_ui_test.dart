@@ -56,9 +56,9 @@ void main() {
 
     await _openLevelOne(tester, await _loadRealManualLevels(tester));
 
-    // Level 1 is an L-shaped board with 4 nodes and 1 arrow (Phase 9 redesign).
+    // Level 1 (Phase 10 connected denser redesign): 22 nodes, 10 arrows.
     expect(
-      find.bySemanticsLabel('Graph board with 4 nodes and 1 active arrows'),
+      find.bySemanticsLabel('Graph board with 22 nodes and 10 active arrows'),
       findsOneWidget,
     );
     semantics.dispose();
@@ -111,6 +111,23 @@ void main() {
     expect(find.byKey(GameUiKeys.livesLabel), findsOneWidget);
     // Three heart icons: all filled at start.
     expect(find.byIcon(Icons.favorite), findsNWidgets(3));
+  });
+
+  testWidgets('should_show_reset_view_button_and_keep_taps_working', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_TestGameApp(level: _singleNodeExitLevel()));
+    await _pumpUntilFound(tester, find.byKey(GameUiKeys.gameBoard));
+
+    // Pan/zoom reset control is present and tappable (no crash).
+    expect(find.byKey(GameUiKeys.resetViewButton), findsOneWidget);
+    await tester.tap(find.byKey(GameUiKeys.resetViewButton));
+    await tester.pump();
+
+    // Tap-to-activate still works with InteractiveViewer wrapping the board.
+    await tester.tapAt(_singleNodePosition(tester));
+    await tester.pump();
+    expect(find.byKey(GameUiKeys.victoryCard), findsOneWidget);
   });
 
   testWidgets('should_show_game_over_when_lives_reach_zero', (tester) async {

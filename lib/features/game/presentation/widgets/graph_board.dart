@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_poc_arrow/core/localization/l10n/app_localizations.dart';
 
+import '../../../../core/theme/app_theme.dart';
 import '../game_ui_keys.dart';
 import '../../domain/arrow_path.dart';
 import '../../domain/game_session.dart';
@@ -45,6 +47,9 @@ class _GraphBoardState extends State<GraphBoard>
   ArrowPath? _exitingArrow;
   Set<String> _activeIds = const {};
   String? _shakeArrowId;
+
+  /// Pan/zoom transform for dense boards. Reset via the reset-view button.
+  final TransformationController _viewController = TransformationController();
 
   @override
   void initState() {
@@ -104,6 +109,7 @@ class _GraphBoardState extends State<GraphBoard>
   void dispose() {
     _exitController?.dispose();
     _shakeController?.dispose();
+    _viewController.dispose();
     super.dispose();
   }
 
@@ -124,7 +130,7 @@ class _GraphBoardState extends State<GraphBoard>
               size: size,
             );
 
-            return GestureDetector(
+            final board = GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTapUp: (details) {
                 final arrowId = const GraphBoardHitTester().findArrowAt(
@@ -149,7 +155,57 @@ class _GraphBoardState extends State<GraphBoard>
                 ),
               ),
             );
+
+            // Pan/zoom for dense boards. The tap GestureDetector lives inside
+            // the transformed child, so hit testing stays in child coordinates.
+            return Stack(
+              children: [
+                Positioned.fill(
+                  child: InteractiveViewer(
+                    transformationController: _viewController,
+                    minScale: 1.0,
+                    maxScale: 4.0,
+                    boundaryMargin: const EdgeInsets.all(24),
+                    child: board,
+                  ),
+                ),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: _ResetViewButton(onPressed: _resetView),
+                ),
+              ],
+            );
           },
+        ),
+      ),
+    );
+  }
+
+  void _resetView() {
+    _viewController.value = Matrix4.identity();
+  }
+}
+
+class _ResetViewButton extends StatelessWidget {
+  const _ResetViewButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+    return Tooltip(
+      message: localizations.resetView,
+      child: Material(
+        color: AppTheme.surface.withValues(alpha: 0.85),
+        shape: const CircleBorder(),
+        clipBehavior: Clip.antiAlias,
+        child: IconButton(
+          key: GameUiKeys.resetViewButton,
+          icon: const Icon(Icons.center_focus_strong, size: 20),
+          tooltip: localizations.resetView,
+          onPressed: onPressed,
         ),
       ),
     );
