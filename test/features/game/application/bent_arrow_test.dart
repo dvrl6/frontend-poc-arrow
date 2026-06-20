@@ -98,7 +98,9 @@ void main() {
     expect(resolver.resolve(session: session, arrow: arrow), ExitAttemptOutcome.escaped);
   });
 
-  test('bent_arrow_collides_when_body_sweep_hits_another_arrow', () {
+  test('bent_arrow_escapes_when_head_clear_but_body_node_adjacent_to_another_arrow', () {
+    // Head-only rule: body adjacency to another arrow is NOT a collision.
+    //
     // 2-column × 3-row grid:
     //   a(0,0) — b(1,0)
     //   c(0,1) — d(1,1)
@@ -107,10 +109,10 @@ void main() {
     // Arrow L: L-shaped, occupies ab+bd (tail=a, bend=b, head=d, direction=down).
     //   Covered nodes: {a, b, d}.
     // Arrow B: occupies ce (tail=c, head=e, direction=down).
-    //   Covered nodes: {c, e}. No overlap with L.
+    //   c(0,1) is directly below body node a(0,0) — body is adjacent to B.
+    //   Head d(1,1) sweeps down to f(1,2) which is NOT in B → clear path.
     //
-    // When L moves down:
-    //   • From a(0,0): sweep down → neighbour c(0,1) ∈ B's nodes → COLLISION.
+    // Expected: ESCAPED (body adjacency is ignored; head path is clear).
     final definition = LevelDefinition(
       id: 'bent-collision',
       name: 'Bent Collision',
@@ -145,6 +147,61 @@ void main() {
           startNodeId: 'c',
           endNodeId: 'e',
           direction: Direction.down,
+        ),
+      ],
+      blockedEdgeIds: const [],
+      metadata: const {'difficulty': 'test'},
+    );
+    final session = buildSession(definition);
+    final arrow = session.arrowById('L')!;
+    expect(resolver.resolve(session: session, arrow: arrow), ExitAttemptOutcome.escaped);
+  });
+
+  test('bent_arrow_head_blocked_at_adjacent_coordinate_without_graph_edge_is_collision', () {
+    // Coordinate-based sweep from HEAD catches a blocker at the next coordinate
+    // even when no graph edge connects head to that node (sparse-graph case).
+    //
+    // Board:
+    //   a(0,0) — b(1,0)
+    //   c(0,1)   e(1,1)   ← e is head
+    //             f(1,2)   ← blocker, no edge e→f
+    //
+    // Edges: ab (horizontal), be (vertical). No edge between e and f.
+    //
+    // Arrow L: occupies ab+be (tail=a, bend=b, head=e, direction=down).
+    // Arrow B: single node at f(1,2).
+    //   f is directly below head e but NOT connected by a graph edge.
+    //
+    // Head sweeps down from e(1,1): coordinate (1,2) → nodeByCoordinate finds f
+    // → f ∈ blockerNodes → COLLISION.
+    final definition = LevelDefinition(
+      id: 'sparse-head-collision',
+      name: 'Sparse Head Collision',
+      nodes: const [
+        GraphNodeDefinition(id: 'a', x: 0, y: 0),
+        GraphNodeDefinition(id: 'b', x: 1, y: 0),
+        GraphNodeDefinition(id: 'c', x: 0, y: 1),
+        GraphNodeDefinition(id: 'e', x: 1, y: 1),
+        GraphNodeDefinition(id: 'f', x: 1, y: 2),
+      ],
+      edges: const [
+        GraphEdgeDefinition(id: 'ab', fromNodeId: 'a', toNodeId: 'b'),
+        GraphEdgeDefinition(id: 'be', fromNodeId: 'b', toNodeId: 'e'),
+      ],
+      arrows: const [
+        ArrowPathDefinition(
+          id: 'L',
+          occupiedEdgeIds: ['ab', 'be'],
+          startNodeId: 'a',
+          endNodeId: 'e',
+          direction: Direction.down,
+        ),
+        ArrowPathDefinition(
+          id: 'B',
+          occupiedEdgeIds: [],
+          startNodeId: 'f',
+          endNodeId: 'f',
+          direction: Direction.right,
         ),
       ],
       blockedEdgeIds: const [],

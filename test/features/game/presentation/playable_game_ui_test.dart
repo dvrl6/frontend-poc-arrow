@@ -56,9 +56,9 @@ void main() {
 
     await _openLevelOne(tester, await _loadRealManualLevels(tester));
 
-    // Level 1 (Phase 11 random regeneration): 42 nodes, 11 arrows.
+    // Level 1 (Phase 12 regeneration): 36 nodes, 10 arrows.
     expect(
-      find.bySemanticsLabel('Graph board with 42 nodes and 11 active arrows'),
+      find.bySemanticsLabel('Graph board with 36 nodes and 10 active arrows'),
       findsOneWidget,
     );
     semantics.dispose();

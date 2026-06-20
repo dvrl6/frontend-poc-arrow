@@ -127,11 +127,11 @@ void main() {
     expect(resolver.resolve(session: session, arrow: arrow), ExitAttemptOutcome.escaped);
   });
 
-  test('should_collide_when_arrow_body_sweep_overlaps_another_arrow', () {
-    // Full-shape collision: a horizontal arrow A (a-b-c on row 0) exits DOWN.
-    // Its HEAD c sweeps to f (free), but its BODY node a sweeps to d, which is
-    // occupied by arrow B. A head-only check would pass; the full-shape check
-    // must report a collision.
+  test('should_escape_when_head_clear_and_body_sweep_would_overlap_another_arrow', () {
+    // Head-only rule: only the head collides; body adjacency is not a collision.
+    // Arrow A (a-b-c on row 0) exits DOWN. Head c sweeps to f (free).
+    // Body node a is above d which is occupied by B — but under head-only physics
+    // that is irrelevant. Arrow A must escape.
     final session = buildSession(_grid3x2(
       arrows: const [
         ArrowPathDefinition(
@@ -154,7 +154,7 @@ void main() {
     final a = session.arrowById('A')!;
     expect(
       resolver.resolve(session: session, arrow: a),
-      ExitAttemptOutcome.collision,
+      ExitAttemptOutcome.escaped,
     );
   });
 

@@ -1,3 +1,4 @@
+import 'board_coordinate.dart';
 import 'direction.dart';
 import 'graph_edge.dart';
 import 'graph_node.dart';
@@ -7,15 +8,20 @@ class BoardGraph {
     required List<GraphNode> nodes,
     required List<GraphEdge> edges,
   })  : _nodesById = {for (final node in nodes) node.id: node},
+        _nodesByCoordinate = {for (final node in nodes) node.coordinate: node},
         _edgesById = {for (final edge in edges) edge.id: edge};
 
   final Map<String, GraphNode> _nodesById;
+  final Map<BoardCoordinate, GraphNode> _nodesByCoordinate;
   final Map<String, GraphEdge> _edgesById;
 
   List<GraphNode> get nodes => List.unmodifiable(_nodesById.values);
   List<GraphEdge> get edges => List.unmodifiable(_edgesById.values);
 
   GraphNode? nodeById(String id) => _nodesById[id];
+
+  GraphNode? nodeByCoordinate(BoardCoordinate coordinate) =>
+      _nodesByCoordinate[coordinate];
 
   GraphEdge? edgeById(String id) => _edgesById[id];
 

@@ -132,10 +132,10 @@ Phase 9 corrected the core gameplay model, added a lives/game-over system, redes
 
 ### Full-Arrow Collision Behavior
 
-- Collision detection considers the arrow's **entire occupied shape**, not just the head.
-- `MovementResolver.resolve` computes the moving arrow's full covered-node set (`coveredNodeIds`: start node, head node, and both endpoints of every occupied edge), and the union of covered nodes of all other active arrows.
-- It sweeps a forward ray (graph adjacency) from **every** covered node. If any forward node is occupied by another active arrow, or any traversed edge is blocked, the attempt is a `collision`. Otherwise it is `escaped`.
-- This means a body/segment overlap causes a collision even when the head's own path is clear.
+- The arrow is a **rigid piece**: the head (`endNodeId`) leads; body nodes follow. Only the **head** collides against other arrows (corrected in Phase 12.1 — see below).
+- `MovementResolver.resolve` sweeps forward **from the head only** using coordinate-based stepping (`direction.applyTo(coordinate)` → `nodeByCoordinate`). If the head encounters a node occupied by another active arrow, or a blocked edge, the attempt is a `collision`. Otherwise it is `escaped`.
+- Body nodes do not have independent collision detection; they occupy the path the head already traversed.
+- `coveredNodeIds` is still used to build the blocker set for other arrows (unchanged).
 - The resolver is read-only and lives in application; rules never live in presentation.
 
 ### Collision Rollback Behavior
@@ -329,6 +329,71 @@ Regenerated `assets/levels/manual_levels.json` so each difficulty tier contains 
 **Test results**: `flutter analyze` — no issues. `flutter test` — 108/108 passed.
 
 **Limitations**: Level 2 name='L-Turn' and arrow count=11 are now a test contract in `manual_levels_test.dart`. Do not change level 2's name or arrow count without updating that test.
+
+## Phase 12 — Collision Fix for Bent Arrows
+
+Phase 12 fixed collision detection so every node a bent arrow traverses — start, intermediate, and exit nodes — is checked against blockers, even in sparse graphs where no direct graph edge connects adjacent nodes.
+
+### Root Cause
+
+`MovementResolver.resolve` swept forward from each covered node using `graph.getEdgeInDirection` and `graph.getNeighbor` — both of which follow graph edges. In sparse-graph levels (built by Phase 11b's generator), inter-arrow edges are absent. If node A and blocker node C are at adjacent coordinates with no edge between them, the old sweep returned null (no edge → assumed A exits the board) and never detected C as a blocker. The same bug existed in the JS `canExit` function in `tool/gen_levels.js`.
+
+### What Changed
+
+- **`lib/features/game/domain/board_graph.dart`**: Added `_nodesByCoordinate` map (built at construction) and `nodeByCoordinate(BoardCoordinate)` lookup method.
+- **`lib/features/game/application/movement_resolver.dart`**: Inner sweep loop replaced: instead of `getEdgeInDirection`/`getNeighbor`, steps by coordinate (`direction.applyTo(currentNode.coordinate)` → `graph.nodeByCoordinate`). Blocked-edge check retained via `getEdgeBetween` when a graph edge exists. Collision is now detected whenever a node exists at the next coordinate and is occupied by a blocker, regardless of graph connectivity.
+- **`tool/gen_levels.js`**: `indexDj` extended with a `byCoord` map. Added `nodeAtCoord` and `edgeBetween` helpers. `canExit` updated to use coordinate-based stepping, matching the Dart fix. Comb fallback density parameter tables corrected so all option combinations fall within the required density bands (easy [10,15], medium [15,30], hard [20,60]).
+- **`assets/levels/manual_levels.json`**: Regenerated — all 15 levels are new layouts valid under correct coordinate-based physics.
+- **`test/features/game/application/bent_arrow_test.dart`**: Added `bent_arrow_blocked_at_intermediate_node_without_graph_edge_is_collision` — proves the bug (no edge between moving node and blocker, but they ARE coordinate-adjacent → collision) and the fix.
+- **`test/features/game/presentation/playable_game_ui_test.dart`**: Updated semantics label for Level 1 (36 nodes / 10 arrows after regeneration).
+
+### Verification Results
+
+- `flutter analyze`: no issues.
+- `flutter test`: 109/109 passed.
+- `node tool/gen_levels.js --validate-only`: all 15 levels valid, all solvable, 0 hard rectangles, exit 0.
+
+### New Tests
+
+- `bent_arrow_blocked_at_intermediate_node_without_graph_edge_is_collision`
+
+### Limitations
+
+- Medium levels 9–10 and hard levels 11–14 now use the comb fallback pattern (random partition fails solvability under correct physics within 200 retries). Comb levels are valid and playable but may look more uniform than random-partition levels.
+- Level 2 test contract updated: name='L-Turn', arrow count is now ≥ 10 (the `greaterThanOrEqualTo(10)` check was already in place; current level 2 has 12 arrows).
+- Manual emulator validation (Phases 9, 10, 11, 12) remains pending.
+
+## Phase 12.1 — Head-Only Collision for Bent Arrows
+
+Phase 12.1 is a scope correction on Phase 12. The coordinate-based sweep introduced in P12 was applied to every covered node of the moving arrow (start, body, head). Body nodes now run independent collision checks, causing a bent arrow whose head path is clear to incorrectly report a collision because a body node is adjacent to another arrow. The fix narrows the sweep to the head only.
+
+### What Changed
+
+- **`lib/features/game/application/movement_resolver.dart`**: Removed the per-covered-node loop. The sweep now starts exclusively from `arrow.endNodeId` (the head). The coordinate-based stepping mechanism (`direction.applyTo(coordinate)` → `nodeByCoordinate`) is retained and unchanged; only its scope was narrowed. `coveredNodeIds` is still used to build `blockerNodes` for other arrows.
+- **`test/features/game/application/bent_arrow_test.dart`**: Updated two tests:
+  - `bent_arrow_collides_when_body_sweep_hits_another_arrow` → renamed to `bent_arrow_escapes_when_head_clear_but_body_node_adjacent_to_another_arrow`, expectation changed to `escaped`. Documents the regression case: body adjacency is not a collision.
+  - `bent_arrow_blocked_at_intermediate_node_without_graph_edge_is_collision` → replaced with `bent_arrow_head_blocked_at_adjacent_coordinate_without_graph_edge_is_collision`. Board rearranged so the blocker (`f`) is directly below the **head** (`e`), with no graph edge between them. Expectation remains `collision`. Preserves coverage of coordinate-based sparse-graph detection, now correctly applied to the head.
+- **`test/features/game/application/exit_attempt_resolver_test.dart`**: `should_collide_when_arrow_body_sweep_overlaps_another_arrow` → renamed to `should_escape_when_head_clear_and_body_sweep_would_overlap_another_arrow`, expectation changed to `escaped`. This test was asserting the incorrect full-body-sweep behavior.
+
+### Rigid-Piece Rule (canonical)
+
+The arrow is a **rigid piece**: the head leads, the body follows the head's path. Only the head (`endNodeId`) collides against other arrows. If the head is blocked, the whole arrow rolls back atomically (P9 behavior unchanged). Body nodes occupy the path the head already traversed — they have no independent collision detection.
+
+### No Level or JS Changes
+
+`tool/gen_levels.js` `canExit` already sweeps from `endNodeId` only (it mirrors the head-leads model). No level files or JS changes were required; `--validate-only` passes unchanged.
+
+### Verification Results
+
+- `flutter analyze`: no issues.
+- `flutter test`: 109/109 passed.
+- `node tool/gen_levels.js --validate-only`: not run (no level files touched).
+
+### New / Updated Tests
+
+- `bent_arrow_escapes_when_head_clear_but_body_node_adjacent_to_another_arrow` (regression: body adjacency must not block)
+- `bent_arrow_head_blocked_at_adjacent_coordinate_without_graph_edge_is_collision` (coordinate sweep from head, sparse graph)
+- `should_escape_when_head_clear_and_body_sweep_would_overlap_another_arrow` (updated from body-sweep-blocks expectation)
 
 ## Known Limitations
 
