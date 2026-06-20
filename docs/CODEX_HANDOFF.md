@@ -328,7 +328,7 @@ Regenerated `assets/levels/manual_levels.json` so each difficulty tier contains 
 
 **Test results**: `flutter analyze` — no issues. `flutter test` — 108/108 passed.
 
-**Limitations**: Level 2 name='L-Turn' and arrow count=11 are now a test contract in `manual_levels_test.dart`. Do not change level 2's name or arrow count without updating that test.
+**Limitations**: Level 2's name and arrow count are a test contract in `manual_levels_test.dart`. Do not change them without updating that test. (As of Phase 13.2 the name is `'Level 2'` — see that section.)
 
 ## Phase 12 — Collision Fix for Bent Arrows
 
@@ -395,6 +395,134 @@ The arrow is a **rigid piece**: the head leads, the body follows the head's path
 - `bent_arrow_head_blocked_at_adjacent_coordinate_without_graph_edge_is_collision` (coordinate sweep from head, sparse graph)
 - `should_escape_when_head_clear_and_body_sweep_would_overlap_another_arrow` (updated from body-sweep-blocks expectation)
 
+## Phase 13 — Path-Following Exit Animation (Train on Tracks)
+
+Phase 13 implements the exit animation so bent arrows slide along their own path off the board. The head leaves first; each body node follows the exact sequence of pixel positions the nodes ahead of it occupied, rounding corners, then continues in the exit direction past the head. All changes are presentation-only; no domain or test files were modified.
+
+### What Changed
+
+- **`lib/features/game/presentation/widgets/graph_board_painter.dart`**: `_drawExitingArrow` rewritten with arc-length track sampling.
+  - Builds cumulative pixel arc lengths (`arcs[]`) along the `orderedNodeIds` polyline (tail→head).
+  - For each node at "from-head index" `i` (0=head, n-1=tail), starts moving after `i * effectiveDelay` (same 10%-per-segment stagger, capped at 50%, as before).
+  - `advance = totalDistance * localT`. If `advance ≤ arcToHead`: walks forward along the node polyline by `advance` pixels from the node's starting position, with linear interpolation within each segment — the node rounds the bend. If `advance > arcToHead`: continues straight past the head in the exit direction.
+  - Opacity driven by the head's `localT` (head leads the fade). Arrowhead drawn at the displaced head position.
+  - The existing 360 ms controller, stagger constants, direction vector, and collision shake are untouched.
+  - Previous bug: each node translated `pos + dir * totalDistance * localT` — a straight slide from its own position that preserved the bent shape and moved it in a straight line off the board.
+
+### Files Touched
+
+- `lib/features/game/presentation/widgets/graph_board_painter.dart`
+
+### Verification Results
+
+- `flutter analyze`: passed with no issues.
+- `flutter test`: 109/109 passed.
+- `node tool/gen_levels.js --validate-only`: not applicable (no level files touched).
+
+### New Tests
+
+- None (presentation-only change; existing suite fully covers the affected code path).
+
+### Limitations
+
+- Manual emulator validation (Phases 9, 10, 11, 12, 13) is still pending. Trigger an exit on a bent (L/U/zigzag) arrow and confirm it rounds its own corner on the way out, the head leads, and the collision shake is unaffected.
+
+## Phase 13.1 — Level Direction Variety
+
+Phase 13.1 is a generator-only change. All 15 levels now contain a meaningful mix of up/down/left/right arrows; no level is all-horizontal. No engine, collision, rendering, or Dart test files were modified.
+
+### Root Cause
+
+`partitionNodes()` in `tool/gen_levels.js` had two explicit horizontal biases:
+1. The last DFS step of each path preferred horizontal neighbours so `direction` would be `right` or `left`.
+2. Any path whose final direction was vertical was reversed to produce a horizontal end.
+
+Additionally, `canExit` swept from **all** covered nodes rather than from `endNodeId` only — contradicting the Dart Phase 12.1 head-only resolver. This over-rejected valid vertical configurations, causing ~200-retry failures and comb fallback on most levels.
+
+### What Changed
+
+- **`tool/gen_levels.js`**:
+  - `canExit`: now sweeps from `endNodeId` only, matching the Dart Phase 12.1 `MovementResolver` (head-leads model). This was a pre-existing mismatch documented as fixed in P12.1 but not yet applied to the JS tool.
+  - `partitionNodes`: removed the last-step horizontal preference and the post-hoc vertical-to-horizontal reversal. Candidates are already shuffled by the seeded PRNG; direction is now determined by whichever step the DFS naturally takes last.
+  - `generateLevel`: added a direction-variety check — a level is retried if it has no vertical arrow (`up` or `down`) or if any single direction exceeds 60% of arrows.
+  - `Builder`: added `weaveH()` — adds horizontal edges between all horizontally-adjacent node pairs. Used by the mixed fallback for graph connectivity.
+  - `buildCombFallback`: replaced the old horizontal-only comb with a **mixed-lane builder** — alternating right/left horizontal rows (H-section) stacked above down-pointing vertical columns (V-section). The two sections are provably non-cross-blocking: H arrows sweep within their rows, V arrows sweep below the H-section. Connectivity ensured by `weaveH()` + `weave()`. Guarantees `hasVertical=true` and `maxDirFrac ≤ 60%`.
+- **`assets/levels/manual_levels.json`**: regenerated — 13/15 levels generated by the random partition algorithm; 2 hard levels (14 and 15) use the new mixed fallback.
+
+### Direction Variety (all 15 levels)
+
+```
+#1  First Exit   (10): down:60% right:30% left:10%
+#2  L-Turn       (11): right:55% down:36% left:9%
+#3  Zigzag       (12): down:50% right:33% left:8% up:8%
+#4  Two Lanes    (12): right:42% left:25% down:17% up:17%
+#5  Queue Up     (11): right:45% left:27% up:18% down:9%
+#6  Cross Roads  (16): down:38% left:31% right:31%
+#7  T-Junction   (18): right:50% down:39% left:11%
+#8  Comb Grid    (21): down:48% left:24% right:24% up:5%
+#9  Offset Pair  (17): down:53% right:29% left:18%
+#10 Three Way    (16): right:56% down:31% left:13%
+#11 Deadlock Intro (23): down:52% left:35% right:13%
+#12 Chain Block  (23): down:57% right:26% left:9% up:9%
+#13 Comb Maze    (26): left:38% down:35% right:27%
+#14 Four Locks   (41): down:39% right:37% left:24%
+#15 Final Maze   (41): down:39% right:37% left:24%
+```
+
+All 15: `hasVertical=true`, single-direction cap ≤ 60%.
+
+### Files Touched
+
+- `tool/gen_levels.js`
+- `assets/levels/manual_levels.json`
+
+### Verification Results
+
+- `flutter analyze`: no issues.
+- `flutter test`: 109/109 passed (no Dart files changed; level 1 layout unchanged — 36 nodes, 10 arrows — so semantics label test unchanged).
+- `node tool/gen_levels.js --validate-only`: all 15 levels valid, all solvable, 0 hard rectangles, exit 0.
+
+### New Tests
+
+- None (generator-only change; existing suite fully covers the affected code path).
+
+### Limitations (Phase 13.1 first pass — now resolved)
+
+- Levels 14 and 15 used the deterministic mixed-lane fallback. Fixed in Phase 13.1 refactor below.
+- Manual emulator validation (Phases 9, 10, 11, 12, 13, 13.1) is still pending. Confirm up/down-pointing arrows render correctly and exit in the correct direction.
+
+## Phase 13.1 Refactor — All Levels From Random Partition
+
+Generator-only follow-up to Phase 13.1. All 15 levels now originate from the random partition algorithm; the deterministic `buildCombFallback` is no longer a source of shipped levels.
+
+### Root Cause
+
+Hard levels 14 and 15 (seeds 14014 / 15015) exhausted the 200-attempt retry budget without satisfying the variety check. The variety success rate for hard levels is roughly 0.5–1% per attempt — levels 14 and 15 happened to find valid layouts at attempts 209 and 208 respectively, just beyond the old budget.
+
+### What Changed
+
+- **`tool/gen_levels.js`**:
+  - `MAX_RETRIES` changed from a flat `200` to a per-tier object: `{ easy: 200, medium: 200, hard: 3000 }`. Hard tier now has a 3000-attempt budget; the PRNG-based loop completes in well under a second per attempt.
+  - `generateLevel` computes `const maxRetries = MAX_RETRIES[difficulty] || 200` and uses it for the retry loop.
+  - Removed the `buildCombFallback` call at the end of `generateLevel`. On retry exhaustion the function now throws, surfacing generation failures loudly rather than silently shipping a deterministic layout.
+  - `buildCombFallback` marked as dead code with a header comment. The function body is retained for reference but is unreachable during generation.
+- **`assets/levels/manual_levels.json`**: regenerated — all 15 levels are random-partition outputs. Levels 14 and 15 found at attempts 209 and 208.
+
+### Generation Output
+
+```
+#14 Four Locks  hard  nodes=114 arrows=23 bbox=12x10 rect=n comp=1 free=- solvable=true
+#15 Final Maze  hard  nodes=104 arrows=22 bbox=12x9  rect=n comp=1 free=- solvable=true
+tier avg: easy=11.2 < medium=17.6 < hard=23.4 ✓  hard rects=0 ✓  ALL VALID: true
+```
+
+### Verification Results
+
+- `flutter analyze`: no issues.
+- `flutter test`: 109/109 passed.
+- `node tool/gen_levels.js --validate-only`: all 15 levels valid, all solvable, 0 hard rectangles, exit 0.
+- Confirmed: no level uses `buildCombFallback` (generation log shows attempt numbers; no FALLBACK warning printed).
+
 ## Known Limitations
 
 - No random level generation yet.
@@ -408,6 +536,22 @@ The arrow is a **rigid piece**: the head leads, the body follows the head's path
 - Stuck/deadlock detection was treated as optional and is not implemented; lives/game-over remains the failure path.
 - Dense hard levels may require pinch-zoom/drag to play comfortably on small screens.
 - Manual emulator validation (Phase 9 + Phase 10) is still pending.
+
+## Phase 13.2 — Level Name Simplification
+
+**Scope**: Generator-only (plus dependent test assertions). No gameplay, domain, or rendering changes.
+
+**What changed**:
+- `tool/gen_levels.js`: all 15 `LEVEL_DEFS` names changed from descriptive labels ("First Exit", "L-Turn", …, "Final Maze") to generic `'Level N'`. Difficulty, seeds, meta, and the generation algorithm are unchanged.
+- `assets/levels/manual_levels.json` regenerated. Level structure is identical to Phase 13.1 (same seeds → same layouts); only the `name` fields differ.
+- Test assertions updated to the new names:
+  - `test/features/game/infrastructure/manual_levels_test.dart`: level 2 name `'L-Turn'` → `'Level 2'`.
+  - `test/features/game/presentation/playable_game_ui_test.dart`: `'First Exit'` → `'Level 1'` (×2), `'Final Maze'` → `'Level 15'`.
+  - `test/widget_test.dart`: `'First Exit'` → `'Level 1'`.
+
+**Test results**: `flutter analyze` — no issues. `flutter test` — 109/109 passed. `node tool/gen_levels.js --validate-only` — ALL VALID: true; tier avgs easy=11.2 < medium=17.6 < hard=23.4; 0 hard full-rectangle levels.
+
+**Note**: Level 2's test contract is now name=`'Level 2'`, arrows ≥ 10.
 
 ## Next Recommended Phase
 

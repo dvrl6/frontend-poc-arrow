@@ -27,7 +27,7 @@ void main() {
     await tester.tap(find.text('Play'));
     await _pumpUntilFound(tester, find.byKey(GameUiKeys.levelCard(1)));
 
-    expect(find.text('First Exit'), findsOneWidget);
+    expect(find.text('Level 1'), findsOneWidget);
     expect(find.byKey(GameUiKeys.levelCard(1)), findsOneWidget);
   });
 }
