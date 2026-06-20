@@ -25,7 +25,7 @@ Check every item on this list before starting any phase. Update this file when c
 
 - `assets/levels/manual_levels.json` is the **authoritative hand-editable source**. Do not run `node tool/gen_levels.js --generate` unless regeneration is explicitly intended by the task.
 - `--validate-only` is always safe and reads without writing.
-- **Level 2 test contract**: name='L-Turn', arrow count=11. Do not change level 2's name or arrow count without updating `test/features/game/infrastructure/manual_levels_test.dart`.
+- **Level 2 test contract**: name='Level 2', arrow count ≥ 10. Do not change level 2's name or arrow count below the floor without updating `test/features/game/infrastructure/manual_levels_test.dart`.
 
 ## Git
 

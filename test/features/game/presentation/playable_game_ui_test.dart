@@ -26,8 +26,7 @@ void main() {
     await _pumpUntilFound(tester, find.byKey(GameUiKeys.levelCard(1)));
 
     expect(find.byKey(GameUiKeys.levelCard(1)), findsOneWidget);
-    // Level 1 is now named "First Exit" — unchanged from Phase 8.
-    expect(find.text('First Exit'), findsAtLeastNWidgets(1));
+    expect(find.text('Level 1'), findsAtLeastNWidgets(1));
 
     await tester.scrollUntilVisible(
       find.byKey(GameUiKeys.levelCard(15)),
@@ -36,7 +35,7 @@ void main() {
     );
 
     expect(find.byKey(GameUiKeys.levelCard(15)), findsOneWidget);
-    expect(find.text('Final Maze'), findsOneWidget);
+    expect(find.text('Level 15'), findsOneWidget);
   });
 
   testWidgets('should_open_game_screen_when_manual_level_is_selected', (
@@ -44,7 +43,7 @@ void main() {
   ) async {
     await _openLevelOne(tester, await _loadRealManualLevels(tester));
 
-    expect(find.text('First Exit'), findsAtLeastNWidgets(1));
+    expect(find.text('Level 1'), findsAtLeastNWidgets(1));
     expect(find.byKey(GameUiKeys.gameBoard), findsOneWidget);
     expect(find.byKey(GameUiKeys.movesLabel), findsOneWidget);
     expect(find.byKey(GameUiKeys.scoreLabel), findsOneWidget);

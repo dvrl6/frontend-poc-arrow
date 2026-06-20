@@ -57,7 +57,7 @@ class _GraphBoardState extends State<GraphBoard>
     _activeIds = widget.session.activeArrows.map((a) => a.id).toSet();
     if (widget.animate) {
       _exitController =
-          AnimationController(vsync: this, duration: const Duration(milliseconds: 360))
+          AnimationController(vsync: this, duration: const Duration(milliseconds: 700))
             ..addListener(() => setState(() {}))
             ..addStatusListener((status) {
               if (status == AnimationStatus.completed) {

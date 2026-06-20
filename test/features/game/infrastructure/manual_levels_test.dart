@@ -129,7 +129,7 @@ void main() {
     expect(level, isNotNull);
     expect(level!.number, 2);
     expect(level.id, 'manual-002');
-    expect(level.name, 'L-Turn');
+    expect(level.name, 'Level 2');
     expect(level.arrows.length, greaterThanOrEqualTo(10));
     expect(level.metadata['generationType'], 'manual');
   });

@@ -33,7 +33,11 @@ const fs = require('fs');
 const path = require('path');
 
 const ASSET = path.join(__dirname, '..', 'assets', 'levels', 'manual_levels.json');
-const MAX_RETRIES = 200;
+// Per-tier retry budgets. Hard gets a large budget so the random partition
+// algorithm finds a valid varied level without falling back to a deterministic
+// layout. This is a build-time tool — spending a few seconds per hard level
+// is acceptable.
+const MAX_RETRIES = { easy: 200, medium: 200, hard: 3000 };
 
 // ---------------------------------------------------------------------------
 // Utilities
@@ -116,6 +120,15 @@ function Builder(number, name, difficulty) {
       for (const [id, p] of this._nodes) {
         const below = nid(p.x, p.y + 1);
         if (this._nodes.has(below)) this.addEdge(id, below);
+      }
+    },
+    // Add horizontal edges between every horizontally-adjacent node pair for
+    // graph connectivity. Used by mixed layouts where vertical sections would
+    // otherwise be disconnected from each other.
+    weaveH() {
+      for (const [id, p] of this._nodes) {
+        const right = nid(p.x + 1, p.y);
+        if (this._nodes.has(right)) this.addEdge(id, right);
       }
     },
     build(meta) {
@@ -225,25 +238,9 @@ function partitionNodes(nodes, rng, maxPathLen) {
     while (path.length < maxPathLen) {
       const allCands = rng.shuffle(coordAdj(cur, nodes).filter(nb => unvisited.has(nb)));
       if (!allCands.length) break;
-
-      let next;
-      if (path.length === maxPathLen - 1) {
-        // Last step: prefer horizontal neighbours so direction=right/left.
-        const hCands = allCands.filter(nb => nodes.get(nb).y === nodes.get(cur).y);
-        next = hCands.length ? hCands[0] : allCands[0];
-      } else {
-        next = allCands[0];
-      }
-      path.push(next);
-      unvisited.delete(next);
-      cur = next;
-    }
-
-    // Try to reverse path if direction is vertical, to get a horizontal end.
-    const dir = finalDir(path, nodes);
-    if (!H_DIRS.includes(dir) && path.length >= 2) {
-      const revDir = finalDir([...path].reverse(), nodes);
-      if (H_DIRS.includes(revDir)) path.reverse();
+      path.push(allCands[0]);
+      unvisited.delete(allCands[0]);
+      cur = allCands[0];
     }
 
     if (path.length >= 2) {
@@ -306,8 +303,9 @@ const DENSITY = {
 function generateLevel(number, name, difficulty, meta, baseSeed) {
   const cfg = LEVEL_CONFIGS[difficulty];
   const band = DENSITY[difficulty];
+  const maxRetries = MAX_RETRIES[difficulty] || 200;
 
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
     const rng = makePRNG(baseSeed + attempt * 97);
 
     const W = cfg.W + rng.int(cfg.Wvar + 1);
@@ -346,29 +344,76 @@ function generateLevel(number, name, difficulty, meta, baseSeed) {
     // when the removal leaves parts joined only through removed horizontal edges).
     if (connectedComponents(dj) !== 1) continue;
 
-    // Greedy solvability (should almost always pass with sparse graph + horizontal bias).
+    // Direction variety: require at least one vertical arrow; cap any single
+    // direction at 60% so no axis dominates the level.
+    const dirCounts = {};
+    for (const a of dj.arrows) dirCounts[a.direction] = (dirCounts[a.direction] || 0) + 1;
+    const hasVertical = (dirCounts['up'] || 0) + (dirCounts['down'] || 0) > 0;
+    const maxDirFrac = Math.max(...Object.values(dirCounts)) / dj.arrows.length;
+    if (!hasVertical || maxDirFrac > 0.60) continue;
+
+    // Greedy solvability.
     if (!solvableGreedy(dj)) continue;
 
     console.log(`  #${number} attempt ${attempt + 1}: ${n} arrows, ${totalNodes} nodes, ${W}x${H}`);
     return level;
   }
 
-  // Fallback: deterministic comb (guaranteed valid, always used as last resort).
-  console.warn(`  #${number} FALLBACK after ${MAX_RETRIES} retries`);
-  return buildCombFallback(number, name, difficulty, meta, baseSeed);
+  // All retries exhausted — fail loudly. No shipped level may come from a
+  // deterministic fallback. Increase MAX_RETRIES or tune LEVEL_CONFIGS.
+  throw new Error(
+    `Level #${number} '${name}' (${difficulty}): exhausted all ${maxRetries} retries ` +
+    `without finding a valid varied level. Increase MAX_RETRIES.hard or tune LEVEL_CONFIGS.hard.`
+  );
 }
 
 // ---------------------------------------------------------------------------
-// Comb fallback (randomised parameters so each fallback looks different)
+// DEAD CODE — buildCombFallback is no longer called. generateLevel throws
+// instead of falling back to this deterministic layout. Retained for reference.
 // ---------------------------------------------------------------------------
-function buildCombFallback(number, name, difficulty, meta, seed) {
-  const rng = makePRNG(seed);
-  // Each option must produce (nTeeth+1)*nCombs arrows within the difficulty's
-  // density band: easy [10,15], medium [15,30], hard [20,60].
-  const nTeeth = { easy: [3,4,4], medium: [4,5,6], hard: [5,6,7] }[difficulty];
-  const nCombs = { easy: [3,3,2], medium: [3,3,3], hard: [4,4,4] }[difficulty];
-  const ti = rng.int(nTeeth.length);
-  return buildCombLevel(number, name, difficulty, meta, nTeeth[ti], nCombs[ti]);
+function buildCombFallback(number, name, difficulty, meta, seed) { // eslint-disable-line no-unused-vars
+  // Parameters tuned to hit density bands: easy [10,15], medium [15,30], hard [20,60].
+  // H-section: nHRows rows each with W/2 two-node arrows, alternating right/left.
+  // V-section: nVCols columns each with nVPC two-node down-pointing arrows.
+  // Total arrows = nHRows*(W/2) + nVCols*nVPC
+  const CFG = {
+    easy:   { W: 6, nHRows: 3, nVCols: 2, nVPC: 2 }, // 9 + 4 = 13
+    medium: { W: 8, nHRows: 4, nVCols: 3, nVPC: 3 }, // 16 + 9 = 25
+    hard:   { W:10, nHRows: 5, nVCols: 4, nVPC: 4 }, // 25 + 16 = 41
+  };
+  const { W, nHRows, nVCols, nVPC } = CFG[difficulty];
+  const b = Builder(number, name, difficulty);
+
+  // H-section: rows 0..nHRows-1, full width W.
+  // Even rows point right (head at right end), odd rows point left (head at left end).
+  for (let y = 0; y < nHRows; y++) {
+    const nArrows = W / 2;
+    for (let ai = 0; ai < nArrows; ai++) {
+      if (y % 2 === 0) {
+        // Right: tail at x=ai*2, head at x=ai*2+1
+        b.arrowOverCells([[ai*2, y], [ai*2+1, y]], 'right');
+      } else {
+        // Left: tail at x=ai*2+1, head at x=ai*2
+        b.arrowOverCells([[ai*2+1, y], [ai*2, y]], 'left');
+      }
+    }
+  }
+
+  // V-section: nVCols columns evenly spaced across x=0..W-1, rows nHRows..nHRows+nVPC*2-1.
+  // Each column gets nVPC two-node down-pointing arrows.
+  // V-column x-positions: spread evenly so they connect to H-section via weave().
+  const vStep = Math.floor(W / (nVCols + 1));
+  for (let ci = 0; ci < nVCols; ci++) {
+    const cx = vStep * (ci + 1);
+    for (let ai = 0; ai < nVPC; ai++) {
+      const ty = nHRows + ai * 2;
+      b.arrowOverCells([[cx, ty], [cx, ty + 1]], 'down');
+    }
+  }
+
+  b.weaveH(); // connect H-section rows and bridge H→V sections horizontally
+  b.weave();  // connect nodes vertically within each column
+  return b.build(meta);
 }
 
 function buildCombLevel(number, name, difficulty, meta, nTeeth, nCombs) {
@@ -392,21 +437,21 @@ function buildCombLevel(number, name, difficulty, meta, nTeeth, nCombs) {
 // Level definitions
 // ---------------------------------------------------------------------------
 const LEVEL_DEFS = [
-  { number:  1, name: 'First Exit',     difficulty: 'easy',   meta: { t: 120, m: 30  }, seed: 10001 },
-  { number:  2, name: 'L-Turn',         difficulty: 'easy',   meta: { t: 120, m: 33  }, seed: 20002 },
-  { number:  3, name: 'Zigzag',         difficulty: 'easy',   meta: { t: 120, m: 36  }, seed: 30003 },
-  { number:  4, name: 'Two Lanes',      difficulty: 'easy',   meta: { t: 120, m: 39  }, seed: 40004 },
-  { number:  5, name: 'Queue Up',       difficulty: 'easy',   meta: { t: 120, m: 45  }, seed: 50005 },
-  { number:  6, name: 'Cross Roads',    difficulty: 'medium', meta: { t: 100, m: 48  }, seed: 60006 },
-  { number:  7, name: 'T-Junction',     difficulty: 'medium', meta: { t: 100, m: 54  }, seed: 70007 },
-  { number:  8, name: 'Comb Grid',      difficulty: 'medium', meta: { t: 100, m: 63  }, seed: 80008 },
-  { number:  9, name: 'Offset Pair',    difficulty: 'medium', meta: { t: 100, m: 72  }, seed: 90009 },
-  { number: 10, name: 'Three Way',      difficulty: 'medium', meta: { t: 100, m: 84  }, seed: 10010 },
-  { number: 11, name: 'Deadlock Intro', difficulty: 'hard',   meta: { t: 90,  m: 66  }, seed: 11011 },
-  { number: 12, name: 'Chain Block',    difficulty: 'hard',   meta: { t: 90,  m: 84  }, seed: 12012 },
-  { number: 13, name: 'Comb Maze',      difficulty: 'hard',   meta: { t: 90,  m: 105 }, seed: 13013 },
-  { number: 14, name: 'Four Locks',     difficulty: 'hard',   meta: { t: 80,  m: 126 }, seed: 14014 },
-  { number: 15, name: 'Final Maze',     difficulty: 'hard',   meta: { t: 80,  m: 150 }, seed: 15015 },
+  { number:  1, name: 'Level 1',  difficulty: 'easy',   meta: { t: 120, m: 30  }, seed: 10001 },
+  { number:  2, name: 'Level 2',  difficulty: 'easy',   meta: { t: 120, m: 33  }, seed: 20002 },
+  { number:  3, name: 'Level 3',  difficulty: 'easy',   meta: { t: 120, m: 36  }, seed: 30003 },
+  { number:  4, name: 'Level 4',  difficulty: 'easy',   meta: { t: 120, m: 39  }, seed: 40004 },
+  { number:  5, name: 'Level 5',  difficulty: 'easy',   meta: { t: 120, m: 45  }, seed: 50005 },
+  { number:  6, name: 'Level 6',  difficulty: 'medium', meta: { t: 100, m: 48  }, seed: 60006 },
+  { number:  7, name: 'Level 7',  difficulty: 'medium', meta: { t: 100, m: 54  }, seed: 70007 },
+  { number:  8, name: 'Level 8',  difficulty: 'medium', meta: { t: 100, m: 63  }, seed: 80008 },
+  { number:  9, name: 'Level 9',  difficulty: 'medium', meta: { t: 100, m: 72  }, seed: 90009 },
+  { number: 10, name: 'Level 10', difficulty: 'medium', meta: { t: 100, m: 84  }, seed: 10010 },
+  { number: 11, name: 'Level 11', difficulty: 'hard',   meta: { t: 90,  m: 66  }, seed: 11011 },
+  { number: 12, name: 'Level 12', difficulty: 'hard',   meta: { t: 90,  m: 84  }, seed: 12012 },
+  { number: 13, name: 'Level 13', difficulty: 'hard',   meta: { t: 90,  m: 105 }, seed: 13013 },
+  { number: 14, name: 'Level 14', difficulty: 'hard',   meta: { t: 80,  m: 126 }, seed: 14014 },
+  { number: 15, name: 'Level 15', difficulty: 'hard',   meta: { t: 80,  m: 150 }, seed: 15015 },
 ];
 
 function buildLevels() {
@@ -443,17 +488,16 @@ function canExit(dj, byId, arrow, activeById, blockedSet) {
     for (const n of coveredNodes(dj, activeById[id], byId)) blocker.add(n);
   }
   const [dx, dy] = DELTA[arrow.direction];
-  for (const start of coveredNodes(dj, arrow, byId)) {
-    let cur = start;
-    while (true) {
-      const cn = byId.nodes[cur];
-      const nextId = nodeAtCoord(byId, cn.x + dx, cn.y + dy);
-      if (nextId === null) break; // board boundary
-      const e = edgeBetween(byId, cur, nextId);
-      if (e && blockedSet.has(e.id)) return false;
-      if (blocker.has(nextId)) return false;
-      cur = nextId;
-    }
+  // Sweep from the head only (mirrors the Dart Phase 12.1 head-only resolver).
+  let cur = arrow.endNodeId;
+  while (true) {
+    const cn = byId.nodes[cur];
+    const nextId = nodeAtCoord(byId, cn.x + dx, cn.y + dy);
+    if (nextId === null) break; // board boundary
+    const e = edgeBetween(byId, cur, nextId);
+    if (e && blockedSet.has(e.id)) return false;
+    if (blocker.has(nextId)) return false;
+    cur = nextId;
   }
   return true;
 }
