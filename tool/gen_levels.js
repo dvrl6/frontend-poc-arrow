@@ -363,8 +363,10 @@ function generateLevel(number, name, difficulty, meta, baseSeed) {
 // ---------------------------------------------------------------------------
 function buildCombFallback(number, name, difficulty, meta, seed) {
   const rng = makePRNG(seed);
-  const nTeeth = { easy: [3,4,5], medium: [4,5,6], hard: [5,6,7] }[difficulty];
-  const nCombs = { easy: [2,2,3], medium: [2,3,3], hard: [3,4,5] }[difficulty];
+  // Each option must produce (nTeeth+1)*nCombs arrows within the difficulty's
+  // density band: easy [10,15], medium [15,30], hard [20,60].
+  const nTeeth = { easy: [3,4,4], medium: [4,5,6], hard: [5,6,7] }[difficulty];
+  const nCombs = { easy: [3,3,2], medium: [3,3,3], hard: [4,4,4] }[difficulty];
   const ti = rng.int(nTeeth.length);
   return buildCombLevel(number, name, difficulty, meta, nTeeth[ti], nCombs[ti]);
 }
@@ -422,26 +424,17 @@ function coveredNodes(dj, arrow, byId) {
   return s;
 }
 function indexDj(dj) {
-  const nodes = {}, edges = {};
-  for (const n of dj.nodes) nodes[n.id] = n;
+  const nodes = {}, edges = {}, byCoord = {};
+  for (const n of dj.nodes) { nodes[n.id] = n; byCoord[`${n.x},${n.y}`] = n.id; }
   for (const e of dj.edges) edges[e.id] = e;
-  return { nodes, edges };
+  return { nodes, edges, byCoord };
 }
-function edgeInDir(dj, byId, nodeId, dir) {
-  const node = byId.nodes[nodeId]; const [dx, dy] = DELTA[dir];
-  for (const e of dj.edges) {
-    let other = null;
-    if (e.fromNodeId === nodeId) other = e.toNodeId;
-    else if (e.toNodeId === nodeId) other = e.fromNodeId;
-    else continue;
-    const o = byId.nodes[other];
-    if (o && o.x === node.x + dx && o.y === node.y + dy) return e;
+function nodeAtCoord(byId, x, y) { return byId.byCoord[`${x},${y}`] || null; }
+function edgeBetween(byId, a, b) {
+  for (const e of Object.values(byId.edges)) {
+    if ((e.fromNodeId === a && e.toNodeId === b) || (e.fromNodeId === b && e.toNodeId === a)) return e;
   }
   return null;
-}
-function neighborInDir(dj, byId, nodeId, dir) {
-  const e = edgeInDir(dj, byId, nodeId, dir); if (!e) return null;
-  return e.fromNodeId === nodeId ? e.toNodeId : e.fromNodeId;
 }
 function canExit(dj, byId, arrow, activeById, blockedSet) {
   const blocker = new Set();
@@ -449,16 +442,17 @@ function canExit(dj, byId, arrow, activeById, blockedSet) {
     if (id === arrow.id) continue;
     for (const n of coveredNodes(dj, activeById[id], byId)) blocker.add(n);
   }
+  const [dx, dy] = DELTA[arrow.direction];
   for (const start of coveredNodes(dj, arrow, byId)) {
     let cur = start;
     while (true) {
-      const e = edgeInDir(dj, byId, cur, arrow.direction);
-      if (!e) break;
-      if (blockedSet.has(e.id)) return false;
-      const nb = neighborInDir(dj, byId, cur, arrow.direction);
-      if (nb === null) break;
-      if (blocker.has(nb)) return false;
-      cur = nb;
+      const cn = byId.nodes[cur];
+      const nextId = nodeAtCoord(byId, cn.x + dx, cn.y + dy);
+      if (nextId === null) break; // board boundary
+      const e = edgeBetween(byId, cur, nextId);
+      if (e && blockedSet.has(e.id)) return false;
+      if (blocker.has(nextId)) return false;
+      cur = nextId;
     }
   }
   return true;
