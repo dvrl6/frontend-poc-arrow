@@ -38,6 +38,38 @@ void main() {
 
     expect(audioPort.playedEvents, isEmpty);
   });
+
+  test('should_play_defeat_event_when_sound_is_enabled', () async {
+    final audioPort = _FakeAudioPort();
+    final controller = GameAudioController(
+      audioPort: audioPort,
+      getPlayerSettings: GetPlayerSettingsUseCase(
+        _FakeSettingsRepository(
+          const PlayerSettings(soundEnabled: true, musicEnabled: false),
+        ),
+      ),
+    );
+
+    await controller.play(GameAudioEvent.defeat);
+
+    expect(audioPort.playedEvents, [GameAudioEvent.defeat]);
+  });
+
+  test('should_not_play_defeat_event_when_sound_is_disabled', () async {
+    final audioPort = _FakeAudioPort();
+    final controller = GameAudioController(
+      audioPort: audioPort,
+      getPlayerSettings: GetPlayerSettingsUseCase(
+        _FakeSettingsRepository(
+          const PlayerSettings(soundEnabled: false, musicEnabled: false),
+        ),
+      ),
+    );
+
+    await controller.play(GameAudioEvent.defeat);
+
+    expect(audioPort.playedEvents, isEmpty);
+  });
 }
 
 class _FakeAudioPort implements AudioPort {
