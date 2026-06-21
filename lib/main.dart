@@ -1,26 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:frontend_poc_arrow/core/localization/l10n/app_localizations.dart';
+import 'package:flutter/widgets.dart';
 
-import 'core/routing/app_routes.dart';
-import 'core/theme/app_theme.dart';
+import 'core/app/app_bootstrap.dart';
 
-void main() {
-  runApp(const ArrowPocApp());
-}
+// Re-export so existing imports of `ArrowPocApp` via main keep working
+// (e.g. widget_test.dart) after moving the widget into core/app.
+export 'core/app/arrow_poc_app.dart' show ArrowPocApp;
 
-class ArrowPocApp extends StatelessWidget {
-  const ArrowPocApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-      theme: AppTheme.dark(),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      initialRoute: AppRoutes.home,
-      onGenerateRoute: AppRoutes.onGenerateRoute,
-    );
-  }
+Future<void> main() async {
+  runApp(await bootstrap());
 }
