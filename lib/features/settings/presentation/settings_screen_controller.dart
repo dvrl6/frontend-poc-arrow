@@ -70,6 +70,15 @@ class SettingsScreenController extends ChangeNotifier {
     await _save(_settings.copyWith(musicEnabled: value));
   }
 
+  Future<void> setLanguage(String? languageCode) async {
+    await _save(
+      _settings.copyWith(
+        languageCode: languageCode,
+        clearLanguage: languageCode == null,
+      ),
+    );
+  }
+
   Future<void> resetProgress() {
     return _resetLocalProgress();
   }

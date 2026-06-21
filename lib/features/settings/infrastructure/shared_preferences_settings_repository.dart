@@ -8,6 +8,7 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
 
   static const _soundEnabledKey = 'settings.soundEnabled';
   static const _musicEnabledKey = 'settings.musicEnabled';
+  static const _languageCodeKey = 'settings.languageCode';
 
   final SharedPreferences _preferences;
 
@@ -19,6 +20,7 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
           _preferences.getBool(_soundEnabledKey) ?? defaults.soundEnabled,
       musicEnabled:
           _preferences.getBool(_musicEnabledKey) ?? defaults.musicEnabled,
+      languageCode: _preferences.getString(_languageCodeKey),
     );
   }
 
@@ -26,5 +28,11 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
   Future<void> saveSettings(PlayerSettings settings) async {
     await _preferences.setBool(_soundEnabledKey, settings.soundEnabled);
     await _preferences.setBool(_musicEnabledKey, settings.musicEnabled);
+    final languageCode = settings.languageCode;
+    if (languageCode == null) {
+      await _preferences.remove(_languageCodeKey);
+    } else {
+      await _preferences.setString(_languageCodeKey, languageCode);
+    }
   }
 }
