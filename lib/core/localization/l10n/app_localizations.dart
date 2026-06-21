@@ -251,13 +251,13 @@ abstract class AppLocalizations {
   /// No description provided for @soundFoundationDescription.
   ///
   /// In en, this message translates to:
-  /// **'Lightweight tap feedback is used while final sound assets are pending.'**
+  /// **' '**
   String get soundFoundationDescription;
 
   /// No description provided for @musicFutureDescription.
   ///
   /// In en, this message translates to:
-  /// **'Music is a future enhancement because no music assets are included yet.'**
+  /// **' '**
   String get musicFutureDescription;
 
   /// No description provided for @language.
@@ -271,6 +271,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'English'**
   String get languageDisplayValue;
+
+  /// No description provided for @languageSystemOption.
+  ///
+  /// In en, this message translates to:
+  /// **'System default'**
+  String get languageSystemOption;
 
   /// No description provided for @resetProgress.
   ///
