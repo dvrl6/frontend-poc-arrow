@@ -244,8 +244,8 @@ class GameScreenController extends ChangeNotifier {
 
     final event = switch (result.outcome) {
       MovementOutcome.escaped => GameAudioEvent.move,
-      MovementOutcome.collision ||
-      MovementOutcome.gameOver => GameAudioEvent.blocked,
+      MovementOutcome.collision => GameAudioEvent.blocked,
+      MovementOutcome.gameOver => GameAudioEvent.defeat,
       MovementOutcome.arrowNotFound ||
       MovementOutcome.alreadyEscaped ||
       MovementOutcome.sessionNotActive => GameAudioEvent.blocked,

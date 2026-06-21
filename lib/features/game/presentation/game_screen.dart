@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_poc_arrow/core/localization/l10n/app_localizations.dart';
-
+import '../../audio/application/background_music_controller.dart';
 import '../../../core/routing/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../audio/infrastructure/audio_dependencies.dart';
@@ -19,6 +19,7 @@ class GameScreen extends StatefulWidget {
     this.notifyRemoteLevelCompletion,
     this.getBestLevelResult,
     this.playGameAudio,
+    this.backgroundMusicController,
     this.enableBoardAnimations = true,
     super.key,
   });
@@ -29,6 +30,7 @@ class GameScreen extends StatefulWidget {
   final NotifyRemoteLevelCompletion? notifyRemoteLevelCompletion;
   final GetBestLevelResult? getBestLevelResult;
   final PlayGameAudio? playGameAudio;
+  final BackgroundMusicController? backgroundMusicController;
 
   /// When false (widget tests), the board renders resolved state without
   /// starting animation tickers.
@@ -40,6 +42,7 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   GameScreenController? _controller;
+  BackgroundMusicController? _musicController;
 
   @override
   void initState() {
@@ -76,11 +79,27 @@ class _GameScreenState extends State<GameScreen> {
     setState(() {
       _controller = controller;
     });
+
+    final musicController =
+        widget.backgroundMusicController ??
+        (widget.enableBoardAnimations
+            ? await AudioDependencies.createBackgroundMusicController()
+            : null);
+    if (musicController != null) {
+      if (!mounted) {
+        await musicController.stop();
+      } else {
+        _musicController = musicController;
+        await musicController.start();
+      }
+    }
+
     await controller.load();
   }
 
   @override
   void dispose() {
+    _musicController?.stop();
     _controller?.dispose();
     super.dispose();
   }
