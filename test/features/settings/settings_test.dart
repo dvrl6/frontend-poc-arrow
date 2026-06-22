@@ -151,6 +151,28 @@ void main() {
 
     controller.dispose();
   });
+
+  test('should_persist_language_when_changed', () async {
+    final settingsRepository = _FakeSettingsRepository(
+      const PlayerSettings(soundEnabled: true, musicEnabled: false),
+    );
+    final controller = SettingsScreenController(
+      getPlayerSettings: GetPlayerSettingsUseCase(settingsRepository),
+      savePlayerSettings: SavePlayerSettingsUseCase(settingsRepository),
+      resetLocalProgress: ResetLocalProgressUseCase(
+        _FakeLocalProgressRepository(),
+      ),
+    );
+
+    await controller.load();
+    await controller.setLanguage('es');
+
+    expect(controller.settings.languageCode, 'es');
+    expect(settingsRepository.settings.languageCode, 'es');
+
+    controller.dispose();
+  });
+  
 }
 
 Future<void> _pumpUntilFound(WidgetTester tester, Finder finder) async {

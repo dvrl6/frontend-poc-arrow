@@ -84,18 +84,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get musicEnabled => 'Music';
 
   @override
-  String get soundFoundationDescription =>
-      'Lightweight tap feedback is used while final sound assets are pending.';
+  String get soundFoundationDescription => ' ';
 
   @override
-  String get musicFutureDescription =>
-      'Music is a future enhancement because no music assets are included yet.';
+  String get musicFutureDescription => ' ';
 
   @override
   String get language => 'Language';
 
   @override
   String get languageDisplayValue => 'English';
+
+  @override
+  String get languageSystemOption => 'System default';
 
   @override
   String get resetProgress => 'Reset local progress';

@@ -86,18 +86,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get musicEnabled => 'Musica';
 
   @override
-  String get soundFoundationDescription =>
-      'Se usa retroalimentacion ligera de toque mientras se agregan sonidos finales.';
+  String get soundFoundationDescription => ' ';
 
   @override
-  String get musicFutureDescription =>
-      'La musica es una mejora futura porque aun no hay recursos musicales incluidos.';
+  String get musicFutureDescription => ' ';
 
   @override
   String get language => 'Idioma';
 
   @override
   String get languageDisplayValue => 'Espanol';
+
+  @override
+  String get languageSystemOption => 'Predeterminado del sistema';
 
   @override
   String get resetProgress => 'Reiniciar progreso local';

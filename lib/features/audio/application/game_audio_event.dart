@@ -1,1 +1,1 @@
-enum GameAudioEvent { move, blocked, victory }
+enum GameAudioEvent { move, blocked, victory, defeat}
