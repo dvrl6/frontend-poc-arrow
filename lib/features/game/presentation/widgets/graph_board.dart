@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:frontend_poc_arrow/core/localization/l10n/app_localizations.dart';
 
@@ -5,6 +7,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../game_ui_keys.dart';
 import '../../domain/arrow_path.dart';
 import '../../domain/game_session.dart';
+import '../../domain/graph_node.dart';
 import 'graph_board_hit_tester.dart';
 import 'graph_board_layout.dart';
 import 'graph_board_painter.dart';
@@ -121,7 +124,12 @@ class _GraphBoardState extends State<GraphBoard>
       label:
           'Graph board with ${widget.session.level.boardGraph.nodes.length} nodes and $activeArrowCount active arrows',
       child: AspectRatio(
-        aspectRatio: 1,
+        // Match the board's box to the level's own bounding-box shape
+        // (clamped) instead of always forcing a square — a wide or tall
+        // level gets the extra width/height it actually needs, instead of
+        // wasting screen space on the unused axis while squeezing cells on
+        // the binding one.
+        aspectRatio: _boardAspectRatio(widget.session.level.boardGraph.nodes),
         child: LayoutBuilder(
           builder: (context, constraints) {
             final size = Size(constraints.maxWidth, constraints.maxHeight);
@@ -185,6 +193,20 @@ class _GraphBoardState extends State<GraphBoard>
   void _resetView() {
     _viewController.value = Matrix4.identity();
   }
+}
+
+/// Width/height of the level's node bounding box, clamped so the board box
+/// never becomes extreme. Levels close to square (most of 1-15) are
+/// unaffected (clamp has no effect near 1.0); markedly wide or tall levels
+/// get a matching wide/tall board box instead of being squeezed into a
+/// square.
+double _boardAspectRatio(List<GraphNode> nodes) {
+  if (nodes.isEmpty) return 1;
+  final xs = nodes.map((node) => node.coordinate.x);
+  final ys = nodes.map((node) => node.coordinate.y);
+  final width = math.max(1, xs.reduce(math.max) - xs.reduce(math.min));
+  final height = math.max(1, ys.reduce(math.max) - ys.reduce(math.min));
+  return (width / height).clamp(0.6, 1.6);
 }
 
 class _ResetViewButton extends StatelessWidget {
