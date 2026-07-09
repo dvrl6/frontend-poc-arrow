@@ -17,6 +17,11 @@ class AppRoutes {
   static const auth = '/auth';
   static const leaderboard = '/leaderboard';
 
+  /// Dev shortcut: opens level 21 (the first 3D level) through the normal
+  /// pipeline without requiring levels 1-20 to be completed first
+  /// (GameScreen itself does not enforce level locking).
+  static const demo3d = '/demo-3d';
+
   static Route<void> onGenerateRoute(RouteSettings routeSettings) {
     final builder = switch (routeSettings.name) {
       home => (_) => const HomeScreen(),
@@ -29,6 +34,7 @@ class AppRoutes {
       leaderboard => (_) => LeaderboardScreen(
         levelNumber: _readLevelNumber(routeSettings.arguments),
       ),
+      demo3d => (_) => const GameScreen(levelNumber: 21),
       _ => (_) => const HomeScreen(),
     };
 
