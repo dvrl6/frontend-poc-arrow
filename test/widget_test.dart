@@ -12,7 +12,7 @@ void main() {
     await tester.pumpWidget(const ArrowPocApp());
     await tester.pump();
 
-    expect(find.text('Arrow POC'), findsOneWidget);
+    expect(find.text('Nodus'), findsOneWidget);
     expect(find.text('Play'), findsOneWidget);
     expect(find.text('Settings'), findsOneWidget);
     expect(find.text('http://10.0.2.2:3000'), findsOneWidget);
