@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Arrow POC'**
+  /// **'Nodus'**
   String get appTitle;
 
   /// No description provided for @play.
@@ -137,7 +137,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'A graph puzzle foundation for the mobile game.'**
+  /// **'Untangle the knot. One exit at a time.'**
   String get homeSubtitle;
 
   /// No description provided for @levelSelectionPlaceholder.

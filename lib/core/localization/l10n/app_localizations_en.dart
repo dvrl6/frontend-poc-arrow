@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Arrow POC';
+  String get appTitle => 'Nodus';
 
   @override
   String get play => 'Play';
@@ -27,7 +27,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backendUrlLabel => 'Backend URL';
 
   @override
-  String get homeSubtitle => 'A graph puzzle foundation for the mobile game.';
+  String get homeSubtitle => 'Untangle the knot. One exit at a time.';
 
   @override
   String get levelSelectionPlaceholder => 'Level selection placeholder';
