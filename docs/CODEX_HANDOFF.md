@@ -1240,3 +1240,92 @@ Manual on-device validation pass covering Phases 15/15.1/17/18/19 together
 new figure-level `hitSlop` fix, pinch-to-zoom, and the regenerated crown/
 spade/club figure levels) — then the long-pending backend/emulator smoke test
 for Phases 9–14.1.
+
+## Phase 20 — Main Menu Redesign & Game Rebrand (2026-07-09)
+
+### What Changed
+
+- **Rebrand:** "Arrow POC" → **Nodus** (Latin for "knot"/"node" — the core
+  mechanic is untangling a graph of nodes, so the name is on-theme without
+  reusing generic words like "Puzzle"/"Arrow"/"Game"). Changed only in
+  `appTitle` in both ARB files; `MaterialApp.onGenerateTitle` in
+  `arrow_poc_app.dart` already reads that key, so the OS-level app title
+  updates automatically — no separate `title:` constant existed to edit.
+  `homeSubtitle` replaced with a short tagline ("Untangle the knot. One exit
+  at a time." / Spanish equivalent) in both locales.
+- **`HomeScreen` rewritten** (`lib/features/home/presentation/home_screen.dart`)
+  from a plain `Column` to a `StatefulWidget` with:
+  - `_MenuBackgroundPainter` (`CustomPainter`) — 4 soft, blurred, neon-tinted
+    glows drifting in slow circular orbits over `AppTheme.background`, driven
+    by one looping `AnimationController` (18s). Pure geometry (`Canvas.drawCircle`
+    + `MaskFilter.blur`), no images/video/shaders/physics — cheap on low-end
+    Android.
+  - Large display title, gradient-masked (`neonMint`→`neonBlue`) via
+    `ShaderMask`.
+  - `_MenuButton` — shared tactile button widget (Play=filled/`neonMint`,
+    Settings=outlined/`neonPurple`) with `AnimatedScale` press-down feedback
+    (0.97x) and a glow `BoxShadow` that softens on press. Reuses the existing
+    neon palette; no new colors introduced.
+  - `_DebugRow` — backend URL demoted to 50%-opacity, 11px text near the
+    bottom, replacing the old prominent `Card`.
+- **Android app label**: `android:label` in `AndroidManifest.xml` changed
+  `frontend_poc_arrow` → `Nodus`.
+- **iOS**: no `ios/` platform directory exists in this project — confirmed via
+  glob before starting; nothing to change, no manual step needed.
+
+### Files Touched
+
+- `lib/features/home/presentation/home_screen.dart`
+- `lib/core/localization/l10n/app_en.arb`
+- `lib/core/localization/l10n/app_es.arb`
+- `android/app/src/main/AndroidManifest.xml`
+
+### Verification Results
+
+- `flutter analyze`: passed with 0 issues.
+- `flutter test`: 124/124 passed (0 new — existing tests locate Play/Settings
+  by localized text via `find.text`, not widget type, so they were unaffected
+  by the `FilledButton`/`OutlinedButton` → `_MenuButton` swap).
+- `node tool/gen_levels.js --validate-only`: not applicable (no level files
+  touched).
+
+### New Tests
+
+- None. Presentation-only visual redesign; existing navigation/localization
+  tests already cover the preserved behavior (Play → levels, Settings →
+  settings, backend URL still rendered).
+
+### Assets
+
+- None added. The redesign uses only existing theme colors, system fonts, and
+  procedural (`CustomPainter`) graphics — no images, SVGs, fonts, or Lottie
+  files were needed to hit "premium" visual quality, so `assets/menu/` was not
+  created and `pubspec.yaml` was not touched.
+
+### Before / After
+
+- **Before:** static dark `Column` — "Arrow POC" plain text title, one-line
+  grey subtitle, a prominent bordered `Card` showing the backend URL in neon
+  mint, then a solid `FilledButton` "Play" and bordered `OutlinedButton`
+  "Settings".
+- **After:** full-bleed animated background of slowly drifting neon glows
+  behind a large gradient-text "Nodus" wordmark and tagline; Play/Settings are
+  now glowing, press-responsive pill buttons; the backend URL is a small,
+  half-opacity debug line tucked near the bottom instead of a prominent card.
+
+### Limitations
+
+- Manual on-device verification of animation smoothness on a genuinely
+  low-end Android device is still pending (analytical review: single
+  `AnimationController`, 4 blurred circles, no per-frame allocations in
+  `paint()` — expected to be cheap, not device-measured).
+- No app-icon regeneration was performed or required by this phase (task item
+  5's "icon regen" is N/A — the task only asked for the app *label*, not a new
+  icon asset).
+
+### Next Recommended Phase
+
+Manual on-device validation pass covering the still-pending Phases
+15/15.1/17/18/19/20 items together (audio, board rendering, dense-level tap
+accuracy, pinch-to-zoom, and the new animated main menu) — then the
+long-pending backend/emulator smoke test for Phases 9–14.1.
