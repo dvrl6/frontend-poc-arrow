@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Arrow POC'**
+  /// **'Nodus'**
   String get appTitle;
 
   /// No description provided for @play.
@@ -122,6 +122,12 @@ abstract class AppLocalizations {
   /// **'Levels'**
   String get levels;
 
+  /// No description provided for @gameMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Game Mode'**
+  String get gameMode;
+
   /// No description provided for @gamePlaceholder.
   ///
   /// In en, this message translates to:
@@ -137,7 +143,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'A graph puzzle foundation for the mobile game.'**
+  /// **'Untangle the knot. One exit at a time.'**
   String get homeSubtitle;
 
   /// No description provided for @levelSelectionPlaceholder.
@@ -295,6 +301,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Local progress reset.'**
   String get progressReset;
+
+  /// No description provided for @resetRemoteProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset remote progress'**
+  String get resetRemoteProgress;
+
+  /// No description provided for @resetRemoteProgressConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'This clears your progress stored on the server, then also resets local progress. Settings stay unchanged.'**
+  String get resetRemoteProgressConfirmation;
+
+  /// No description provided for @remoteProgressReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote and local progress reset.'**
+  String get remoteProgressReset;
+
+  /// No description provided for @resetRemoteProgressLoginRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in to reset remote progress.'**
+  String get resetRemoteProgressLoginRequired;
+
+  /// No description provided for @remoteResetOfflineMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Backend unavailable. Local progress reset only.'**
+  String get remoteResetOfflineMessage;
+
+  /// No description provided for @remoteResetFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reset remote progress. Please try again.'**
+  String get remoteResetFailedMessage;
 
   /// No description provided for @cancel.
   ///

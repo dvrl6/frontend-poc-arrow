@@ -6,6 +6,7 @@ import '../../features/levels/presentation/level_selection_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/leaderboard/presentation/leaderboard_screen.dart';
+import '../../features/leaderboard/presentation/leaderboard_level_picker_screen.dart';
 
 class AppRoutes {
   const AppRoutes._();
@@ -16,6 +17,7 @@ class AppRoutes {
   static const settings = '/settings';
   static const auth = '/auth';
   static const leaderboard = '/leaderboard';
+  static const leaderboardLevelPicker = '/leaderboard-level-picker';
 
   /// Dev shortcut: opens level 21 (the first 3D level) through the normal
   /// pipeline without requiring levels 1-20 to be completed first
@@ -34,7 +36,7 @@ class AppRoutes {
       leaderboard => (_) => LeaderboardScreen(
         levelNumber: _readLevelNumber(routeSettings.arguments),
       ),
-      demo3d => (_) => const GameScreen(levelNumber: 21),
+      leaderboardLevelPicker => (_) => const LeaderboardLevelPickerScreen(),
       _ => (_) => const HomeScreen(),
     };
 
