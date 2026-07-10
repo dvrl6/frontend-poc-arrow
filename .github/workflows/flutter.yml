@@ -2,9 +2,9 @@ name: Flutter
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
   analyze-and-test:
@@ -18,12 +18,24 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          # Pinned to the version the project is developed against so CI can't
+          # silently drift onto a newer SDK than the team's machines.
+          flutter-version: 3.44.0
+          cache: true
 
       - name: Install dependencies
         run: flutter pub get
 
       - name: Analyze
         run: flutter analyze
+
+      # Level validator (harness gate 3): structure, no-free-nodes, greedy
+      # solvability, density bands, connectivity, no single-node arrows.
+      # Reads assets/levels/manual_levels.json; never writes; exits non-zero
+      # on any failure. Runs before the test suite because it finishes in
+      # ~1s and catches bad level data early.
+      - name: Validate levels
+        run: node tool/gen_levels.js --validate-only
 
       - name: Test
         run: flutter test

@@ -33,6 +33,11 @@ flutter test              # all tests must pass; report the count
 node tool/gen_levels.js --validate-only   # if any level files were touched
 ```
 
+All three gates are also enforced by CI (`.github/workflows/flutter.yml`) on
+every pull request and on pushes to `main`/`develop` — pinned to the team's
+Flutter version. Local runs remain mandatory (CI is the backstop, not the
+first line); a red check on a PR means the gate was skipped locally.
+
 Additionally:
 - Update `docs/CODEX_HANDOFF.md` with the phase summary.
 - Update `harness/context/phase_registry.md` with the new phase entry.
