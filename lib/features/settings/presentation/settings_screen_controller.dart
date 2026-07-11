@@ -8,6 +8,7 @@ import '../../progress/application/reset_local_progress_use_case.dart';
 import '../../progress/application/reset_remote_progress_use_case.dart';
 import '../application/get_player_settings_use_case.dart';
 import '../application/save_player_settings_use_case.dart';
+import '../domain/game_mode.dart';
 import '../domain/player_settings.dart';
 
 enum SettingsScreenLoadState { loading, ready, failed }
@@ -87,6 +88,10 @@ class SettingsScreenController extends ChangeNotifier {
         clearLanguage: languageCode == null,
       ),
     );
+  }
+
+  Future<void> setGameMode(GameMode mode) async {
+    await _save(_settings.copyWith(gameMode: mode));
   }
 
   Future<void> resetProgress() {

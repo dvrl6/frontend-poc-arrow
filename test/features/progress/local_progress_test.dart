@@ -6,14 +6,44 @@ import 'package:frontend_poc_arrow/features/progress/application/reset_local_pro
 import 'package:frontend_poc_arrow/features/progress/application/save_level_completion_use_case.dart';
 import 'package:frontend_poc_arrow/features/progress/domain/level_best_result.dart';
 import 'package:frontend_poc_arrow/features/progress/domain/local_progress.dart';
+import 'package:frontend_poc_arrow/features/settings/domain/game_mode.dart';
 
 void main() {
   test('should_unlock_level_one_by_default', () async {
     final repository = _InMemoryLocalProgressRepository();
     final isUnlocked = IsLevelUnlockedUseCase(repository);
 
-    expect(await isUnlocked(1), isTrue);
-    expect(await isUnlocked(2), isFalse);
+    expect(await isUnlocked(1, GameMode.twoD), isTrue);
+    expect(await isUnlocked(2, GameMode.twoD), isFalse);
+  });
+
+  test('should_unlock_first_3d_level_by_default', () async {
+    final repository = _InMemoryLocalProgressRepository();
+    final isUnlocked = IsLevelUnlockedUseCase(repository);
+
+    // Internal 21 is the first 3D level; unlocked with empty progress.
+    expect(await isUnlocked(21, GameMode.threeD), isTrue);
+    expect(await isUnlocked(22, GameMode.threeD), isFalse);
+  });
+
+  test('should_isolate_unlock_between_modes', () async {
+    // Completing 2D level 20 must NOT unlock 3D internal 21, and completing
+    // 3D internal 21 must NOT unlock 2D level 2. The shared set is partitioned
+    // purely by the globally-unique internal numbers.
+    // Internal 21 is the first 3D level, so it is always unlocked — the
+    // isolation guarantee is that completing 2D level 20 does not bleed forward
+    // into the *second* 3D level (internal 22).
+    final completed2D20 = LocalProgress.initial().copyWith(
+      completedLevelNumbers: const <int>{20},
+    );
+    expect(completed2D20.isUnlockedForMode(22, GameMode.threeD), isFalse);
+
+    final completed3D21 = LocalProgress.initial().copyWith(
+      completedLevelNumbers: const <int>{21},
+    );
+    expect(completed3D21.isUnlockedForMode(2, GameMode.twoD), isFalse);
+    // But it does unlock the next 3D level.
+    expect(completed3D21.isUnlockedForMode(22, GameMode.threeD), isTrue);
   });
 
   test('should_unlock_next_level_when_current_level_is_completed', () async {

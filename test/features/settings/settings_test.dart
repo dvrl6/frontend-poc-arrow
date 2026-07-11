@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:frontend_poc_arrow/core/app/app_settings_controller.dart';
+import 'package:frontend_poc_arrow/core/app/app_settings_scope.dart';
 import 'package:frontend_poc_arrow/core/localization/l10n/app_localizations.dart';
 import 'package:frontend_poc_arrow/core/theme/app_theme.dart';
 import 'package:frontend_poc_arrow/features/auth/application/get_auth_session_use_case.dart';
@@ -20,6 +22,7 @@ import 'package:frontend_poc_arrow/features/progress/infrastructure/shared_prefe
 import 'package:frontend_poc_arrow/features/settings/application/get_player_settings_use_case.dart';
 import 'package:frontend_poc_arrow/features/settings/application/save_player_settings_use_case.dart';
 import 'package:frontend_poc_arrow/features/settings/application/settings_repository.dart';
+import 'package:frontend_poc_arrow/features/settings/domain/game_mode.dart';
 import 'package:frontend_poc_arrow/features/settings/domain/player_settings.dart';
 import 'package:frontend_poc_arrow/features/settings/infrastructure/shared_preferences_settings_repository.dart';
 import 'package:frontend_poc_arrow/features/settings/presentation/settings_screen.dart';
@@ -339,7 +342,100 @@ void main() {
 
     controller.dispose();
   });
-  
+
+  test('should_default_game_mode_to_2d', () {
+    expect(PlayerSettings.defaults().gameMode, GameMode.twoD);
+  });
+
+  test('should_persist_and_read_back_game_mode', () async {
+    SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    final repository = SharedPreferencesSettingsRepository(preferences);
+
+    await repository.saveSettings(
+      PlayerSettings.defaults().copyWith(gameMode: GameMode.threeD),
+    );
+
+    final settings = await repository.getSettings();
+    expect(settings.gameMode, GameMode.threeD);
+  });
+
+  test('should_default_game_mode_to_2d_when_stored_value_is_missing', () async {
+    SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    final repository = SharedPreferencesSettingsRepository(preferences);
+
+    final settings = await repository.getSettings();
+    expect(settings.gameMode, GameMode.twoD);
+  });
+
+  test(
+    'should_default_game_mode_to_2d_when_stored_value_is_unrecognized',
+    () async {
+      SharedPreferences.setMockInitialValues({
+        'settings.gameMode': 'not-a-real-mode',
+      });
+      final preferences = await SharedPreferences.getInstance();
+      final repository = SharedPreferencesSettingsRepository(preferences);
+
+      final settings = await repository.getSettings();
+      expect(settings.gameMode, GameMode.twoD);
+    },
+  );
+
+  test('should_persist_game_mode_when_changed_via_controller', () async {
+    final settingsRepository = _FakeSettingsRepository(
+      PlayerSettings.defaults(),
+    );
+    final controller = SettingsScreenController(
+      getPlayerSettings: GetPlayerSettingsUseCase(settingsRepository),
+      savePlayerSettings: SavePlayerSettingsUseCase(settingsRepository),
+      resetLocalProgress: ResetLocalProgressUseCase(
+        _FakeLocalProgressRepository(),
+      ),
+    );
+
+    await controller.load();
+    await controller.setGameMode(GameMode.threeD);
+
+    expect(controller.settings.gameMode, GameMode.threeD);
+    expect(settingsRepository.settings.gameMode, GameMode.threeD);
+
+    controller.dispose();
+  });
+
+  testWidgets(
+    'should_invoke_controller_and_app_scope_when_3d_is_selected_in_settings_ui',
+    (tester) async {
+      final settingsRepository = _FakeSettingsRepository(
+        PlayerSettings.defaults(),
+      );
+      final controller = SettingsScreenController(
+        getPlayerSettings: GetPlayerSettingsUseCase(settingsRepository),
+        savePlayerSettings: SavePlayerSettingsUseCase(settingsRepository),
+        resetLocalProgress: ResetLocalProgressUseCase(
+          _FakeLocalProgressRepository(),
+        ),
+      );
+      final appSettings = AppSettingsController();
+      await tester.binding.setSurfaceSize(const Size(800, 2000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        _TestSettingsApp(controller: controller, appSettings: appSettings),
+      );
+      await _pumpUntilFound(tester, find.byKey(GameUiKeys.gameModeSelector));
+
+      await tester.tap(find.text('3D'));
+      await tester.pumpAndSettle();
+
+      expect(controller.settings.gameMode, GameMode.threeD);
+      expect(settingsRepository.settings.gameMode, GameMode.threeD);
+      expect(appSettings.gameMode, GameMode.threeD);
+
+      controller.dispose();
+    },
+  );
 }
 
 Future<void> _pumpUntilFound(WidgetTester tester, Finder finder) async {
@@ -353,18 +449,24 @@ Future<void> _pumpUntilFound(WidgetTester tester, Finder finder) async {
 }
 
 class _TestSettingsApp extends StatelessWidget {
-  const _TestSettingsApp({required this.controller});
+  const _TestSettingsApp({required this.controller, this.appSettings});
 
   final SettingsScreenController controller;
+  final AppSettingsController? appSettings;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    final app = MaterialApp(
       theme: AppTheme.dark(),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: SettingsScreen(controller: controller),
     );
+    final appSettings = this.appSettings;
+    if (appSettings == null) {
+      return app;
+    }
+    return AppSettingsScope(controller: appSettings, child: app);
   }
 }
 

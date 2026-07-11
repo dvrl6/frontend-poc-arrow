@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_poc_arrow/core/localization/l10n/app_localizations.dart';
 
+import '../../../core/app/app_settings_scope.dart';
 import '../../../core/routing/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../game/domain/level.dart';
 import '../../game/infrastructure/local_level_dependencies.dart';
 import '../../game/presentation/game_ui_keys.dart';
+import '../../game/presentation/level_mode_filter.dart';
+import '../../settings/domain/game_mode.dart';
 
 typedef LoadLocalLevels = Future<List<Level>> Function();
 
@@ -37,6 +40,8 @@ class _LeaderboardLevelPickerScreenState
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
+    final gameMode =
+        AppSettingsScope.maybeOf(context)?.gameMode ?? GameMode.twoD;
 
     return Scaffold(
       appBar: AppBar(title: Text(localizations.leaderboard)),
@@ -47,7 +52,10 @@ class _LeaderboardLevelPickerScreenState
             if (snapshot.connectionState != ConnectionState.done) {
               return const Center(child: CircularProgressIndicator());
             }
-            final levels = snapshot.data ?? const <Level>[];
+            final levels = filterLevelsByGameMode(
+              snapshot.data ?? const <Level>[],
+              wantThreeD: gameMode == GameMode.threeD,
+            );
             if (snapshot.hasError || levels.isEmpty) {
               return Center(child: Text(localizations.leaderboardUnavailable));
             }
@@ -58,15 +66,16 @@ class _LeaderboardLevelPickerScreenState
               itemBuilder: (context, index) {
                 final level = levels[index];
                 final number = level.number ?? 0;
+                final displayNumber = displayNumberFor(number, gameMode);
                 return Card(
                   key: GameUiKeys.levelCard(number),
                   child: ListTile(
                     leading: CircleAvatar(
                       backgroundColor: AppTheme.neonBlue,
                       foregroundColor: AppTheme.background,
-                      child: Text('$number'),
+                      child: Text('$displayNumber'),
                     ),
-                    title: Text(level.name),
+                    title: Text('Level $displayNumber'),
                     trailing: const Icon(Icons.chevron_right_rounded),
                     onTap: () => Navigator.of(context).pushNamed(
                       AppRoutes.leaderboard,

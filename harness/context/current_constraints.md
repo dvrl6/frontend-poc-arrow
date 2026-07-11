@@ -23,7 +23,7 @@ Check every item on this list before starting any phase. Update this file when c
 
 ## Levels
 
-- `assets/levels/manual_levels.json` is the **authoritative hand-editable source**. Do not run `node tool/gen_levels.js --generate` (levels 1–15), `--generate-figures` (levels 16–20), or `--generate-3d` (levels 21–25) unless regeneration is explicitly intended by the task.
+- `assets/levels/manual_levels_2d.json` (levels 1–20) and `assets/levels/manual_levels_3d.json` (levels 21–25) are the **authoritative hand-editable sources** (Phase 24.1 split the former single `manual_levels.json`; internal numbers stayed globally unique, no renumber). Do not run `node tool/gen_levels.js --generate-2d`, `--generate-3d`, or `--generate` unless regeneration is explicitly intended by the task.
 - `--validate-only` is always safe and reads without writing.
 - **Level 2 test contract**: name='Level 2', arrow count ≥ 10. Do not change level 2's name or arrow count below the floor without updating `test/features/game/infrastructure/manual_levels_test.dart`.
 - **25 levels total** (1–15 random rectangle boards, 16–20 figure silhouettes: heart/diamond/club/spade/crown, 21–25 multi-layer 3D levels: 23 pyramid / 24 diamond / 25 hourglass). `AppConfig.manualLevelCount` is the single source of truth for the count — do not hardcode a level count elsewhere. See `docs/LEVEL_AUTHORING.md` §15 (figure-level model) and §16 (3D-level model).
@@ -66,4 +66,4 @@ Check every item on this list before starting any phase. Update this file when c
 
 ---
 
-*Last updated: 2026-07-09 (Phase 22/22.1 — 3D graph extension: level count 20 → 25, added `--generate-3d` mode, no-single-node-arrows rule, 3D real-gap semantics, and the new "3D Board" section covering Graph3DBoard/Graph3DProjector invariants)*
+*Last updated: 2026-07-10 (Phase 24.1 — 2D/3D level file split: `manual_levels.json` replaced by `manual_levels_2d.json` (1–20) + `manual_levels_3d.json` (21–25); `--generate`/`--generate-figures`/`--generate-3d` replaced by `--generate-2d`/`--generate-3d`/`--generate` shorthand; internal numbering, offset, progress/leaderboard/sync, and backend unchanged)*

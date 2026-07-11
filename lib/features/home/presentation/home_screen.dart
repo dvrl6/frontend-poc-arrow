@@ -121,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen>
                       Expanded(
                         child: _MenuNavButton(
                           icon: Icons.view_in_ar_rounded,
-                          label: localizations.gameMode,
+                          label: localizations.challenges,
                           accentColor: AppTheme.neonPink,
                           onPressed: null,
                         ),

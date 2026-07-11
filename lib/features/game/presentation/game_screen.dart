@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_poc_arrow/core/localization/l10n/app_localizations.dart';
 import '../../audio/application/background_music_controller.dart';
+import '../../../core/app/app_settings_scope.dart';
 import '../../../core/routing/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../audio/infrastructure/audio_manager.dart';
+import '../../settings/domain/game_mode.dart';
 import '../domain/game_session.dart';
 import '../infrastructure/local_level_dependencies.dart';
 import '../../progress/infrastructure/local_progress_dependencies.dart';
 import 'game_screen_controller.dart';
 import 'game_ui_keys.dart';
+import 'level_mode_filter.dart';
 import 'widgets/graph_board.dart';
 import 'widgets/graph_3d_board.dart';
-import '../../../core/config/app_config.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({
@@ -150,13 +152,15 @@ class _GameScreenState extends State<GameScreen> {
         animation: controller,
         builder: (context, _) {
           final localizations = AppLocalizations.of(context);
+          final gameMode =
+              AppSettingsScope.maybeOf(context)?.gameMode ?? GameMode.twoD;
+          final internalNumber = controller.level?.number;
+          final title = internalNumber == null
+              ? localizations.loadingLevel
+              : 'Level ${displayNumberFor(internalNumber, gameMode)}';
 
           return Scaffold(
-            appBar: AppBar(
-              title: Text(
-                controller.level?.name ?? localizations.loadingLevel,
-              ),
-            ),
+            appBar: AppBar(title: Text(title)),
             body: SafeArea(
               child: switch (controller.loadState) {
                 GameScreenLoadState.loading => _LoadingState(
@@ -170,6 +174,7 @@ class _GameScreenState extends State<GameScreen> {
                 ),
                 GameScreenLoadState.ready => _GameReadyView(
                   controller: controller,
+                  gameMode: gameMode,
                   animateBoard: widget.enableBoardAnimations,
                   onBackToLevels: _backToLevels,
                   onNextLevel: _openNextLevel,
@@ -218,6 +223,7 @@ class _GameScreenState extends State<GameScreen> {
 class _GameReadyView extends StatelessWidget {
   const _GameReadyView({
     required this.controller,
+    required this.gameMode,
     required this.animateBoard,
     required this.onBackToLevels,
     required this.onNextLevel,
@@ -227,6 +233,7 @@ class _GameReadyView extends StatelessWidget {
   });
 
   final GameScreenController controller;
+  final GameMode gameMode;
   final bool animateBoard;
   final VoidCallback onBackToLevels;
   final VoidCallback onNextLevel;
@@ -299,7 +306,11 @@ class _GameReadyView extends StatelessWidget {
             score: session.score.value,
             moves: session.movesCount,
             bestScore: controller.bestResult?.score,
-            hasNextLevel: (level.number ?? 0) < AppConfig.manualLevelCount,
+            hasNextLevel: hasNextLevelFor(level.number ?? 0, gameMode),
+            nextLevelDisplayNumber: displayNumberFor(
+              (level.number ?? 0) + 1,
+              gameMode,
+            ),
             onRetry: controller.restart,
             onBackToLevels: onBackToLevels,
             onNextLevel: onNextLevel,
@@ -422,6 +433,7 @@ class _VictoryOverlay extends StatelessWidget {
     required this.moves,
     required this.bestScore,
     required this.hasNextLevel,
+    required this.nextLevelDisplayNumber,
     required this.onRetry,
     required this.onBackToLevels,
     required this.onNextLevel,
@@ -432,6 +444,7 @@ class _VictoryOverlay extends StatelessWidget {
   final int moves;
   final int? bestScore;
   final bool hasNextLevel;
+  final int nextLevelDisplayNumber;
   final VoidCallback onRetry;
   final VoidCallback onBackToLevels;
   final VoidCallback onNextLevel;
@@ -484,7 +497,9 @@ class _VictoryOverlay extends StatelessWidget {
                     OutlinedButton(
                       key: GameUiKeys.nextLevelButton,
                       onPressed: onNextLevel,
-                      child: Text(localizations.nextLevel),
+                      child: Text(
+                        '${localizations.nextLevel}: $nextLevelDisplayNumber',
+                      ),
                     ),
                   ],
                 ],

@@ -24,6 +24,7 @@ class GameUiKeys {
   static const confirmResetRemoteProgressButton = Key(
     'confirm-reset-remote-progress-button',
   );
+  static const gameModeSelector = Key('settings-game-mode-selector');
 
   static Key levelCard(int levelNumber) => Key('level-card-$levelNumber');
 }

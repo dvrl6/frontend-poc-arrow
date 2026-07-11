@@ -1923,3 +1923,233 @@ constraints); `LeaderboardLevelPickerScreen` itself was not modified.
   "theoretical, negligible probability").
 - Manual on-device validation for this phase (and the long-standing pending
   manual validation from prior phases) was not performed.
+
+## Phase 24 — Game Mode Selector (2D/3D) + "Challenges" Rebrand
+
+Branch `feat/phase-24-game-mode-selector`. Renamed the disabled main-menu "Game Mode" button to "Challenges"/"Retos" (stays disabled — challenge levels don't exist), and added a persisted 2D/3D game-mode selector in Settings that filters the Levels and Leaderboard-picker screens. Presentation-layer filter only, per an explicit decision against splitting `manual_levels.json`.
+
+### What Changed
+
+- **Task A (rebrand):** added a `challenges` ARB key (EN "Challenges" / ES "Retos") to both locales; the disabled fourth `_MenuNavButton` in `home_screen.dart` now reads `localizations.challenges` instead of `localizations.gameMode`. `onPressed` stays `null`. The `gameMode` key is kept and repurposed as the Settings selector's title.
+- **Task B1 (domain/persistence):** new `GameMode` enum (`twoD`/`threeD`, pure Dart, no Flutter import) with a stable `storageKey` decoupled from any localized label. `PlayerSettings.gameMode` added, defaulting to `GameMode.twoD` in the constructor and `PlayerSettings.defaults()`. `SharedPreferencesSettingsRepository` persists it under `settings.gameMode`; a missing or unrecognized stored value falls back to 2D via `GameMode.fromStorageKey`.
+- **Task B2 (controller):** `SettingsScreenController.setGameMode(GameMode)` mirrors `setLanguage` — `_save(copyWith(gameMode: mode))`.
+- **Task B3 (app-level reactivity):** `AppSettingsController` gained a `gameMode` field/getter and `setGameMode()` (notifies only on change), mirroring `locale`/`setLocale`. `app_bootstrap.dart` seeds it from the saved `PlayerSettings.gameMode` alongside the locale seed. The Settings UI calls both `controller.setGameMode(...)` (persist) and `AppSettingsScope.maybeOf(context)?.setGameMode(...)` (drive reactive UI), same two-call pattern as the language dropdown.
+- **Task B4 (Settings UI):** new `_GameModeSelectorCard` in `settings_screen.dart` — a `Card` with the `gameMode` title, a `gameModeHint` helper line, and a `SegmentedButton<GameMode>` (2D/3D) keyed `GameUiKeys.gameModeSelector`.
+- **Task B5 (filtering — presentation only):** new `lib/features/game/presentation/level_mode_filter.dart` exports `isThreeDLevel(Level)` (`boardGraph.isMultiLayer || (number ?? 0) >= 21`) and `filterLevelsByGameMode(levels, {required wantThreeD})`. `LevelSelectionScreen` and `LeaderboardLevelPickerScreen` both read `AppSettingsScope.maybeOf(context)?.gameMode` (defaulting to 2D when the scope is absent, e.g. in tests without it) and filter the already-loaded level list before building cards. No domain, application, or level-loader code changed; both screens still navigate to the same routes as before (`AppRoutes.levels`, `AppRoutes.leaderboardLevelPicker`) and the pushed screens self-filter from the scope.
+- **Task C (localization):** added `challenges`, `gameMode2D`, `gameMode3D`, `gameModeHint` to both ARB files; `gameMode` itself was already present in both locales (EN "Game Mode" / ES "Modo de juego", unchanged). Regenerated via `flutter gen-l10n` (uses the project's `l10n.yaml`, not CLI flags).
+- **Architecture decision (recorded, not code):** considered splitting levels 21–25 out of `assets/levels/manual_levels.json` into a separate `manual_levels_3d.json` for a "file-level" mode split. Rejected — all 25 levels load through one `AssetLevelRepository`/`LocalLevelDataSource`/single asset path, and `GameScreen` resolves gameplay by level number through that same single path; a split would touch the repository, dependencies, `GameScreen`'s lookup, `pubspec.yaml`, `tool/gen_levels.js` (two independent validate/generate passes), and `manual_levels_test.dart`, for no correctness gain over the existing `isMultiLayer` structural invariant the 3D board already depends on. Kept the presentation-layer filter as originally scoped.
+
+### Files Touched
+
+- `lib/features/settings/domain/game_mode.dart` (new)
+- `lib/features/settings/domain/player_settings.dart`
+- `lib/features/settings/infrastructure/shared_preferences_settings_repository.dart`
+- `lib/features/settings/presentation/settings_screen_controller.dart`
+- `lib/features/settings/presentation/settings_screen.dart`
+- `lib/core/app/app_settings_controller.dart`
+- `lib/core/app/app_bootstrap.dart`
+- `lib/features/home/presentation/home_screen.dart`
+- `lib/features/game/presentation/game_ui_keys.dart`
+- `lib/features/game/presentation/level_mode_filter.dart` (new)
+- `lib/features/levels/presentation/level_selection_screen.dart`
+- `lib/features/leaderboard/presentation/leaderboard_level_picker_screen.dart`
+- `lib/core/localization/l10n/app_en.arb`, `app_es.arb` (+ regenerated `app_localizations*.dart`)
+- `test/widget_test.dart` (label update: "Game Mode" → "Challenges")
+- `test/features/settings/settings_test.dart` (game-mode persistence/controller/UI tests)
+- `test/features/levels/level_selection_screen_game_mode_filter_test.dart` (new)
+- `test/features/leaderboard/presentation/leaderboard_level_picker_screen_test.dart` (added filter test)
+
+### Verification Results
+
+- `flutter gen-l10n`: regenerated cleanly; new getters (`challenges`, `gameMode2D`, `gameMode3D`, `gameModeHint`) confirmed present in `app_localizations.dart`/`_en.dart`/`_es.dart`.
+- `flutter analyze`: no issues.
+- `flutter test`: 187/187 passed (9 new: 6 in `settings_test.dart`, 2 in `level_selection_screen_game_mode_filter_test.dart`, 1 in `leaderboard_level_picker_screen_test.dart`).
+- `node tool/gen_levels.js --validate-only`: not run — no level files touched; `manual_levels.json` was not regenerated or split.
+- `backend-poc-arrow`: not touched.
+
+### New Tests
+
+- `should_default_game_mode_to_2d`
+- `should_persist_and_read_back_game_mode`
+- `should_default_game_mode_to_2d_when_stored_value_is_missing`
+- `should_default_game_mode_to_2d_when_stored_value_is_unrecognized`
+- `should_persist_game_mode_when_changed_via_controller`
+- `should_invoke_controller_and_app_scope_when_3d_is_selected_in_settings_ui`
+- `should_show_only_2d_levels_when_game_mode_is_2d`
+- `should_show_only_3d_levels_when_game_mode_is_3d`
+- `should_filter_levels_by_active_game_mode_from_app_settings_scope`
+
+### Limitations
+
+- Manual emulator/device validation of the selector and menu-driven filtering was not performed in this pass.
+- `AppSettingsScope.maybeOf(context)` defaults to 2D when absent (e.g. a screen pushed without the scope in a test harness) — matches the existing locale-scope pattern, not a new gap.
+- The `_GameModeSelectorCard` uses `SegmentedButton<GameMode>` rather than a `DropdownButton`, for parity with a toggle-style 2-option control; both were acceptable per the phase prompt.
+
+### Next Recommended Phase
+
+Wire the "Challenges" destination once challenge-level content design begins; until then the button stays intentionally disabled.
+
+## Phase 24 Follow-up — 3D Display-Number Mapping (1-5 instead of 21-25)
+
+Same branch (`feat/phase-24-game-mode-selector`). In 3D mode, internal levels 21-25 were showing as "Level 21"-"Level 25" in `LevelSelectionScreen`/`LeaderboardLevelPickerScreen`, and all 5 appeared locked — confusing now that 2D/3D are user-facing separate modes expected to each start at "Level 1". Added a presentation-only display-number mapping; the internal numbers 21-25 are unchanged everywhere else (domain, application, infrastructure, storage, backend). **Correction (Phase 24.2):** an earlier draft of this note attributed the "all 5 locked" symptom to a separate `progress3d.*` namespace starting empty. That namespace never existed — completions are stored in a single `progress.*` namespace keyed by internal level number (1-25). The real cause was the scalar `lastUnlockedLevel` gate (initial `1`) never reaching internal 21; Phase 24.2 fixes it with a computed per-mode unlock rule.
+
+### What Changed
+
+- **`lib/features/game/presentation/level_mode_filter.dart`**: added `twoDLevelCount = 20` (the source of truth for "where 2D ends and 3D begins", also used to redefine `isThreeDLevel`'s threshold as `> twoDLevelCount` instead of a hardcoded `>= 21`), `displayNumberFor(int internalLevel, GameMode mode)` (`internalLevel - 20` in 3D mode, unchanged in 2D), `maxInternalLevelFor(GameMode mode)` (20 for 2D, `AppConfig.manualLevelCount` for 3D), and `hasNextLevelFor(int internalLevel, GameMode mode)`.
+- **`LevelSelectionScreen`**: `_LevelCard` now takes a `displayNumber` (computed by the parent from `AppSettingsScope`'s `gameMode`) and shows it in both the number badge and the `'Level $displayNumber'` title, replacing the previous `level.name`/`level.number` display. The `GameUiKeys.levelCard(...)` key and the unlock check (`progress.isUnlocked(levelNumber)`) still use the **internal** number — only the rendered text changed. Tapping still calls `_openLevel(context, level.number)` (internal).
+- **`LeaderboardLevelPickerScreen`**: same mapping — `ListTile` avatar/title show `displayNumberFor(number, gameMode)`; `Navigator.pushNamed(AppRoutes.leaderboard, arguments: number)` still passes the internal number.
+- **`GameScreen`**: reads `gameMode` from `AppSettingsScope` in the `AnimatedBuilder` builder (defaults to 2D when absent). AppBar title changed from `controller.level?.name` to a computed `'Level ${displayNumberFor(internalNumber, gameMode)}'` (safe because every shipped level's `name` field is already exactly `'Level <internal number>'` — verified against the shipped `manual_levels.json`, so this is a no-op for 2D). `_GameReadyView`/`_VictoryOverlay` gained a `gameMode`/`nextLevelDisplayNumber` parameter; `hasNextLevel` now calls `hasNextLevelFor(level.number, gameMode)` instead of comparing the internal number against the global `AppConfig.manualLevelCount` (previously a 3D level 24 victory would always show "next level" since `24 < 25`, correctly, but a 2D level 20 victory would also incorrectly read `20 < 25` as true before this fix — now 2D caps at 20, 3D caps at 25 internal). The "Next Level" button label is now `'${localizations.nextLevel}: $nextLevelDisplayNumber'` (e.g. "Next level: 2" when leaving internal level 21 in 3D mode) instead of a bare, unnumbered label. `_openNextLevel`/`_openLeaderboard` navigation logic is unchanged — both still use the internal `level.number`.
+- **No domain/application/infrastructure/storage/backend changes.** `LevelDefinition`, `BoardGraph`, `MovementResolver`, `SaveLevelCompletionUseCase`, and the progress repository are untouched. **Correction (Phase 24.2):** there is no separate `progress3d.*` namespace — a single `progress.*` namespace stores completions keyed by internal level number (1-25); mode separation for unlock is computed, not stored.
+
+### Files Touched
+
+- `lib/features/game/presentation/level_mode_filter.dart`
+- `lib/features/levels/presentation/level_selection_screen.dart`
+- `lib/features/leaderboard/presentation/leaderboard_level_picker_screen.dart`
+- `lib/features/game/presentation/game_screen.dart`
+- `test/features/leaderboard/presentation/leaderboard_level_picker_screen_test.dart`
+- `test/features/levels/level_selection_screen_game_mode_filter_test.dart`
+- `test/features/game/presentation/game_screen_display_number_test.dart` (new)
+
+### Verification Results
+
+- `flutter analyze`: no issues.
+- `flutter test`: 195/195 passed (8 new: 2 name-mapping fixups + 6 net-new display-number tests across the three touched screens).
+- `node tool/gen_levels.js --validate-only`: not run — no level files touched.
+- `backend-poc-arrow`: not touched. `manual_levels.json`: not regenerated.
+
+### New Tests
+
+- `should_display_2d_level_numbers_unchanged`
+- `should_map_3d_internal_level_numbers_21_to_25_as_display_1_to_5` (level selection)
+- `should_open_internal_level_21_when_displayed_3d_level_1_is_tapped`
+- `should_map_3d_internal_level_numbers_21_to_25_as_display_1_to_5` (leaderboard picker)
+- `should_navigate_with_internal_level_number_when_displayed_3d_card_is_tapped`
+- `should_display_internal_2d_level_number_unchanged_in_app_bar`
+- `should_map_internal_3d_level_21_to_displayed_level_1_in_app_bar`
+- `should_show_mapped_next_level_number_on_victory_in_3d_mode`
+
+### Limitations
+
+- The AppBar/HUD "Level N" text is not a localized string (matches the pre-existing behavior of displaying `level.name`, which was already an unlocalized literal baked into the level data) — same convention, not a regression.
+- Manual on-device validation of the 3D display mapping was not performed.
+- `hasNextLevelFor`'s incidental fix (2D no longer reads `< manualLevelCount` globally) was not called out as a separate bug in the request but is a direct, necessary consequence of "hasNextLevel must check against the mode's level range, not the global count" — flagged here for visibility since it changes prior 2D behavior at the boundary (level 20 in 2D no longer shows a "next level" button, which is correct since level 21 is a different mode's content).
+
+## Phase 24.2 — Mode-Aware Level Unlock (Approach A)
+
+Branch: `feat/phase-24-game-mode-selector` (continuation). Fixed the bug where every 3D level (internal 21–25) was locked for a fresh user. Root cause was **not** a separate progress namespace (see the `progress3d.*` correction below) but the single scalar `LocalProgress.lastUnlockedLevel` (initial `1`): the level-selection gate called `progress.isUnlocked(internalNumber)`, and for internal 21 that scalar never reached 21 unless the user completed 2D level 20 — i.e. the two modes bled through one shared counter. Approach A computes unlock **per mode** from the existing shared `completedLevelNumbers` set (no new storage, no migration): the set is naturally partitioned because 2D (1–20) and 3D (21–25) internal numbers never overlap.
+
+### Unlock Rule
+
+`isUnlockedForMode(n, mode)` := `n == firstInternalLevelFor(mode)` (2D→1, 3D→21; the first level of a mode is always unlocked) **OR** `isCompleted(n - 1)` (previous internal level completed — same mode, since numbering is contiguous per mode). The `firstInternalLevelFor` clause is what prevents cross-mode bleed for internal 21 (whose predecessor 20 is a 2D level).
+
+### What Changed
+
+- **`lib/features/progress/domain/local_progress.dart`**: added `isUnlockedForMode(int levelNumber, GameMode mode)` — the **authoritative** rule. Existing `isUnlocked(int)` (scalar `lastUnlockedLevel`) kept for reset/backward-compat but is no longer used by the level-selection gate. Added a private `_twoDLevelCount = 20` mirroring the presentation constant so the domain rule needs no presentation import (imports pure-domain `game_mode.dart` only).
+- **`lib/features/game/presentation/level_mode_filter.dart`**: added `firstInternalLevelFor(GameMode)` and `isLevelUnlockedForMode(LocalProgress, int, GameMode)` — the latter delegates to the domain rule (no duplicated logic). Added a `LocalProgress` import.
+- **`lib/features/levels/presentation/level_selection_screen.dart`**: the card gate now calls `isLevelUnlockedForMode(progress, levelNumber, gameMode)` instead of `progress.isUnlocked(levelNumber)`. `gameMode` was already read from `AppSettingsScope`.
+- **`lib/features/progress/application/is_level_unlocked_use_case.dart`**: `call(int)` → `call(int, GameMode)`, delegating to the domain rule. It has **zero production callers** (verified by grep — only the factory in `local_progress_dependencies.dart`, itself uncalled, and the test); a doc comment now marks it legacy. Kept for test coverage per phase instruction — not deleted.
+- **Documentation `progress3d.*` correction**: the earlier Phase 24 / Phase 24-follow-up notes (and `harness/phases/phase_24_game_mode_selector.md`, `harness/context/phase_registry.md`) claimed 3D completions were stored in a separate `progress3d.*` namespace. That namespace **never existed**. A single `progress.*` namespace (`shared_preferences_local_progress_repository.dart`, keys `progress.completedLevelNumbers` / `progress.bestResultsByLevel` / `progress.lastUnlockedLevel`) stores completions keyed by internal level number (1–25); mode separation for unlock is **computed, not stored**. All occurrences annotated/corrected in place (not rewritten destructively).
+- **No changes** to `SaveLevelCompletionUseCase` write logic, the `lastUnlockedLevel` scalar, `hasNextLevelFor`/next-level navigation, leaderboard/API/sync code, or any storage schema. No new `SharedPreferences` key set.
+
+### Files Touched
+
+- `lib/features/progress/domain/local_progress.dart`
+- `lib/features/game/presentation/level_mode_filter.dart`
+- `lib/features/levels/presentation/level_selection_screen.dart`
+- `lib/features/progress/application/is_level_unlocked_use_case.dart`
+- `docs/CODEX_HANDOFF.md`, `harness/phases/phase_24_game_mode_selector.md`, `harness/context/phase_registry.md` (progress3d correction)
+- `test/features/progress/local_progress_test.dart` (updated: use-case signature + cross-mode isolation)
+- `test/features/game/presentation/level_mode_filter_test.dart` (new)
+- `test/features/levels/presentation/level_selection_unlock_test.dart` (new)
+
+### Verification Results
+
+- `flutter analyze`: no issues.
+- `flutter test`: 207/207 passed.
+- `node tool/gen_levels.js --validate-only`: not run — no level files touched.
+- `backend-poc-arrow`: not touched.
+
+### New Tests
+
+- `firstInternalLevelFor returns 1 for 2D and 21 for 3D`
+- `3D first level (internal 21) is unlocked with empty progress`
+- `3D internal 22 locked until 21 completed, unlocked after`
+- `completing 2D level 20 does not unlock 3D internal 21`
+- `completing 3D internal 21 does not unlock 2D level 2`
+- `2D level 1 unlocked by default; level 2 locked until 1 completed`
+- `should_unlock_first_3d_level_by_default`
+- `should_isolate_unlock_between_modes`
+- `in_3d_mode_with_empty_progress_first_3d_card_unlocked_rest_locked`
+
+### Limitations
+
+- Manual on-device validation of the 3D unlock progression was not performed.
+- `IsLevelUnlockedUseCase` is retained with zero production callers purely for application-layer test coverage of the rule; its factory in `local_progress_dependencies.dart` is likewise unused.
+
+### Follow-up bug — 3D leaderboard never loaded (backend seed gap)
+
+**Symptom:** in 3D mode, Leaderboard → pick a level → the app issued `GET /levels` but never `GET /leaderboard/:levelId`; entries never loaded.
+
+**Diagnosis:** the frontend navigation/argument passing was already correct — the picker ([leaderboard_level_picker_screen.dart:80](lib/features/leaderboard/presentation/leaderboard_level_picker_screen.dart:80)) and the victory screen ([game_screen.dart:211](lib/features/game/presentation/game_screen.dart:211)) both pass the **internal** level number (21–25), the route reads it as `int`, and `GetLeaderboardForLevelNumberUseCase` resolves number→backend `Level.id` via `GET /levels` before calling `GET /leaderboard/:id`. The real cause was upstream: **the backend seed (`backend-poc-arrow/prisma/levels/manual-levels.ts`) defined only levels 1–15**, so `getLevelIdsByNumber()[n]` was `null` for every n > 15 and the use case short-circuited to `[]` before the leaderboard call. This bit all 3D levels (start at 21) and would also have hit 2D figure levels 16–20.
+
+**Fix (backend seed only, with user approval to touch the backend):** added leaderboard/progress **anchor rows** for numbers 16–25 to `levelSpecs` (10 generated `LevelSpec` entries, `'Level 16'…'Level 25'`). `Level.number` is `@unique` and `Level.id` is a generated UUID, so a row per internal number is required for number→id resolution. The seeded `definitionJson` is a minimal valid 2D placeholder and is **never used for gameplay** — the authoritative, playable boards (figures + multi-layer 3D) live in the frontend's local assets. No frontend code changed; no leaderboard API contract changed. Backend `tsc --noEmit` clean. **Deploy step required:** re-run `prisma db seed` (or `prisma migrate reset`) against the target DB for the new rows to exist.
+
+### Next Recommended Phase
+
+Wire the "Challenges" destination once challenge-level content design begins (unchanged from the Phase 24 recommendation).
+
+## Phase 24.1 — 2D/3D Level File Separation (Option 2: File Split, Global Numbering Preserved)
+
+Chosen as Option 2 of a Phase 24.1 audit (P24 had explicitly rejected a file split for "no correctness gain" — this phase revisits that decision at the harness's direction). Splits the single `assets/levels/manual_levels.json` authoring file into two files while keeping internal level numbers **globally unique**: 2D stays 1–20, 3D stays 21–25. No renumber, no display-offset change (`level_mode_filter.dart` untouched). Progress, leaderboard, sync, and backend are untouched — the internal `number` primary key never moved.
+
+### What Changed
+
+- **`assets/levels/manual_levels_2d.json`** (new): levels 1–20, generated via `tool/gen_levels.js --generate-2d` from the same deterministic seeds/builders as before — verified byte-identical union with the deleted `manual_levels.json`.
+- **`assets/levels/manual_levels_3d.json`** (new): levels 21–25, generated via `tool/gen_levels.js --generate-3d` (deterministic, no RNG) — same verification.
+- **`assets/levels/manual_levels.json`**: deleted, after loading + validation + tests were confirmed green against the two new files.
+- **`tool/gen_levels.js`**: `ASSET` constant replaced by `ASSET_2D`/`ASSET_3D`. CLI modes replaced: `--generate-2d` (levels 1–15 random + 16–20 figures, writes `manual_levels_2d.json`), `--generate-3d` (levels 21–25, writes `manual_levels_3d.json`, unchanged builders), `--generate` (shorthand: both), `--validate-only` (reads and validates both files independently, default). `validateAll(levels, fileKind)` now takes a `'2d'`/`'3d'` kind: the 2D path keeps the full existing invariant set (progression, strictly-increasing tier averages, density, hard-not-all-rectangular, figure real-gap); the 3D path skips the progression/increasing-average checks (meaningless over an all-hard 5-level set) and instead asserts every level is `'hard'` and multi-layer (`new Set(nodes.map(z)).size > 1`) — structure/no-free-nodes/no-shared-nodes/greedy-solvability/no-single-node-arrows/`hasRealInteriorGapExit3D` already applied generically per-level regardless of file, so those needed no gating.
+- **`lib/features/game/infrastructure/local_level_data_source.dart`**: `LocalLevelDataSource` now takes `assetPath2d`/`assetPath3d` (both injectable, defaulting to the real asset paths via new `manualLevels2dAssetPath`/`manualLevels3dAssetPath` static constants replacing the old single `manualLevelsAssetPath`). `loadManualLevels()` loads and parses both via the unchanged `ManualLevelCollectionDto.fromJsonString`, concatenating 2D-then-3D into one list.
+- **`pubspec.yaml`**: asset registration swapped from the single old path to both new paths.
+- **`AssetLevelRepository`/`LocalLevelDependencies`**: no changes — the repository already only depends on `LocalLevelDataSource.loadManualLevels()` returning one merged list; the dependency factory already only passed `assetTextLoader`, so it picks up both new default paths automatically.
+- **`level_mode_filter.dart`, `level_definition_mapper.dart` id logic, progress/leaderboard/sync code, `backend-poc-arrow`**: all confirmed untouched — internal numbers, ids (`manual-001`…`manual-025`), and the presentation display offset are unaffected by the file split.
+- **`test/features/game/infrastructure/manual_levels_test.dart`**: restructured into a `'merged repository (2D + 3D)'` group (the prior top-level 25-level/unique-number/unique-id/progression assertions, now scoped explicitly to the merged repository, since they're integration-level), a new `'2D levels (1-20)'` group, and a new `'3D levels (21-25)'` group (all-hard + multi-layer, plus a new `should_have_spanning_vertical_arrows_in_every_3d_level` check). Existing cross-cutting checks that already loop over all loaded levels (no-free-nodes, solvability, density bands, single-connected-component, arrowhead orientation, no-single-node-arrows, interior-gap/figure-real-gap/3D-real-gap, bent-arrow-per-tier) were left as top-level tests since they naturally span both files with zero changes needed. `should_keep_manual_levels_graph_based_not_matrix_based` updated to read both new asset-path constants instead of the deleted `manualLevelsAssetPath`.
+- **`docs/LEVEL_AUTHORING.md`**: documents the dual-file workflow (§ intro, §12 regenerating, §16 3D regenerate/validate commands).
+- **`harness/context/current_constraints.md`**: updated the Levels section and "last updated" line to reference the two new files and CLI modes instead of the deleted single file/old flags (not explicitly required by Task E but kept in sync since it documents the exact CLI surface this phase changed).
+
+### Files Touched
+
+- `assets/levels/manual_levels_2d.json` (new), `assets/levels/manual_levels_3d.json` (new), `assets/levels/manual_levels.json` (deleted)
+- `tool/gen_levels.js`
+- `lib/features/game/infrastructure/local_level_data_source.dart`
+- `pubspec.yaml`
+- `test/features/game/infrastructure/manual_levels_test.dart`
+- `docs/LEVEL_AUTHORING.md`
+- `harness/context/current_constraints.md`
+
+### Verification Results
+
+- `node tool/gen_levels.js --generate-2d`: 20 levels valid, written.
+- `node tool/gen_levels.js --generate-3d`: 5 levels valid, written.
+- `node tool/gen_levels.js --generate`: both, valid, written (used to produce the shipped files).
+- `node tool/gen_levels.js --validate-only`: ALL VALID: true for both files.
+- Verified programmatically: the union of the two files' levels is byte-identical (after sorting by number) to the deleted `manual_levels.json`'s 25 levels.
+- `flutter analyze`: no issues.
+- `flutter test`: 198/198 passed (6 new: `should_only_contain_levels_1_to_20`, `should_only_contain_hard_multi_layer_levels`, `should_have_spanning_vertical_arrows_in_every_3d_level`, plus the 3 group-restructure test names carried over unchanged in behavior).
+- `grep -r manual_levels.json` (Dart/YAML): no remaining references outside a `tool/gen_levels.js` header comment.
+- `backend-poc-arrow`: not modified (no git repo in this workspace to diff, but no file under that directory was opened or written this phase).
+
+### New Tests
+
+- `should_only_contain_levels_1_to_20`
+- `should_only_contain_hard_multi_layer_levels`
+- `should_have_spanning_vertical_arrows_in_every_3d_level`
+
+### Limitations
+
+- Manual in-app validation (2D level plays, 3D level plays and still displays 1–5 in the app bar) was not performed this pass — recommended before merging.
+- `harness/context/current_constraints.md` was updated even though Task E didn't explicitly list it, to keep the documented CLI surface accurate; flagging in case the harness expects only the four listed docs to change.
+
+### Next Recommended Phase
+
+Manual on-device/emulator validation of 2D and 3D gameplay end-to-end now that levels load from two separate assets.

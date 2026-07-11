@@ -16,7 +16,7 @@ void main() {
     expect(find.text('Levels'), findsOneWidget);
     expect(find.text('Leaderboard'), findsOneWidget);
     expect(find.text('Settings'), findsOneWidget);
-    expect(find.text('Game Mode'), findsOneWidget);
+    expect(find.text('Challenges'), findsOneWidget);
     expect(find.text('http://10.0.2.2:3000'), findsOneWidget);
   });
 

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_poc_arrow/core/localization/l10n/app_localizations.dart';
 
+import '../../../core/app/app_settings_scope.dart';
 import '../../../core/routing/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../game/domain/level.dart';
 import '../../game/infrastructure/local_level_dependencies.dart';
 import '../../game/presentation/game_ui_keys.dart';
+import '../../game/presentation/level_mode_filter.dart';
 import '../../progress/domain/local_progress.dart';
 import '../../progress/infrastructure/local_progress_dependencies.dart';
+import '../../settings/domain/game_mode.dart';
 
 typedef LoadLocalLevels = Future<List<Level>> Function();
 typedef LoadLocalProgress = Future<LocalProgress> Function();
@@ -69,6 +72,8 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
+    final gameMode =
+        AppSettingsScope.maybeOf(context)?.gameMode ?? GameMode.twoD;
 
     return Scaffold(
       appBar: AppBar(title: Text(localizations.levels)),
@@ -90,7 +95,10 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
                   levels: const <Level>[],
                   progress: LocalProgress.initial(),
                 );
-            final levels = screenData.levels;
+            final levels = filterLevelsByGameMode(
+              screenData.levels,
+              wantThreeD: gameMode == GameMode.threeD,
+            );
             final progress = screenData.progress;
             return ListView.separated(
               padding: const EdgeInsets.all(20),
@@ -99,9 +107,14 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
               itemBuilder: (context, index) {
                 final level = levels[index];
                 final levelNumber = level.number ?? 0;
-                final isUnlocked = progress.isUnlocked(levelNumber);
+                final isUnlocked = isLevelUnlockedForMode(
+                  progress,
+                  levelNumber,
+                  gameMode,
+                );
                 return _LevelCard(
                   level: level,
+                  displayNumber: displayNumberFor(levelNumber, gameMode),
                   isUnlocked: isUnlocked,
                   isCompleted: progress.isCompleted(levelNumber),
                   bestScore: progress.bestResultFor(levelNumber)?.score,
@@ -132,6 +145,7 @@ class _LevelSelectionData {
 class _LevelCard extends StatelessWidget {
   const _LevelCard({
     required this.level,
+    required this.displayNumber,
     required this.isUnlocked,
     required this.isCompleted,
     required this.bestScore,
@@ -139,6 +153,7 @@ class _LevelCard extends StatelessWidget {
   });
 
   final Level level;
+  final int displayNumber;
   final bool isUnlocked;
   final bool isCompleted;
   final int? bestScore;
@@ -180,7 +195,7 @@ class _LevelCard extends StatelessWidget {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  '$number',
+                  '$displayNumber',
                   style: const TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 20,
@@ -193,7 +208,7 @@ class _LevelCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      level.name,
+                      'Level $displayNumber',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: AppTheme.softText,
                         fontWeight: FontWeight.w700,
