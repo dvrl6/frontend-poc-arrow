@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:frontend_poc_arrow/core/app/app_settings_controller.dart';
+import 'package:frontend_poc_arrow/core/app/app_settings_scope.dart';
 import 'package:frontend_poc_arrow/core/localization/l10n/app_localizations.dart';
 import 'package:frontend_poc_arrow/core/routing/app_routes.dart';
 import 'package:frontend_poc_arrow/core/theme/app_theme.dart';
@@ -9,6 +11,7 @@ import 'package:frontend_poc_arrow/features/game/domain/graph_node.dart';
 import 'package:frontend_poc_arrow/features/game/domain/level.dart';
 import 'package:frontend_poc_arrow/features/game/presentation/game_ui_keys.dart';
 import 'package:frontend_poc_arrow/features/leaderboard/presentation/leaderboard_level_picker_screen.dart';
+import 'package:frontend_poc_arrow/features/settings/domain/game_mode.dart';
 
 void main() {
   testWidgets(
@@ -21,8 +24,10 @@ void main() {
 
       expect(find.byKey(GameUiKeys.levelCard(1)), findsOneWidget);
       expect(find.byKey(GameUiKeys.levelCard(2)), findsOneWidget);
-      expect(find.text('Level One'), findsOneWidget);
-      expect(find.text('Level Two'), findsOneWidget);
+      // The card title is derived from the (2D-mode-unchanged) display
+      // number, not the fixture's raw `name` field.
+      expect(find.text('Level 1'), findsOneWidget);
+      expect(find.text('Level 2'), findsOneWidget);
     },
   );
 
@@ -102,6 +107,84 @@ void main() {
       await tester.pumpAndSettle();
     },
   );
+
+  testWidgets(
+    'should_filter_levels_by_active_game_mode_from_app_settings_scope',
+    (tester) async {
+      final levels = [..._fakeLevels(), _fakeThreeDLevel(21)];
+
+      await tester.pumpWidget(
+        _TestApp(
+          loadLevels: () async => levels,
+          gameMode: GameMode.threeD,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(GameUiKeys.levelCard(1)), findsNothing);
+      expect(find.byKey(GameUiKeys.levelCard(2)), findsNothing);
+      expect(find.byKey(GameUiKeys.levelCard(21)), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'should_map_3d_internal_level_numbers_21_to_25_as_display_1_to_5',
+    (tester) async {
+      final levels = [_fakeThreeDLevel(21), _fakeThreeDLevel(23)];
+
+      await tester.pumpWidget(
+        _TestApp(loadLevels: () async => levels, gameMode: GameMode.threeD),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Level 1'), findsOneWidget);
+      expect(find.text('Level 3'), findsOneWidget);
+      expect(find.text('Level 21'), findsNothing);
+      expect(find.text('Level 23'), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'should_navigate_with_internal_level_number_when_displayed_3d_card_is_tapped',
+    (tester) async {
+      final levels = [_fakeThreeDLevel(21), _fakeThreeDLevel(23)];
+      Object? capturedArguments;
+
+      await tester.pumpWidget(
+        _TestApp(
+          loadLevels: () async => levels,
+          gameMode: GameMode.threeD,
+          onLeaderboardRoutePushed: (settings) {
+            capturedArguments = settings.arguments;
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Displayed "Level 1" card corresponds to internal level 21.
+      await tester.tap(find.byKey(GameUiKeys.levelCard(21)));
+      await tester.pumpAndSettle();
+
+      expect(capturedArguments, 21);
+    },
+  );
+}
+
+Level _fakeThreeDLevel(int number) {
+  return Level(
+    id: 'fixture-$number',
+    number: number,
+    name: 'Level $number',
+    boardGraph: BoardGraph(
+      nodes: [
+        GraphNode(id: 'a', coordinate: const BoardCoordinate(x: 0, y: 0, z: 0)),
+        GraphNode(id: 'b', coordinate: const BoardCoordinate(x: 0, y: 0, z: 1)),
+      ],
+      edges: [],
+    ),
+    arrows: [],
+    metadata: {'difficulty': 'test'},
+  );
 }
 
 List<Level> _fakeLevels() {
@@ -132,14 +215,19 @@ List<Level> _fakeLevels() {
 }
 
 class _TestApp extends StatelessWidget {
-  const _TestApp({required this.loadLevels, this.onLeaderboardRoutePushed});
+  const _TestApp({
+    required this.loadLevels,
+    this.onLeaderboardRoutePushed,
+    this.gameMode,
+  });
 
   final LoadLocalLevels loadLevels;
   final void Function(RouteSettings settings)? onLeaderboardRoutePushed;
+  final GameMode? gameMode;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    final app = MaterialApp(
       theme: AppTheme.dark(),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
@@ -155,6 +243,14 @@ class _TestApp extends StatelessWidget {
         }
         return null;
       },
+    );
+    final gameMode = this.gameMode;
+    if (gameMode == null) {
+      return app;
+    }
+    return AppSettingsScope(
+      controller: AppSettingsController(initialGameMode: gameMode),
+      child: app,
     );
   }
 }

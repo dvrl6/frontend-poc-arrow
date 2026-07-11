@@ -24,6 +24,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameMode => 'Game Mode';
 
   @override
+  String get challenges => 'Challenges';
+
+  @override
+  String get gameMode2D => '2D';
+
+  @override
+  String get gameMode3D => '3D';
+
+  @override
+  String get gameModeHint => 'Choose which level set the menu opens.';
+
+  @override
   String get gamePlaceholder => 'Game placeholder';
 
   @override

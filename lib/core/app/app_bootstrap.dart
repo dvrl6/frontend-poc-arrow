@@ -15,6 +15,9 @@ Future<Widget> bootstrap() async {
       settings.languageCode == null ? null : Locale(settings.languageCode!);
 
   return ArrowPocApp(
-    appSettings: AppSettingsController(initialLocale: initialLocale),
+    appSettings: AppSettingsController(
+      initialLocale: initialLocale,
+      initialGameMode: settings.gameMode,
+    ),
   );
 }

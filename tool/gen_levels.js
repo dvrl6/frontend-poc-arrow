@@ -1,10 +1,22 @@
 // Level tool for the Arrow game (Phase 11 — random bent-arrow generator).
 //
+// Phase 24.1: the single manual_levels.json asset was split into two files,
+// with internal level numbers kept globally unique (no renumber): 2D levels
+// 1-20 live in manual_levels_2d.json, 3D levels 21-25 in manual_levels_3d.json.
+//
 //   node tool/gen_levels.js --validate-only   (default, no args)
-//       Reads assets/levels/manual_levels.json, runs all checks. Never writes.
+//       Reads both asset files, runs all checks on each independently. Never writes.
+//
+//   node tool/gen_levels.js --generate-2d
+//       Generates levels 1-15 (random) + 16-20 (figures), validates as the 2D
+//       set, writes manual_levels_2d.json.
+//
+//   node tool/gen_levels.js --generate-3d
+//       Generates levels 21-25 (hand-designed), validates as the 3D set,
+//       writes manual_levels_3d.json.
 //
 //   node tool/gen_levels.js --generate
-//       Generates 15 random levels, validates, writes manual_levels.json.
+//       Shorthand: runs --generate-2d then --generate-3d.
 //
 // Generation algorithm (sparse graph + DFS partition):
 //   1. Define a W×H node grid (coordinate-based adjacency, NO edges upfront).
@@ -32,7 +44,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const ASSET = path.join(__dirname, '..', 'assets', 'levels', 'manual_levels.json');
+const ASSET_2D = path.join(__dirname, '..', 'assets', 'levels', 'manual_levels_2d.json');
+const ASSET_3D = path.join(__dirname, '..', 'assets', 'levels', 'manual_levels_3d.json');
 // Per-tier retry budgets. Hard gets a large budget so the random partition
 // algorithm finds a valid varied level without falling back to a deterministic
 // layout. This is a build-time tool — spending a few seconds per hard level
@@ -1335,7 +1348,17 @@ function noSharedNodes(dj) {
   return conflicts.length ? conflicts : null;
 }
 
-function validateAll(levels) {
+// [fileKind] is '2d' (default) or '3d'. The 2D set (1-20) keeps the full
+// invariant set: difficulty progression (1-5 easy/6-10 medium/11-20 hard),
+// strictly-increasing tier averages, density bands, figure-level real-gap
+// check, contiguous numbering. The 3D set (21-25) is all-hard by design, so
+// the easy/medium progression and increasing-tier-average checks do not
+// apply to it (there is nothing to compare); instead every 3D level must be
+// multi-layer (>1 distinct z), on top of the invariants that already apply
+// generically (structure/no-single-node-arrows, no-free-nodes, greedy
+// solvability, disjoint arrows, real-gap-3D).
+function validateAll(levels, fileKind = '2d') {
+  const is3DFile = fileKind === '3d';
   let ok = true; const warnings = [];
   const diffByNum = {}, arrowsByTier = { easy: [], medium: [], hard: [] };
   for (const lvl of levels) {
@@ -1344,6 +1367,9 @@ function validateAll(levels) {
     const se = structureErrors(dj), free = noFreeNodes(dj);
     const sv = solvableGreedy(dj), sh = shapeOf(dj);
     const shared = noSharedNodes(dj);
+    const isMultiLayer = new Set(dj.nodes.map(zOf)).size > 1;
+    const layerErr = is3DFile && !isMultiLayer;
+    if (layerErr) ok = false;
     // Figure levels (16-20) are deliberately concave silhouettes: a bbox-
     // interior "gap" can be a legitimate part of the shape's own visible
     // outer edge, not an accidental hole. Random tiers (1-15) use the
@@ -1362,7 +1388,7 @@ function validateAll(levels) {
       if (n < band.min || n > band.max) densityErr = `density ${n} out of [${band.min},${band.max}]`;
       else if (band.warn && n > band.warn) warnings.push(`#${lvl.number} dense (${n} arrows, >${band.warn})`);
     }
-    const bad = se.length || free || !sv || densityErr || components !== 1 || shared || gapExit;
+    const bad = se.length || free || !sv || densityErr || components !== 1 || shared || gapExit || layerErr;
     if (bad) ok = false;
     console.log(
       '#' + String(lvl.number).padStart(2) + ' ' + (lvl.name || '').padEnd(15) +
@@ -1376,11 +1402,24 @@ function validateAll(levels) {
       ' shared=' + (shared ? JSON.stringify(shared) : '-') +
       ' gapExit=' + (gapExit ? 'Y' : '-') +
       ' solvable=' + sv +
-      (is3D ? ' layers=' + new Set(dj.nodes.map(zOf)).size : '') +
+      (is3D ? ' layers=' + new Set(dj.nodes.map(zOf)).size + (layerErr ? ' NOT_MULTI_LAYER' : '') : '') +
       (components !== 1 ? ' DISCONNECTED(' + components + ')' : '') +
       (densityErr ? ' ' + densityErr.toUpperCase() : '') +
       (se.length ? ' STRUCT_ERR=' + JSON.stringify(se) : '')
     );
+  }
+  if (is3DFile) {
+    // 3D set is all-hard by construction; the easy/medium progression and
+    // strictly-increasing tier-average checks don't apply (nothing to
+    // compare against). All-hard is still asserted directly.
+    const allHard = Object.values(diffByNum).every(d => d === 'hard');
+    if (!allHard) ok = false;
+    console.log();
+    console.log('all levels hard (3D set):', allHard);
+    if (warnings.length) console.log('WARNINGS:', warnings.join('; '));
+    const allOk = ok && allHard;
+    console.log('ALL VALID:', allOk);
+    return allOk;
   }
   // Generalized so any count >= 15 (figure levels 16+) works without a code
   // change: 1-5 easy, 6-10 medium, every number >= 11 present must be hard.
@@ -1435,80 +1474,89 @@ function selfTest() {
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
+function writeLevels(assetPath, levels) {
+  fs.writeFileSync(assetPath, JSON.stringify({ levels }, null, 2) + '\n');
+  console.log('\nWROTE', assetPath);
+}
+
+function runGenerate2D() {
+  console.log('MODE: --generate-2d (levels 1-15 random + 16-20 figures; writes manual_levels_2d.json)\n');
+  const levels = [...buildLevels(), ...buildFigureLevels()];
+  console.log();
+  const allOk = validateAll(levels, '2d');
+  if (allOk) {
+    writeLevels(ASSET_2D, levels);
+  } else {
+    console.log('\nNOT WRITTEN — fix issues first'); process.exitCode = 1;
+  }
+  return allOk;
+}
+
+function runGenerate3D() {
+  console.log('MODE: --generate-3d (levels 21-25; writes manual_levels_3d.json)\n');
+  const levels = build3DLevels();
+  console.log();
+  const allOk = validateAll(levels, '3d');
+  if (allOk) {
+    writeLevels(ASSET_3D, levels);
+  } else {
+    console.log('\nNOT WRITTEN — fix issues first'); process.exitCode = 1;
+  }
+  return allOk;
+}
+
+function readContiguous(assetPath, expectedStart) {
+  const parsed = JSON.parse(fs.readFileSync(assetPath, 'utf8'));
+  const levels = parsed.levels || [];
+  const numbers = levels.map(l => l.number).sort((a, b) => a - b);
+  const contiguous = numbers.length > 0 &&
+    numbers.every((n, i) => n === expectedStart + i);
+  if (!contiguous) {
+    console.log(`${assetPath}: expected contiguous numbering from ${expectedStart}, found: ${JSON.stringify(numbers)}`);
+    return null;
+  }
+  return levels;
+}
+
 function main() {
   const args = process.argv.slice(2);
   const generate = args.includes('--generate');
-  const generateFigures = args.includes('--generate-figures');
+  const generate2D = args.includes('--generate-2d');
   const generate3D = args.includes('--generate-3d');
-  const modeCount = [generate, generateFigures, generate3D, args.includes('--validate-only')].filter(Boolean).length;
+  const modeCount = [generate, generate2D, generate3D, args.includes('--validate-only')].filter(Boolean).length;
   if (modeCount > 1) {
-    console.error('Pass exactly one of --generate, --generate-figures, --generate-3d, --validate-only.');
+    console.error('Pass exactly one of --generate, --generate-2d, --generate-3d, --validate-only.');
     process.exitCode = 2; return;
   }
   if (!selfTest()) return;
   console.log();
   if (generate) {
-    console.log('MODE: --generate (will write manual_levels.json if valid)\n');
-    const levels = buildLevels();
+    console.log('MODE: --generate (shorthand: --generate-2d + --generate-3d)\n');
+    const ok2d = runGenerate2D();
     console.log();
-    const allOk = validateAll(levels);
-    if (allOk) {
-      fs.writeFileSync(ASSET, JSON.stringify({ levels }, null, 2) + '\n');
-      console.log('\nWROTE', ASSET);
-    } else {
-      console.log('\nNOT WRITTEN — fix issues first'); process.exitCode = 1;
-    }
+    const ok3d = runGenerate3D();
+    if (!ok2d || !ok3d) process.exitCode = 1;
     return;
   }
-  if (generateFigures) {
-    console.log('MODE: --generate-figures (regenerates levels 16-20 only; 1-15 left byte-identical)\n');
-    const parsed = JSON.parse(fs.readFileSync(ASSET, 'utf8'));
-    const base = (parsed.levels || []).filter(l => l.number <= 15);
-    if (base.length !== 15) {
-      console.log(`Expected 15 base levels (1-15) on disk, found ${base.length}`); process.exitCode = 1; return;
-    }
-    const figures = buildFigureLevels();
-    console.log();
-    const levels = [...base, ...figures];
-    const allOk = validateAll(levels);
-    if (allOk) {
-      fs.writeFileSync(ASSET, JSON.stringify({ levels }, null, 2) + '\n');
-      console.log('\nWROTE', ASSET);
-    } else {
-      console.log('\nNOT WRITTEN — fix issues first'); process.exitCode = 1;
-    }
+  if (generate2D) {
+    const ok = runGenerate2D();
+    if (!ok) process.exitCode = 1;
     return;
   }
   if (generate3D) {
-    console.log('MODE: --generate-3d (regenerates levels 21-25 only; 1-20 left byte-identical)\n');
-    const parsed = JSON.parse(fs.readFileSync(ASSET, 'utf8'));
-    const base = (parsed.levels || []).filter(l => l.number <= 20);
-    if (base.length !== 20) {
-      console.log(`Expected 20 base levels (1-20) on disk, found ${base.length}`); process.exitCode = 1; return;
-    }
-    const threeD = build3DLevels();
-    console.log();
-    const levels = [...base, ...threeD];
-    const allOk = validateAll(levels);
-    if (allOk) {
-      fs.writeFileSync(ASSET, JSON.stringify({ levels }, null, 2) + '\n');
-      console.log('\nWROTE', ASSET);
-    } else {
-      console.log('\nNOT WRITTEN — fix issues first'); process.exitCode = 1;
-    }
+    const ok = runGenerate3D();
+    if (!ok) process.exitCode = 1;
     return;
   }
-  console.log('MODE: --validate-only (reads manual_levels.json, never writes)\n');
-  const parsed = JSON.parse(fs.readFileSync(ASSET, 'utf8'));
-  const levels = parsed.levels || [];
-  const numbers = levels.map(l => l.number).sort((a, b) => a - b);
-  const contiguous = numbers.length > 0 && numbers.every((n, i) => n === i + 1);
-  if (!contiguous) {
-    console.log(`Expected a contiguous 1..N level numbering, found: ${JSON.stringify(numbers)}`);
-    process.exitCode = 1; return;
-  }
-  const allOk = validateAll(levels);
-  if (!allOk) process.exitCode = 1;
+  console.log('MODE: --validate-only (reads manual_levels_2d.json + manual_levels_3d.json, never writes)\n');
+  const levels2d = readContiguous(ASSET_2D, 1);
+  const levels3d = readContiguous(ASSET_3D, 21);
+  if (!levels2d || !levels3d) { process.exitCode = 1; return; }
+  console.log('--- 2D set (manual_levels_2d.json) ---');
+  const ok2d = validateAll(levels2d, '2d');
+  console.log('\n--- 3D set (manual_levels_3d.json) ---');
+  const ok3d = validateAll(levels3d, '3d');
+  if (!ok2d || !ok3d) process.exitCode = 1;
 }
 
 main();

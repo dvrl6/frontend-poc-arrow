@@ -2,16 +2,24 @@
 
 This guide explains how to author and edit the Arrow game's manual levels.
 
-`assets/levels/manual_levels.json` is the **authoritative source of truth**. You
-edit it by hand, then validate with:
+Levels are split across two files, both authoritative hand-editable sources.
+Internal level numbers stay **globally unique** across both files (no
+renumber) — this is a file split, not a change to numbering:
+
+- `assets/levels/manual_levels_2d.json` — levels **1–20** (2D).
+- `assets/levels/manual_levels_3d.json` — levels **21–25** (3D, see §16).
+
+Edit either by hand, then validate with:
 
 ```bash
 node tool/gen_levels.js --validate-only
 flutter test
 ```
 
-The tool **never overwrites** the JSON unless you explicitly pass `--generate`
-(see §12). Hand-edit freely — your changes will not be lost by validation.
+`--validate-only` reads BOTH files and validates each independently. The tool
+**never overwrites** either JSON unless you explicitly pass `--generate-2d`,
+`--generate-3d`, or `--generate` (see §12). Hand-edit freely — your changes
+will not be lost by validation.
 
 ---
 
@@ -262,15 +270,15 @@ Common failures:
 denser baseline:
 
 ```bash
-node tool/gen_levels.js --generate          # rebuilds levels 1-15, WRITES manual_levels.json
-node tool/gen_levels.js --generate-figures  # rebuilds levels 16-20 only, WRITES manual_levels.json
+node tool/gen_levels.js --generate-2d  # rebuilds levels 1-15 (random) + 16-20 (figures), WRITES manual_levels_2d.json
+node tool/gen_levels.js --generate-3d  # rebuilds levels 21-25, WRITES manual_levels_3d.json
+node tool/gen_levels.js --generate     # shorthand: runs both of the above
 ```
 
-Use either only when you intend to replace the corresponding hand-authored
-JSON. `--generate-figures` reads the 15 levels already on disk and carries
-them through byte-for-byte (it never touches 1–15); it only regenerates and
-replaces 16–20. Day-to-day authoring is hand-editing the JSON +
-`--validate-only`.
+Use only when you intend to replace the corresponding hand-authored JSON.
+Each mode rebuilds its own file from scratch (deterministic seeds/builders,
+same as before the file split) and refuses to write if validation fails.
+Day-to-day authoring is hand-editing the JSON + `--validate-only`.
 
 ## 14. blockedEdges
 
@@ -384,5 +392,6 @@ nodes, edges, arrows — extended with a third axis:
   board (`Graph3DBoard`); 2D levels keep the flat board. No per-level flag.
 - `metadata.generationType` must be `"3d"` (selects the 3D real-gap check).
 - Regenerate/validate with `node tool/gen_levels.js --generate-3d` (rewrites
-  21–25 from the deterministic builders, keeps 1–20 byte-identical) and
-  `--validate-only` (all 25 levels, never writes).
+  `manual_levels_3d.json` levels 21–25 from the deterministic builders;
+  `manual_levels_2d.json` is a separate file and is never touched by this
+  mode) and `--validate-only` (both files, 25 levels total, never writes).

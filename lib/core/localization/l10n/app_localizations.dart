@@ -128,6 +128,30 @@ abstract class AppLocalizations {
   /// **'Game Mode'**
   String get gameMode;
 
+  /// No description provided for @challenges.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenges'**
+  String get challenges;
+
+  /// No description provided for @gameMode2D.
+  ///
+  /// In en, this message translates to:
+  /// **'2D'**
+  String get gameMode2D;
+
+  /// No description provided for @gameMode3D.
+  ///
+  /// In en, this message translates to:
+  /// **'3D'**
+  String get gameMode3D;
+
+  /// No description provided for @gameModeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which level set the menu opens.'**
+  String get gameModeHint;
+
   /// No description provided for @gamePlaceholder.
   ///
   /// In en, this message translates to:

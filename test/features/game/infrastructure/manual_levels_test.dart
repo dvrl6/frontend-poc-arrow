@@ -39,64 +39,73 @@ void main() {
     );
   });
 
-  test('should_load_25_manual_levels_from_assets', () async {
-    final levels = await GetLocalLevelsUseCase(repository)();
+  // Merged-repository integration assertions: the combined list must still
+  // load all 25 levels (2D 1-20 from manual_levels_2d.json, 3D 21-25 from
+  // manual_levels_3d.json) with globally-unique numbers/ids. Internal
+  // numbering is unchanged by the file split (Phase 24.1).
+  group('merged repository (2D + 3D)', () {
+    test('should_load_25_manual_levels_from_assets', () async {
+      final levels = await GetLocalLevelsUseCase(repository)();
 
-    expect(levels, hasLength(25));
-    expect(levels.first.number, 1);
-    expect(levels.last.number, 25);
-  });
+      expect(levels, hasLength(25));
+      expect(levels.first.number, 1);
+      expect(levels.last.number, 25);
+    });
 
-  test('should_validate_all_manual_levels', () async {
-    final dataSource = LocalLevelDataSource(
-      assetTextLoader: const RootBundleAssetTextLoader(),
-    );
-    final mapper = LevelDefinitionMapper();
-    final validator = LevelDefinitionValidator();
-    final dtos = await dataSource.loadManualLevels();
+    test('should_validate_all_manual_levels', () async {
+      final dataSource = LocalLevelDataSource(
+        assetTextLoader: const RootBundleAssetTextLoader(),
+      );
+      final mapper = LevelDefinitionMapper();
+      final validator = LevelDefinitionValidator();
+      final dtos = await dataSource.loadManualLevels();
 
-    final levels = dtos.map(mapper.toDomain).map(validator.validate).toList();
+      final levels = dtos.map(mapper.toDomain).map(validator.validate).toList();
 
-    expect(levels, hasLength(25));
-    expect(levels.every((level) => level.boardGraph.nodes.isNotEmpty), isTrue);
-    expect(levels.every((level) => level.boardGraph.edges.isNotEmpty), isTrue);
-  });
+      expect(levels, hasLength(25));
+      expect(levels.every((level) => level.boardGraph.nodes.isNotEmpty), isTrue);
+      expect(levels.every((level) => level.boardGraph.edges.isNotEmpty), isTrue);
+    });
 
-  test('should_have_progressive_difficulty_across_manual_levels', () async {
-    final levels = await GetLocalLevelsUseCase(repository)();
+    test('should_have_progressive_difficulty_across_manual_levels', () async {
+      final levels = await GetLocalLevelsUseCase(repository)();
 
-    expect(
-      levels.where((level) => level.number! <= 5).map(_difficulty),
-      everyElement('easy'),
-    );
-    expect(
-      levels
-          .where((level) => level.number! >= 6 && level.number! <= 10)
-          .map(_difficulty),
-      everyElement('medium'),
-    );
-    expect(
-      levels.where((level) => level.number! >= 11).map(_difficulty),
-      everyElement('hard'),
-    );
-  });
+      expect(
+        levels.where((level) => level.number! <= 5).map(_difficulty),
+        everyElement('easy'),
+      );
+      expect(
+        levels
+            .where((level) => level.number! >= 6 && level.number! <= 10)
+            .map(_difficulty),
+        everyElement('medium'),
+      );
+      expect(
+        levels.where((level) => level.number! >= 11).map(_difficulty),
+        everyElement('hard'),
+      );
+    });
 
-  test('should_have_unique_level_numbers', () async {
-    final levels = await GetLocalLevelsUseCase(repository)();
-    final numbers = levels.map((level) => level.number).toSet();
+    test('should_have_unique_level_numbers', () async {
+      final levels = await GetLocalLevelsUseCase(repository)();
+      final numbers = levels.map((level) => level.number).toSet();
 
-    expect(numbers, hasLength(25));
-    expect(numbers, containsAll(List<int>.generate(25, (index) => index + 1)));
-  });
+      expect(numbers, hasLength(25));
+      expect(
+        numbers,
+        containsAll(List<int>.generate(25, (index) => index + 1)),
+      );
+    });
 
-  test('should_have_unique_level_ids', () async {
-    final levels = await GetLocalLevelsUseCase(repository)();
-    final ids = levels.map((level) => level.id).toSet();
+    test('should_have_unique_level_ids', () async {
+      final levels = await GetLocalLevelsUseCase(repository)();
+      final ids = levels.map((level) => level.id).toSet();
 
-    expect(ids, hasLength(25));
-    expect(ids, contains('manual-001'));
-    expect(ids, contains('manual-020'));
-    expect(ids, contains('manual-025'));
+      expect(ids, hasLength(25));
+      expect(ids, contains('manual-001'));
+      expect(ids, contains('manual-020'));
+      expect(ids, contains('manual-025'));
+    });
   });
 
   test(
@@ -137,22 +146,27 @@ void main() {
   });
 
   test('should_keep_manual_levels_graph_based_not_matrix_based', () async {
-    final source = await const RootBundleAssetTextLoader().loadString(
-      LocalLevelDataSource.manualLevelsAssetPath,
-    );
-    final decoded = jsonDecode(source) as Map<String, Object?>;
-    final levels = decoded['levels']! as List<Object?>;
+    const loader = RootBundleAssetTextLoader();
+    final sources = await Future.wait([
+      loader.loadString(LocalLevelDataSource.manualLevels2dAssetPath),
+      loader.loadString(LocalLevelDataSource.manualLevels3dAssetPath),
+    ]);
 
-    for (final rawLevel in levels) {
-      final level = rawLevel! as Map<String, Object?>;
-      final definition = level['definitionJson']! as Map<String, Object?>;
-      expect(definition.containsKey('nodes'), isTrue);
-      expect(definition.containsKey('edges'), isTrue);
-      expect(definition.containsKey('arrows'), isTrue);
-      expect(definition.containsKey('blockedEdges'), isTrue);
-      expect(definition.containsKey('matrix'), isFalse);
-      expect(definition.containsKey('grid'), isFalse);
-      expect(definition.containsKey('cells'), isFalse);
+    for (final source in sources) {
+      final decoded = jsonDecode(source) as Map<String, Object?>;
+      final levels = decoded['levels']! as List<Object?>;
+
+      for (final rawLevel in levels) {
+        final level = rawLevel! as Map<String, Object?>;
+        final definition = level['definitionJson']! as Map<String, Object?>;
+        expect(definition.containsKey('nodes'), isTrue);
+        expect(definition.containsKey('edges'), isTrue);
+        expect(definition.containsKey('arrows'), isTrue);
+        expect(definition.containsKey('blockedEdges'), isTrue);
+        expect(definition.containsKey('matrix'), isFalse);
+        expect(definition.containsKey('grid'), isFalse);
+        expect(definition.containsKey('cells'), isFalse);
+      }
     }
   });
 
@@ -508,6 +522,60 @@ void main() {
         reason: 'Medium levels have no bent arrow');
     expect(hasBent(11, 15), isTrue,
         reason: 'Hard levels have no bent arrow');
+  });
+
+  // 2D group (levels 1-20, manual_levels_2d.json): tier progression, density
+  // bands, figure-level real-gap, and bent-arrow checks already run above
+  // over the merged repository and naturally cover this range (2D levels are
+  // 1-20). This group adds the assertions specific to the 2D file split.
+  group('2D levels (1-20)', () {
+    test('should_only_contain_levels_1_to_20', () async {
+      final levels = await GetLocalLevelsUseCase(repository)();
+      final twoD = levels.where((l) => (l.number ?? 0) <= 20).toList();
+
+      expect(twoD, hasLength(20));
+      expect(twoD.map((l) => l.number).toSet(),
+          List<int>.generate(20, (i) => i + 1).toSet());
+    });
+  });
+
+  // 3D group (levels 21-25, manual_levels_3d.json): all-hard, multi-layer,
+  // spanning/vertical arrows, no single-node arrows, real-gap-3D semantics,
+  // and solvability. No-single-node-arrows, real-gap-3D, and solvability are
+  // already asserted generically above (they loop over all 25 levels); this
+  // group adds the 3D-specific assertions those generic checks don't cover.
+  group('3D levels (21-25)', () {
+    test('should_only_contain_hard_multi_layer_levels', () async {
+      final levels = await GetLocalLevelsUseCase(repository)();
+      final threeD = levels.where((l) => (l.number ?? 0) >= 21).toList();
+
+      expect(threeD, hasLength(5));
+      expect(threeD.map((l) => l.number).toSet(),
+          List<int>.generate(5, (i) => i + 21).toSet());
+      for (final level in threeD) {
+        expect(_difficulty(level), 'hard',
+            reason: 'Level ${level.number} is not hard');
+        expect(level.boardGraph.isMultiLayer, isTrue,
+            reason: 'Level ${level.number} is not multi-layer');
+      }
+    });
+
+    test('should_have_spanning_vertical_arrows_in_every_3d_level', () async {
+      final levels = await GetLocalLevelsUseCase(repository)();
+      final threeD = levels.where((l) => (l.number ?? 0) >= 21);
+
+      for (final level in threeD) {
+        final graph = level.boardGraph;
+        final hasVertical = level.arrows.any((arrow) {
+          final start = graph.nodeById(arrow.startNodeId)!;
+          final end = graph.nodeById(arrow.endNodeId)!;
+          return start.coordinate.z != end.coordinate.z;
+        });
+        expect(hasVertical, isTrue,
+            reason:
+                'Level ${level.number} has no arrow spanning between layers');
+      }
+    });
   });
 }
 
