@@ -149,6 +149,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancel => 'Cancel';
 
   @override
+  String get settingsSectionAccount => 'Account';
+
+  @override
+  String get settingsSectionGamePreferences => 'Game Preferences';
+
+  @override
+  String get settingsSectionAppSettings => 'App Settings';
+
+  @override
+  String get settingsSectionData => 'Data';
+
+  @override
   String get loadingSettings => 'Loading settings';
 
   @override
