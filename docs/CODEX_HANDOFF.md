@@ -2312,3 +2312,85 @@ pre-existing `ScoreStrategy` abstraction.
   found the hidden six-collision death confusing — a challenge run now
   ends only by its own rule: clock, budget, or the perfect-run mistake).
   Regression-tested with eight collisions under Time Attack.
+
+## Phase 27 — UI Polish: Launcher Icon, Home Menu Layout, Settings Restyle (2026-07-12)
+
+### Context
+
+User-requested visual pass on branch `feat/phase-27-ui-polish`, driven by
+three reference images: a rendered heart figure level (new app icon), a
+dark UI kit and a settings mockup (both lavender/violet on dark navy).
+The settings restyle was explicitly a **trial** for a possible app-wide
+re-theme. Mid-phase, after seeing the result, the user kept the new
+sectioned layout but rejected the lavender/violet palette — the final
+screen uses the mockups' structure with the app's existing mint/neon
+colors.
+
+### What Changed
+
+- **Android launcher icon** (no new dependencies — ffmpeg pipeline, not
+  `flutter_launcher_icons`): the user-supplied `HeartNodus.jpeg` (864×758,
+  the heart level rendered with neon arrows) was padded square on its own
+  sampled background color `#121A2D` (probed from the image corner so no
+  seam shows), then scaled to the 5 legacy `ic_launcher.png` mipmaps
+  (heart at ~80% of canvas). Added a proper adaptive icon for API 26+:
+  `mipmap-anydpi-v26/ic_launcher.xml`, `values/ic_launcher_background.xml`
+  (color `#121A2D`), and 5 `ic_launcher_foreground.png` mipmaps with the
+  heart at ~58% of canvas to fit the 66/108dp safe zone under any mask.
+  `AndroidManifest.xml` already pointed at `@mipmap/ic_launcher` — untouched.
+- **Home menu layout** (`home_screen.dart`): the 4-button `Row` from P21.1
+  (icon-above-label tiles, 11px text that ellipsized "Leaderboard" and the
+  Spanish labels) became a `Column` of full-width horizontal bar buttons:
+  leading icon, 16px label, trailing chevron — same per-button neon accent,
+  glow shadow, and tap-scale feedback. Wordmark, animated background, and
+  debug row untouched. Widget tests locate these by localized label text,
+  so no test changes were needed for this screen.
+- **Settings restyle** (`settings_screen.dart` — new structure, existing
+  colors):
+  - Mockup-style sectioned order with uppercase mint `_SectionHeader`s:
+    **Account** (avatar with initials or person glyph on a mint→blue
+    gradient circle; filled login/sync; outlined logout) → **Game
+    Preferences** (game mode, language) → **App Settings** (sound + music
+    `SwitchListTile`s with rounded mint icon chips) → **Data** (backend URL
+    card, both reset buttons).
+  - `_SettingsCard` (a `Material` with the same mint-tinted border as the
+    global `Card` theme) replaces `Card` within this screen. Using
+    `Material` (not a decorated `Container`) matters: `ListTile` asserts if
+    wrapped in a color-decorated non-Material ancestor.
+  - A lavender/violet variant of this restyle (new `AppTheme` constants,
+    scoped `Theme` override for switches/segmented button, gradient primary
+    button) was built first and then reverted at the user's direction after
+    review — the layout survived, the palette did not. No `AppTheme` color
+    constants were ultimately added or changed.
+  - All `GameUiKeys`, the language-dropdown key, controller wiring, dialogs,
+    and snackbar logic are byte-identical in behavior. The empty placeholder
+    subtitles (`soundFoundationDescription`/`musicFutureDescription`, both
+    `" "`) are no longer rendered; their ARB keys remain.
+  - 4 new ARB keys in both locales (`settingsSectionAccount`,
+    `settingsSectionGamePreferences`, `settingsSectionAppSettings`,
+    `settingsSectionData`), Spanish kept accent-free matching file style;
+    regenerated via `flutter gen-l10n`.
+- **Test adjustments** (`settings_test.dart`, both consequences of the
+  taller sectioned layout on the 800×600 test viewport): the "settings
+  loaded" readiness probe switched from `soundSwitch` (now below the fold —
+  `ListView` children are lazily built, so the finder finds nothing) to
+  `gameModeSelector` (near the top); and the reset-progress tap now does
+  `ensureVisible` after `scrollUntilVisible`, because the latter stops as
+  soon as an edge enters the viewport while the tap targets the center.
+
+### Verification Results
+
+- `flutter analyze`: no issues.
+- `flutter test`: 235/235 passed (0 new, 2 adjusted as above).
+- `node tool/gen_levels.js --validate-only`: n/a (no level files touched).
+- Manual on-device validation pending: launcher icon on a real
+  launcher/emulator (legacy + adaptive mask), home layout, settings look.
+
+### Limitations
+
+- The lavender/violet trial palette was rejected for this app; any future
+  re-theme proposal should start from a different palette direction (the
+  sectioned layout itself was approved and kept).
+- Icon source is a JPEG screenshot; a vector or direct-render source would
+  produce crisper small sizes if ever needed.
+- No `ios/` directory exists in this project — nothing to update there.

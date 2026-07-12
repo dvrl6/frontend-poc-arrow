@@ -368,6 +368,30 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get cancel;
 
+  /// No description provided for @settingsSectionAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get settingsSectionAccount;
+
+  /// No description provided for @settingsSectionGamePreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Game Preferences'**
+  String get settingsSectionGamePreferences;
+
+  /// No description provided for @settingsSectionAppSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'App Settings'**
+  String get settingsSectionAppSettings;
+
+  /// No description provided for @settingsSectionData.
+  ///
+  /// In en, this message translates to:
+  /// **'Data'**
+  String get settingsSectionData;
+
   /// No description provided for @loadingSettings.
   ///
   /// In en, this message translates to:
