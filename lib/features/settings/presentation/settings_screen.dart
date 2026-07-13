@@ -7,7 +7,6 @@ import '../../../core/theme/app_theme.dart';
 import '../../auth/infrastructure/auth_dependencies.dart';
 import '../../game/presentation/game_ui_keys.dart';
 import '../../progress/infrastructure/local_progress_dependencies.dart';
-import '../domain/game_mode.dart';
 import '../infrastructure/settings_dependencies.dart';
 import 'settings_screen_controller.dart';
 import '../../../core/app/app_settings_scope.dart';
@@ -115,11 +114,6 @@ class _SettingsContent extends StatelessWidget {
         _SectionHeader(localizations.settingsSectionAccount),
         _AuthStatusCard(controller: controller),
         const SizedBox(height: 22),
-        _SectionHeader(localizations.settingsSectionGamePreferences),
-        _GameModeSelectorCard(controller: controller),
-        const SizedBox(height: 12),
-        _LanguageSelectorCard(controller: controller),
-        const SizedBox(height: 22),
         _SectionHeader(localizations.settingsSectionAppSettings),
         _SettingsCard(
           child: SwitchListTile(
@@ -140,6 +134,8 @@ class _SettingsContent extends StatelessWidget {
             title: Text(localizations.musicEnabled),
           ),
         ),
+        const SizedBox(height: 12),
+        _LanguageSelectorCard(controller: controller),
         const SizedBox(height: 22),
         _SectionHeader(localizations.settingsSectionData),
         _ReadOnlyInfoCard(
@@ -541,59 +537,6 @@ class _LanguageSelectorCard extends StatelessWidget {
                 child: Text('Español'),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _GameModeSelectorCard extends StatelessWidget {
-  const _GameModeSelectorCard({required this.controller});
-
-  final SettingsScreenController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-    final current = controller.settings.gameMode;
-
-    return _SettingsCard(
-      padding: const EdgeInsets.all(18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            localizations.gameMode,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: AppTheme.softText,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(localizations.gameModeHint),
-          const SizedBox(height: 12),
-          SegmentedButton<GameMode>(
-            key: GameUiKeys.gameModeSelector,
-            segments: [
-              ButtonSegment(
-                value: GameMode.twoD,
-                label: Text(localizations.gameMode2D),
-              ),
-              ButtonSegment(
-                value: GameMode.threeD,
-                label: Text(localizations.gameMode3D),
-              ),
-            ],
-            selected: {current},
-            onSelectionChanged: (selection) async {
-              final mode = selection.first;
-              await controller.setGameMode(mode);
-              if (!context.mounted) {
-                return;
-              }
-              AppSettingsScope.maybeOf(context)?.setGameMode(mode);
-            },
           ),
         ],
       ),
