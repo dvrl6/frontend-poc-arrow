@@ -553,7 +553,8 @@ class _VictoryOverlay extends StatelessWidget {
                 children: [
                   Text(
                     localizations.victory,
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    style: Theme.of(context).textTheme.headlineSmall
+                        ?.copyWith(fontFamily: 'PixelGame', fontSize: 30),
                   ),
                   const SizedBox(height: 12),
                   if (isChallenge && isNewChallengeRecord)
@@ -659,7 +660,8 @@ class _GameOverOverlay extends StatelessWidget {
                 children: [
                   Text(
                     localizations.gameOver,
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    style: Theme.of(context).textTheme.headlineSmall
+                        ?.copyWith(fontFamily: 'PixelGame', fontSize: 30),
                   ),
                   const SizedBox(height: 8),
                   Text(

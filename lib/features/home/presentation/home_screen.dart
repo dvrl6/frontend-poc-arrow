@@ -8,9 +8,15 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:frontend_poc_arrow/core/localization/l10n/app_localizations.dart';
 
+import '../../../core/app/app_settings_scope.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/routing/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../game/presentation/game_ui_keys.dart';
+import '../../settings/application/get_player_settings_use_case.dart';
+import '../../settings/application/save_player_settings_use_case.dart';
+import '../../settings/domain/game_mode.dart';
+import '../../settings/infrastructure/settings_dependencies.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,15 +32,31 @@ class _HomeScreenState extends State<HomeScreen>
     duration: const Duration(seconds: 18),
   )..repeat();
 
+  late final Future<GetPlayerSettingsUseCase> _getPlayerSettings =
+      SettingsDependencies.createGetPlayerSettingsUseCase();
+  late final Future<SavePlayerSettingsUseCase> _savePlayerSettings =
+      SettingsDependencies.createSavePlayerSettingsUseCase();
+
   @override
   void dispose() {
     _backgroundController.dispose();
     super.dispose();
   }
 
+  /// Same two-call shape as the settings screen's selectors: the scope makes
+  /// the change reactive app-wide immediately; the use case persists it.
+  Future<void> _setGameMode(GameMode mode) async {
+    AppSettingsScope.maybeOf(context)?.setGameMode(mode);
+    final getSettings = await _getPlayerSettings;
+    final saveSettings = await _savePlayerSettings;
+    final settings = await getSettings();
+    await saveSettings(settings.copyWith(gameMode: mode));
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
+    final appSettings = AppSettingsScope.maybeOf(context);
 
     return Scaffold(
       body: Stack(
@@ -56,22 +78,7 @@ class _HomeScreenState extends State<HomeScreen>
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Spacer(flex: 3),
-                  ShaderMask(
-                    shaderCallback: (bounds) => const LinearGradient(
-                      colors: [AppTheme.neonMint, AppTheme.neonBlue],
-                    ).createShader(bounds),
-                    child: Text(
-                      localizations.appTitle,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 56,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 2,
-                        color: Colors.white,
-                        height: 1.0,
-                      ),
-                    ),
-                  ),
+                  _PixelWordmark(text: localizations.appTitle),
                   const SizedBox(height: 12),
                   Text(
                     localizations.homeSubtitle,
@@ -82,7 +89,26 @@ class _HomeScreenState extends State<HomeScreen>
                       letterSpacing: 0.5,
                     ),
                   ),
-                  const Spacer(flex: 3),
+                  const Spacer(flex: 2),
+                  // Listen to the controller directly: AppSettingsScope's
+                  // updateShouldNotify compares controller identity (stable
+                  // for the app's lifetime), so a plain maybeOf read would
+                  // never rebuild this screen and the toggle would appear
+                  // stuck on its startup value after a tap.
+                  if (appSettings == null)
+                    _GameModeToggle(
+                      selected: GameMode.twoD,
+                      onChanged: _setGameMode,
+                    )
+                  else
+                    ListenableBuilder(
+                      listenable: appSettings,
+                      builder: (context, _) => _GameModeToggle(
+                        selected: appSettings.gameMode,
+                        onChanged: _setGameMode,
+                      ),
+                    ),
+                  const Spacer(flex: 2),
                   _MenuNavButton(
                     icon: Icons.grid_view_rounded,
                     label: localizations.levels,
@@ -90,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen>
                     onPressed: () =>
                         Navigator.of(context).pushNamed(AppRoutes.levels),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   _MenuNavButton(
                     icon: Icons.leaderboard_rounded,
                     label: localizations.leaderboard,
@@ -99,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen>
                       context,
                     ).pushNamed(AppRoutes.leaderboardLevelPicker),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   _MenuNavButton(
                     icon: Icons.settings_rounded,
                     label: localizations.settings,
@@ -107,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen>
                     onPressed: () =>
                         Navigator.of(context).pushNamed(AppRoutes.settings),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   _MenuNavButton(
                     icon: Icons.view_in_ar_rounded,
                     label: localizations.challenges,
@@ -176,10 +202,10 @@ class _MenuNavButtonState extends State<_MenuNavButton> {
         curve: Curves.easeOut,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
           decoration: BoxDecoration(
             color: AppTheme.surface,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: color.withValues(alpha: _enabled ? 1 : 0.3),
               width: 1.5,
@@ -196,15 +222,15 @@ class _MenuNavButtonState extends State<_MenuNavButton> {
           ),
           child: Row(
             children: [
-              Icon(widget.icon, color: color, size: 24),
-              const SizedBox(width: 14),
+              Icon(widget.icon, color: color, size: 21),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   widget.label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.4,
                     color: _enabled ? AppTheme.softText : AppTheme.mutedText,
@@ -214,9 +240,147 @@ class _MenuNavButtonState extends State<_MenuNavButton> {
               Icon(
                 Icons.chevron_right_rounded,
                 color: color.withValues(alpha: _enabled ? 0.6 : 0.2),
-                size: 22,
+                size: 20,
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The Nodus title in the Pixel Game display face: neon-blue interior with a
+/// darker blue border, drawn as two stacked texts (stroke pass underneath,
+/// fill pass on top) since Flutter has no single-pass text outline.
+class _PixelWordmark extends StatelessWidget {
+  const _PixelWordmark({required this.text});
+
+  final String text;
+
+  static const _style = TextStyle(
+    fontFamily: 'PixelGame',
+    fontSize: 68,
+    letterSpacing: 3,
+    height: 1.0,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Text(
+          text,
+          textAlign: TextAlign.center,
+          style: _style.copyWith(
+            foreground: Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 6
+              ..strokeJoin = StrokeJoin.round
+              ..color = AppTheme.neonBlueDark,
+          ),
+        ),
+        Text(
+          text,
+          textAlign: TextAlign.center,
+          style: _style.copyWith(color: AppTheme.neonBlue),
+        ),
+      ],
+    );
+  }
+}
+
+/// Pill-shaped 2D/3D switcher shown under the wordmark. The selected mode is
+/// unmistakable: filled with its accent color, glowing shadow, dark label;
+/// the unselected side stays transparent and muted.
+class _GameModeToggle extends StatelessWidget {
+  const _GameModeToggle({required this.selected, required this.onChanged});
+
+  final GameMode selected;
+  final ValueChanged<GameMode> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+
+    return Center(
+      child: Container(
+        key: GameUiKeys.gameModeSelector,
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: AppTheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: AppTheme.mutedText.withValues(alpha: 0.25),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _ModeSegment(
+              label: localizations.gameMode2D,
+              accentColor: AppTheme.neonMint,
+              selected: selected == GameMode.twoD,
+              onTap: () => onChanged(GameMode.twoD),
+            ),
+            const SizedBox(width: 4),
+            _ModeSegment(
+              label: localizations.gameMode3D,
+              accentColor: AppTheme.neonBlue,
+              selected: selected == GameMode.threeD,
+              onTap: () => onChanged(GameMode.threeD),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ModeSegment extends StatelessWidget {
+  const _ModeSegment({
+    required this.label,
+    required this.accentColor,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final Color accentColor;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected ? accentColor : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: accentColor.withValues(alpha: 0.45),
+                    blurRadius: 12,
+                    spreadRadius: 1,
+                  ),
+                ]
+              : null,
+        ),
+        child: Text(
+          label,
+          // Same pixel face as the wordmark; no synthetic bold on top of a
+          // bitmap-style font.
+          style: TextStyle(
+            fontFamily: 'PixelGame',
+            fontSize: 17,
+            letterSpacing: 1,
+            color: selected ? AppTheme.background : AppTheme.mutedText,
           ),
         ),
       ),

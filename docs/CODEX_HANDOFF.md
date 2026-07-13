@@ -2386,6 +2386,76 @@ colors.
 - Manual on-device validation pending: launcher icon on a real
   launcher/emulator (legacy + adaptive mask), home layout, settings look.
 
+### Phase 27.1 follow-ups (same session, user-directed)
+
+- **Pixel Game display font** (user-supplied; replaced an Urban Block
+  choice from earlier in the same session): `assets/fonts/PixelGame.otf`
+  (SuhadiDesign), family `PixelGame` in `pubspec.yaml`. Applied to three
+  surfaces per user direction: (1) the Nodus wordmark — the old
+  mint→blue gradient `ShaderMask` was replaced by `_PixelWordmark`, two
+  stacked `Text`s (a `PaintingStyle.stroke` pass in the new
+  `AppTheme.neonBlueDark` `0xFF0B6180` underneath, a `neonBlue` fill on
+  top) since Flutter has no single-pass text outline; (2) the home 2D/3D
+  toggle labels (no synthetic bold on a bitmap-style face); (3) the
+  Victory and Game Over overlay titles (`headlineSmall.copyWith(
+  fontFamily)`). Glyph coverage verified via fontTools for the EN+ES
+  strings (full lowercase mapped in both shipped variants; only the
+  regular face is bundled). ⚠ **License: 1001Fonts FFP — personal use
+  only** (embedding in a personal-use app is explicitly allowed); a
+  commercial release needs the author's written permission. Noted in
+  `pubspec.yaml` next to the declaration.
+- **Language moved to App Settings**: the language card now sits below the
+  music toggle; the Game Preferences section header no longer precedes it.
+- **2D/3D mode selector moved from settings to the home screen**: a
+  pill-shaped `_GameModeToggle` sits between the Nodus wordmark and the
+  menu buttons (which were shrunk — padding 18/12, 14px labels — so the
+  screen doesn't feel saturated). The selected segment is filled with its
+  accent color (mint for 2D, blue for 3D) plus a glow shadow and dark
+  label; the unselected side stays transparent/muted. Selection uses the
+  same two-call shape as the old settings card: `AppSettingsScope.
+  setGameMode` for app-wide reactivity plus `SavePlayerSettingsUseCase`
+  for persistence (`HomeScreen` builds the use cases via
+  `SettingsDependencies`, the same presentation→infrastructure-factory
+  pattern `SettingsScreen` uses). `GameUiKeys.gameModeSelector` moved with
+  the widget. The settings screen lost its whole Game Preferences section;
+  `SettingsScreenController.setGameMode` kept (controller-level test still
+  covers it; no production UI caller). `gameMode2D`/`gameMode3D` ARB keys
+  remain in use as the toggle labels; `gameMode`/`gameModeHint`/
+  `settingsSectionGamePreferences` are now unused but kept.
+- **Bug found on device and fixed — toggle appeared stuck on 2D**: the
+  home screen never rebuilt on mode change, because `AppSettingsScope.
+  updateShouldNotify` compares controller *identity* (stable for the app's
+  lifetime) and `ArrowPocApp`'s `AnimatedBuilder` only rebuilds
+  `MaterialApp` itself, not already-built routes. The mode DID change
+  underneath (persistence and the freshly-pushed levels screen were
+  correct — which is why the widget test passed while the device looked
+  broken), but the toggle highlight never moved. Fix: the toggle is
+  wrapped in a `ListenableBuilder` on the scope's controller. Any future
+  widget that displays (not just sets) a scope value on an already-mounted
+  screen needs the same treatment.
+- **Tests**: the settings 3D-selection UI test became
+  `test/features/home/presentation/home_game_mode_switch_test.dart`, an
+  end-to-end check: tap 3D on home → toggle highlight actually moves
+  (asserted via the segment's fill color — this assertion fails against
+  the pre-fix code) → SharedPreferences stores `'3D'` → Levels shows
+  internal card 21 and no card 1. It lives in its OWN file deliberately:
+  real `rootBundle` asset loads hang forever on the second navigation to
+  the levels screen within one test process (even inside `runAsync`) —
+  every pre-existing test file only ever visits the levels screen once,
+  so this had never surfaced. Also: never `pumpAndSettle` on the home
+  screen — the background animation repeats forever; use bounded pumps.
+  `settings_test.dart`'s readiness probe returned to `soundSwitch` (back
+  above the fold once the game-mode card left) and the now-unused
+  `appSettings` harness param was removed.
+
+### Verification Results (after 27.1)
+
+- `flutter analyze`: no issues.
+- `flutter test`: 235/235 passed (net zero: −1 settings UI test, +1
+  home end-to-end test).
+- Manual device validation: user confirmed the stuck-toggle symptom and
+  the retest of the fix is pending.
+
 ### Limitations
 
 - The lavender/violet trial palette was rejected for this app; any future
@@ -2394,3 +2464,7 @@ colors.
 - Icon source is a JPEG screenshot; a vector or direct-render source would
   produce crisper small sizes if ever needed.
 - No `ios/` directory exists in this project — nothing to update there.
+- The one-levels-visit-per-test-file constraint (rootBundle hang) is
+  documented in both affected test files but not root-caused inside
+  flutter_test; if a future phase needs multiple real-asset navigations
+  in one file, inject a fake level loader instead.
