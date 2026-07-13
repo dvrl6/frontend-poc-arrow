@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:frontend_poc_arrow/core/app/app_settings_controller.dart';
-import 'package:frontend_poc_arrow/core/app/app_settings_scope.dart';
 import 'package:frontend_poc_arrow/core/localization/l10n/app_localizations.dart';
 import 'package:frontend_poc_arrow/core/theme/app_theme.dart';
 import 'package:frontend_poc_arrow/features/auth/application/get_auth_session_use_case.dart';
@@ -88,10 +86,7 @@ void main() {
     );
 
     await tester.pumpWidget(_TestSettingsApp(controller: controller));
-    // The game-mode card sits near the top of the restyled screen (Phase 27);
-    // the sound switch now lives below the fold, so it can't serve as the
-    // "settings loaded" probe on the test viewport.
-    await _pumpUntilFound(tester, find.byKey(GameUiKeys.gameModeSelector));
+    await _pumpUntilFound(tester, find.byKey(GameUiKeys.soundSwitch));
     await tester.scrollUntilVisible(
       find.byKey(GameUiKeys.resetProgressButton),
       300,
@@ -412,38 +407,11 @@ void main() {
     controller.dispose();
   });
 
-  testWidgets(
-    'should_invoke_controller_and_app_scope_when_3d_is_selected_in_settings_ui',
-    (tester) async {
-      final settingsRepository = _FakeSettingsRepository(
-        PlayerSettings.defaults(),
-      );
-      final controller = SettingsScreenController(
-        getPlayerSettings: GetPlayerSettingsUseCase(settingsRepository),
-        savePlayerSettings: SavePlayerSettingsUseCase(settingsRepository),
-        resetLocalProgress: ResetLocalProgressUseCase(
-          _FakeLocalProgressRepository(),
-        ),
-      );
-      final appSettings = AppSettingsController();
-      await tester.binding.setSurfaceSize(const Size(800, 2000));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
-
-      await tester.pumpWidget(
-        _TestSettingsApp(controller: controller, appSettings: appSettings),
-      );
-      await _pumpUntilFound(tester, find.byKey(GameUiKeys.gameModeSelector));
-
-      await tester.tap(find.text('3D'));
-      await tester.pumpAndSettle();
-
-      expect(controller.settings.gameMode, GameMode.threeD);
-      expect(settingsRepository.settings.gameMode, GameMode.threeD);
-      expect(appSettings.gameMode, GameMode.threeD);
-
-      controller.dispose();
-    },
-  );
+  // The game-mode selector UI moved from this screen to the home screen in
+  // Phase 27.1; its end-to-end selection test lives in test/widget_test.dart
+  // (should_switch_game_mode_from_home_screen). The controller-level
+  // persistence test above (should_persist_game_mode_when_changed_via_
+  // controller) still covers SettingsScreenController.setGameMode.
 }
 
 Future<void> _pumpUntilFound(WidgetTester tester, Finder finder) async {
@@ -457,24 +425,18 @@ Future<void> _pumpUntilFound(WidgetTester tester, Finder finder) async {
 }
 
 class _TestSettingsApp extends StatelessWidget {
-  const _TestSettingsApp({required this.controller, this.appSettings});
+  const _TestSettingsApp({required this.controller});
 
   final SettingsScreenController controller;
-  final AppSettingsController? appSettings;
 
   @override
   Widget build(BuildContext context) {
-    final app = MaterialApp(
+    return MaterialApp(
       theme: AppTheme.dark(),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: SettingsScreen(controller: controller),
     );
-    final appSettings = this.appSettings;
-    if (appSettings == null) {
-      return app;
-    }
-    return AppSettingsScope(controller: appSettings, child: app);
   }
 }
 

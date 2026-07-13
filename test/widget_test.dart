@@ -12,7 +12,9 @@ void main() {
     await tester.pumpWidget(const ArrowPocApp());
     await tester.pump();
 
-    expect(find.text('Nodus'), findsOneWidget);
+    // The wordmark renders as two stacked Text layers (outline stroke pass
+    // underneath, fill pass on top) — see _PixelWordmark in home_screen.dart.
+    expect(find.text('Nodus'), findsNWidgets(2));
     expect(find.text('Levels'), findsOneWidget);
     expect(find.text('Leaderboard'), findsOneWidget);
     expect(find.text('Settings'), findsOneWidget);
@@ -32,6 +34,11 @@ void main() {
     expect(find.text('Level 1'), findsOneWidget);
     expect(find.byKey(GameUiKeys.levelCard(1)), findsOneWidget);
   });
+
+  // The home-screen 2D/3D switch test lives in its own file
+  // (test/features/home/presentation/home_game_mode_switch_test.dart):
+  // real rootBundle asset loads hang on the second navigation to the levels
+  // screen within one test process, so each file gets at most one.
 }
 
 Future<void> _pumpUntilFound(WidgetTester tester, Finder finder) async {

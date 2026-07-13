@@ -12,6 +12,10 @@ class AppTheme {
 
   /// Neon palette used for rendering arrows on the game board.
   static const neonBlue = Color(0xFF1FC8FF);
+
+  /// Darker companion to [neonBlue], used as the outline color of the
+  /// pixel-font Nodus wordmark on the home screen.
+  static const neonBlueDark = Color(0xFF0B6180);
   static const neonGreen = Color(0xFF39FF8E);
   static const neonYellow = Color(0xFFF6FF3D);
   static const neonPink = Color(0xFFFF36C2);

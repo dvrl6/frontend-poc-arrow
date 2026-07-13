@@ -67,6 +67,16 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
+  # Pixel Game (SuhadiDesign, via 1001fonts.com) — display font for the
+  # Nodus wordmark, the home 2D/3D toggle, and the Victory / Game Over
+  # overlay titles. License: 1001Fonts FFP (personal use only; embedding
+  # in a personal-use app is allowed) — a commercial release requires the
+  # author's written permission.
+  fonts:
+    - family: PixelGame
+      fonts:
+        - asset: assets/fonts/PixelGame.otf
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
