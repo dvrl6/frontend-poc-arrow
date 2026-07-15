@@ -59,6 +59,8 @@ type: context
 
 | P31 | 2026-07-14 | COMPLETE | `lib/features/game/presentation/game_screen.dart`, `test/features/game/presentation/playable_game_ui_test.dart` | Closed the victory-overlay save race. `_backToLevels`/`_openNextLevel` used `pushNamedAndRemoveUntil`/`pushReplacementNamed` — not a pop — so they bypassed the P23 `PopScope.onPopInvokedWithResult` await on `controller.completionSettled`, letting the first return to level selection read stale unlock/best-score state. Made both methods `async`: capture `Navigator.of(context)` (+ challenge/next-level-number for next-level) before `await controller.completionSettled`, re-check `!mounted` after, then navigate — mirrors the existing `PopScope` guard. `VoidCallback` signatures on `onBackToLevels`/`onNextLevel` unchanged (async handler is fire-and-forget). No change to `PopScope`, remote-sync (`_notifyRemoteCompletionBestEffort` stays unawaited), or the `completionSettled` contract. 2 new widget tests using a `Completer`-gated `saveLevelCompletion` fake prove each button's navigation is deferred until the save settles. 263/263 tests green (2 new), analyze clean, `--validate-only` n/a (no level files touched), backend untouched. |
 
+| P32 | 2026-07-15 | Done | `frontend-poc-arrow/README.md`, `backend-poc-arrow/README.md` | README refresh for both repos — replaced the stale Phase-8/15-level frontend description and Phase-2-only backend framing with the current state (30 levels 2D/3D, Clean Architecture tree, NestJS 11 + Prisma 6, endpoints table, env template). Docs-only; no source/test/config files touched. |
+
 ## Notes
 
 - "Date" column: fill in when the phase is executed.
