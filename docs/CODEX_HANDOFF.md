@@ -2872,3 +2872,111 @@ route has not been pushed until the completer resolves.
 - Manual rendering check (Markdown preview) was not performed in-session;
   both files use standard GFM syntax (headers, tables, fenced code blocks)
   consistent with the rest of the repo's docs.
+
+## Phase 33 — Nodus Project Landing Page
+
+Static landing page presenting the Nodus project for a university audience.
+Plain HTML/CSS/JS, no build step, no framework, no external network
+dependencies. All files live in `docs/pages/`; nothing else was touched.
+
+### What Changed
+
+- Added `docs/pages/index.html`, `docs/pages/styles.css`,
+  `docs/pages/script.js` — a single self-contained static page.
+- Four sections, in order: **Project Overview** (2D/3D modes, challenge
+  modes, progressive difficulty across 30 levels, capstone framing),
+  **AI Workflow Evolution** (prompt engineering → spec-driven development →
+  harness engineering, each stage's effect on token/context-window usage,
+  plus a `<canvas>` bar chart of input/output token composition across the
+  three stages, explicitly labeled illustrative), **Technical Highlights**
+  (AWS EC2, Docker-based deployment, local/cloud backend flexibility,
+  Flutter + Clean Architecture, Node.js + NestJS + Prisma, graph-based
+  engine, 30 levels, challenge modes), **Closing** (thank-you to Professor
+  Carlos Alonso + backend/frontend GitHub links + Lucidchart link).
+- Pre-implementation audit corrected two claims from the phase draft against
+  the actual repos before writing any code: the backend is **NestJS**, not
+  plain Express (verified via `backend-poc-arrow/package.json` and
+  `nest-cli.json`); and **AWS EC2 hosting** has no supporting evidence in
+  either repo's docs/READMEs/harness — confirmed directly with the user via
+  `AskUserQuestion` before including it as a stated fact.
+- The AI-workflow token/efficiency numbers are illustrative, not measured
+  (no such data exists in the repo); the user explicitly approved this
+  framing, and the page labels the chart accordingly.
+
+### Files Touched
+
+- `docs/pages/index.html` (new)
+- `docs/pages/styles.css` (new)
+- `docs/pages/script.js` (new)
+
+### Verification Results
+
+- `flutter analyze` / `flutter test`: not applicable (no Dart files touched).
+- `node tool/gen_levels.js --validate-only`: ALL VALID true for both the 2D
+  and 3D level sets (sanity check only — no level files touched).
+- Manually verified in the Browser pane over both `http://localhost` (via a
+  throwaway static file server) and `file://` (the actual validation target):
+  all four sections render in order, no console errors, no failed network
+  requests, and the canvas visual draws correctly under both origins.
+
+### New Tests
+
+- None (static page outside the Dart/Node test suites; no automated suite
+  applies per the phase doc).
+
+### Limitations
+
+- Responsive layout was verified via CSS (relative units, `auto-fit` grids,
+  `@media (max-width: 640px)`) and confirmed rendering correctly at the
+  Browser pane's default width; a dedicated narrow-viewport screenshot pass
+  was not completed in-session because the Browser pane's screenshot tool
+  intermittently timed out — text/DOM-based verification (`get_page_text`,
+  console, network) was used instead and is sufficient to confirm content
+  and absence of errors, but not pixel-level mobile layout.
+- The three-stage AI-workflow narrative and its token/efficiency figures are
+  presented as illustrative by design (per the phase doc's own instruction
+  and explicit user approval) — no real token measurements back the chart.
+
+### Next Recommended Phase
+
+Manual on-device/browser screenshot pass at mobile width (375px) to
+visually confirm the responsive layout, if a pixel-level check is desired
+beyond the CSS-based verification already done.
+
+### Phase 33.1 — Landing Page Enhancements (same three files)
+
+Follow-up pass on the same `docs/pages/` files (no new files created; no
+source/test/config touched):
+
+- **Bilingual EN/ES toggle.** Added a `🌐` language button in the hero nav.
+  All copy carries a `data-i18n` (or `data-i18n-aria`) key; `script.js` holds
+  a `translations` object with full English and Spanish strings (79 text keys
+  + 3 aria keys, all verified to resolve in both languages with no empty
+  renders). Switching is instant (innerHTML swap, no reload), defaults to
+  English, and persists the choice in `localStorage` (`nodus-lang`) with a
+  try/catch fallback for restricted `file://`/private-mode storage. The canvas
+  chart redraws with translated labels on switch.
+- **Context-window section redesigned into two visuals.** (1) A new CSS
+  "Anatomy of a Context Window" diagram splitting input tokens (system
+  instructions / project context / phase spec) from output tokens (generated
+  code / audit reports), stacking to one column on mobile. (2) The canvas
+  chart now frames the three techniques as a falling-overhead comparison —
+  stacked input/output bars plus a dashed trend line tracing the shrinking
+  setup share across stages. Added explanatory "why we moved on" blocks to
+  each workflow stage card (problem → next stage; a "why it stuck" block on
+  Harness Engineering).
+- **Expanded content.** Overview grew from 3 to 6 cards (added Graph-Based
+  Mechanics, Audio System, Progress & Leaderboards); every overview/tech card
+  and section lead was lengthened to explain the *why*, not just the *what*.
+- **Numbering audit.** Section numbers 01–04 verified in order; workflow stage
+  indices 1–3; the final (current) stage is visually emphasized. No
+  misnumbering found or introduced.
+- **Verification:** loaded over a local static server in the Browser pane —
+  no console errors, no failed network requests (only the three local files).
+  Canvas confirmed drawing (~92k painted pixels). Toggle exercised via
+  scripted clicks: EN→ES→EN updates `<html lang>`, nav/lead/card text, the
+  toggle label, and `localStorage`, and the `illustrative` tag survives the
+  chart-title translation. Responsive check at 375px: context-window diagram
+  switches to a single column, canvas fits, no horizontal body overflow. A
+  pixel-level screenshot pass was again not captured (Browser pane screenshot
+  tool timed out); DOM/pixel-sample/layout-rect inspection was used instead.
