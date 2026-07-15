@@ -2827,3 +2827,48 @@ route has not been pushed until the completer resolves.
   is still pending, consistent with the broader manual-validation backlog
   noted in earlier phases.
 
+
+## Phase 32 — README Refresh (Frontend + Backend)
+
+### What Changed
+
+- Rewrote `frontend-poc-arrow/README.md`: replaced the stale Phase-8/15-level
+  description with the current state — 30 levels split across
+  `manual_levels_2d.json`/`manual_levels_3d.json`, Clean Architecture
+  directory tree with all current features (`game`, `auth`, `levels`,
+  `progress`, `leaderboard`, `settings`, `challenges`, `home`, `audio`),
+  setup/run/level-tool commands, and the authoritative-level-source note. No
+  backend details included.
+- Rewrote `backend-poc-arrow/README.md`: corrected the stack description to
+  NestJS 11 + Prisma 6 (was previously accurate but described as Phase 2
+  only), added a layered/ports-and-adapters architecture tree matching the
+  real `src/` layout, an endpoints table, `.env` template, and the seed note.
+  No frontend details included.
+- Verified both against the actual repository structure (`lib/`, `src/`,
+  `assets/levels/`, `prisma/`, `package.json` scripts) before writing —
+  confirmed NestJS 11 on Express (not bare Express), Clean Architecture with
+  `lib/core/` + `lib/features/<feature>/{domain,application,infrastructure,presentation}`,
+  and `start:dev` (no `npm run dev`).
+
+### Files Touched
+
+- `frontend-poc-arrow/README.md`
+- `backend-poc-arrow/README.md`
+
+### Verification Results
+
+- `git status` (both repos): only `README.md` modified.
+- `node tool/gen_levels.js --validate-only`: ALL VALID true for both the 2D
+  and 3D sets (sanity check only — no level files touched).
+- No `flutter analyze`/`flutter test`/backend `npm test` run — docs-only
+  change, no source/test/config files edited.
+
+### New Tests
+
+- None (docs-only phase).
+
+### Limitations
+
+- Manual rendering check (Markdown preview) was not performed in-session;
+  both files use standard GFM syntax (headers, tables, fenced code blocks)
+  consistent with the rest of the repo's docs.
