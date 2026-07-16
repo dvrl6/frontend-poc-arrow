@@ -350,17 +350,16 @@ code {
   color: var(--accent-2);
 }
 
-/* Visual blocks */
+/* Visual blocks — figures, not cards. Deliberately distinct from the
+   .tech-card / .overview-card grids they follow: inset surface, accent rule,
+   and generous top margin so they never read as another card in the grid. */
 .visual-block {
   background: var(--surface);
   border: 1px solid var(--surface-border);
+  border-left: 3px solid var(--accent);
   border-radius: var(--radius);
   padding: 1.75rem;
-  margin-bottom: 1.5rem;
-}
-
-.visual-block:last-child {
-  margin-bottom: 0;
+  margin: 3rem 0 0;
 }
 
 .visual-block h3 {
@@ -369,6 +368,18 @@ code {
   align-items: center;
   gap: 0.6rem;
   flex-wrap: wrap;
+  margin-top: 0;
+}
+
+/* Small caps eyebrow marking the block as a figure */
+.visual-kicker {
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
 }
 
 .illustrative-tag {
@@ -513,6 +524,116 @@ code {
   color: var(--text-muted);
   font-size: 1.5rem;
   flex: 0 0 auto;
+}
+
+/* Request-flow diagram (frontend <-> backend working road) */
+.flow-diagram {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.flow-step {
+  display: flex;
+  gap: 1rem;
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+
+.flow-step:last-child {
+  padding-bottom: 0;
+}
+
+.flow-step::before {
+  content: "";
+  position: absolute;
+  left: 17px;
+  top: 38px;
+  bottom: 0;
+  width: 2px;
+  background: var(--surface-border);
+}
+
+.flow-step:last-child::before {
+  display: none;
+}
+
+.flow-step-index {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  z-index: 1;
+}
+
+.flow-step.is-aop .flow-step-index {
+  background: var(--accent-warm);
+}
+
+.flow-step-body {
+  flex: 1 1 auto;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  padding: 0.85rem 1.1rem;
+}
+
+.flow-step-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 0.6rem;
+  margin-bottom: 0.3rem;
+}
+
+.flow-step-title {
+  font-weight: 700;
+  font-size: 0.98rem;
+}
+
+.flow-step-side {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: rgba(109, 141, 255, 0.12);
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+}
+
+.flow-step-side.is-backend {
+  background: rgba(126, 232, 200, 0.15);
+}
+
+.flow-step-p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
+.flow-step-aop {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--accent-warm);
+  font-weight: 600;
+}
+
+.flow-step-aop::before {
+  content: "⚙";
 }
 
 /* Canvas chart */
