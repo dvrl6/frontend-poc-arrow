@@ -5,7 +5,7 @@
 ![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
-Flutter graph-based puzzle game. Player-facing client only — see [`backend-poc-arrow`](https://github.com/arjperez-dev  /backend-poc-arrow) for the server.
+Flutter graph-based puzzle game. Player-facing client only — see [`backend-poc-arrow`](https://github.com/arjperez-dev/backend-poc-arrow) for the server.
 
 ---
 
